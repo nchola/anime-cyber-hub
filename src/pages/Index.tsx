@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import AnimeGrid from "@/components/AnimeGrid";
+import TabNavigation from "@/components/TabNavigation";
 import Footer from "@/components/Footer";
 import { getTopAnime, getSeasonalAnime, getUpcomingAnime } from "@/services/animeService";
 import { Anime } from "@/types/anime";
@@ -70,25 +70,12 @@ const Index = () => {
       <div className="pt-16"> {/* Padding top for navbar */}
         <HeroSection />
         
-        <AnimeGrid
-          title="Top Rated Anime"
-          animeList={topAnime}
-          loading={loading.top}
-          error={error.top}
-        />
-        
-        <AnimeGrid
-          title="Seasonal Anime"
-          animeList={seasonalAnime}
-          loading={loading.seasonal}
-          error={error.seasonal}
-        />
-        
-        <AnimeGrid
-          title="Upcoming Anime"
-          animeList={upcomingAnime}
-          loading={loading.upcoming}
-          error={error.upcoming}
+        <TabNavigation
+          topAnime={topAnime}
+          seasonalAnime={seasonalAnime}
+          upcomingAnime={upcomingAnime}
+          loading={loading}
+          error={error}
         />
       </div>
       
