@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import TabNavigation from "@/components/TabNavigation";
+import GenreCloud from "@/components/GenreCloud";
 import Footer from "@/components/Footer";
 import { getTopAnime, getSeasonalAnime, getUpcomingAnime } from "@/services/animeService";
 import { Anime } from "@/types/anime";
@@ -69,6 +70,13 @@ const Index = () => {
       
       <div className="pt-16"> {/* Padding top for navbar */}
         <HeroSection />
+        
+        <div className="container mx-auto px-4 py-4">
+          <h2 className="text-xl font-orbitron text-cyber-accent text-center mb-2">
+            Explore By Genre
+          </h2>
+          <GenreCloud />
+        </div>
         
         <TabNavigation
           topAnime={topAnime}

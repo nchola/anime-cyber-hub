@@ -68,3 +68,27 @@ export interface AnimeResponse {
 export interface SingleAnimeResponse {
   data: Anime;
 }
+
+export interface Genre {
+  mal_id: number;
+  name: string;
+  count: number;
+  url: string;
+}
+
+export interface AnimeVideo {
+  title: string;
+  embed_url: string;
+  url: string;
+  images: {
+    image_url: string;
+  };
+}
+
+export interface AnimeVideosResponse {
+  data: {
+    promo: AnimeVideo[];
+    episodes: AnimeVideo[];
+    music_videos: AnimeVideo[];
+  };
+}

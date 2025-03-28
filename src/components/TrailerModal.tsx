@@ -1,0 +1,40 @@
+
+import React from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { X } from "lucide-react";
+
+interface TrailerModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  embedUrl?: string;
+  title?: string;
+}
+
+const TrailerModal: React.FC<TrailerModalProps> = ({ isOpen, onClose, embedUrl, title }) => {
+  if (!embedUrl) return null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[800px] bg-cyber-background border-cyber-accent/30">
+        <DialogHeader className="flex flex-row items-center justify-between">
+          <DialogTitle className="text-cyber-accent font-orbitron">
+            {title || "Anime Trailer"}
+          </DialogTitle>
+          <DialogClose className="w-8 h-8 bg-cyber-background rounded-full flex items-center justify-center border border-cyber-accent/30 hover:rotate-90 transition-transform duration-300">
+            <X className="h-4 w-4 text-cyber-accent" />
+          </DialogClose>
+        </DialogHeader>
+        <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-md">
+          <iframe 
+            src={embedUrl}
+            className="absolute top-0 left-0 w-full h-full"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default TrailerModal;

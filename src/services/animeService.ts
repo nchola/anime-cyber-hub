@@ -71,3 +71,15 @@ export const getCurrentSeasonAnime = async (page = 1, limit = 12): Promise<Anime
 export const getUpcomingAnime = async (page = 1, limit = 12): Promise<AnimeResponse> => {
   return fetchWithRetry(`${BASE_URL}/seasons/upcoming?page=${page}&limit=${limit}`);
 };
+
+// Get anime genres
+export const getAnimeGenres = async () => {
+  const response = await fetchWithRetry(`${BASE_URL}/genres/anime`);
+  // Filter out sensitive content
+  return response.data.filter((genre: any) => genre.name !== "Hentai");
+};
+
+// Get anime videos/trailers
+export const getAnimeVideos = async (animeId: number) => {
+  return fetchWithRetry(`${BASE_URL}/anime/${animeId}/videos`);
+};
