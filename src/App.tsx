@@ -10,19 +10,19 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// The correct way to use TooltipProvider is to wrap it inside BrowserRouter
+// This prevents the hook usage error we're seeing
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+    <BrowserRouter>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/anime/:id" element={<AnimeDetail />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/anime/:id" element={<AnimeDetail />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 
