@@ -71,13 +71,6 @@ const Index = () => {
       <div className="pt-16"> {/* Padding top for navbar */}
         <HeroSection />
         
-        <div className="container mx-auto px-4 py-4">
-          <h2 className="text-xl font-orbitron text-cyber-accent text-center mb-2">
-            Explore By Genre
-          </h2>
-          <GenreCloud />
-        </div>
-        
         <TabNavigation
           topAnime={topAnime}
           seasonalAnime={seasonalAnime}
@@ -85,6 +78,14 @@ const Index = () => {
           loading={loading}
           error={error}
         />
+        
+        {/* Genre Cloud moved here, right before the footer */}
+        <div className="container mx-auto px-4 py-8 mb-8">
+          <h2 className="text-2xl font-orbitron text-cyber-accent text-center mb-4">
+            Explore By Genre
+          </h2>
+          <GenreCloud />
+        </div>
       </div>
       
       <Footer />

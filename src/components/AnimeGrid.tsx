@@ -3,19 +3,24 @@ import React from "react";
 import { Anime } from "@/types/anime";
 import AnimeCard from "./AnimeCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface AnimeGridProps {
   animeList: Anime[];
   title: string;
   loading?: boolean;
   error?: string | null;
+  viewMoreLink?: string;
 }
 
 const AnimeGrid: React.FC<AnimeGridProps> = ({ 
   animeList, 
   title, 
   loading = false,
-  error = null
+  error = null,
+  viewMoreLink
 }) => {
   // Render loading skeletons
   if (loading) {
@@ -60,9 +65,21 @@ const AnimeGrid: React.FC<AnimeGridProps> = ({
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-orbitron font-bold mb-6 text-white">
-        {title}
-      </h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-orbitron font-bold text-white">
+          {title}
+        </h2>
+        {viewMoreLink && (
+          <Link to={viewMoreLink}>
+            <Button 
+              variant="outline" 
+              className="border-cyber-accent text-cyber-accent hover:bg-cyber-accent/10"
+            >
+              View More <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </Link>
+        )}
+      </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
         {animeList.map((anime, index) => (
           <AnimeCard key={anime.mal_id} anime={anime} index={index} />

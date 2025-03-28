@@ -18,15 +18,6 @@ const Navbar = () => {
             <Link to="/" className="text-white hover:text-cyber-accent transition-colors">
               HOME
             </Link>
-            <Link to="/top" className="text-white hover:text-cyber-accent transition-colors">
-              TOP RATED
-            </Link>
-            <Link to="/seasonal" className="text-white hover:text-cyber-accent transition-colors">
-              SEASONAL
-            </Link>
-            <Link to="/upcoming" className="text-white hover:text-cyber-accent transition-colors">
-              UPCOMING
-            </Link>
           </div>
           
           <div className="flex items-center">
