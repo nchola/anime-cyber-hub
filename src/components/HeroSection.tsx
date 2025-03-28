@@ -5,12 +5,17 @@ import { Anime } from "@/types/anime";
 import { getCurrentSeasonAnime } from "@/services/animeService";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
+import TrailerModal from "@/components/TrailerModal";
 
 const HeroSection = () => {
   const [featuredAnime, setFeaturedAnime] = useState<Anime[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [trailerModalOpen, setTrailerModalOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchFeaturedAnime = async () => {
@@ -39,6 +44,33 @@ const HeroSection = () => {
     setCurrentIndex((prevIndex) => 
       prevIndex === featuredAnime.length - 1 ? 0 : prevIndex + 1
     );
+  };
+
+  const handleWatchTrailer = () => {
+    const current = featuredAnime[currentIndex];
+    if (!current.trailer || !current.trailer.embed_url) {
+      toast({
+        title: "Trailer Tidak Tersedia",
+        description: `Trailer untuk ${current.title} belum tersedia saat ini.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    setTrailerModalOpen(true);
+  };
+
+  const handleMoreInfo = () => {
+    const current = featuredAnime[currentIndex];
+    if (!current.synopsis) {
+      toast({
+        title: "Informasi Tidak Tersedia",
+        description: `Informasi lengkap untuk ${current.title} belum tersedia saat ini.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    // Navigate to detail page
+    window.location.href = `/anime/${current.mal_id}`;
   };
 
   if (loading) {
@@ -79,19 +111,20 @@ const HeroSection = () => {
   
   return (
     <div className="w-full h-[500px] relative overflow-hidden bg-cyber-background noise-bg">
-      {/* Background image with overlay */}
+      {/* Background image with improved clarity */}
       <div 
-        className="absolute inset-0 z-0 opacity-30 bg-cover bg-center blur-sm scale-105"
+        className="absolute inset-0 z-0 bg-cover bg-center"
         style={{ 
           backgroundImage: `url(${current.images.jpg.large_image_url})`,
+          filter: "brightness(0.4)"
         }}
       />
       
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 z-0 bg-cyber-gradient opacity-70" />
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 z-0 bg-black/50" />
       
       {/* Scanlines effect */}
-      <div className="scanlines absolute inset-0 z-10" />
+      <div className="scanlines absolute inset-0 z-10 opacity-25" />
       
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
@@ -114,16 +147,24 @@ const HeroSection = () => {
             </div>
             
             <p className="text-gray-300 mb-6 line-clamp-3">
-              {current.synopsis}
+              {current.synopsis || "Belum ada deskripsi tersedia untuk anime ini."}
             </p>
             
             <div className="flex space-x-4">
-              <Button className="bg-cyber-accent text-cyber-background font-orbitron hover:bg-opacity-80 transition-colors">
+              <Button 
+                onClick={handleWatchTrailer} 
+                className="bg-cyber-accent text-cyber-background font-orbitron hover:bg-opacity-80 transition-colors"
+              >
                 Watch Trailer
               </Button>
-              <Button variant="outline" className="border-cyber-accent text-cyber-accent font-orbitron hover:bg-cyber-accent/10 transition-colors">
-                More Info
-              </Button>
+              <Link to={`/anime/${current.mal_id}`}>
+                <Button 
+                  variant="outline" 
+                  className="border-cyber-accent text-cyber-accent font-orbitron hover:bg-cyber-accent/10 transition-colors"
+                >
+                  More Info
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -156,6 +197,14 @@ const HeroSection = () => {
           />
         ))}
       </div>
+
+      {/* Trailer Modal */}
+      <TrailerModal 
+        isOpen={trailerModalOpen}
+        onClose={() => setTrailerModalOpen(false)}
+        embedUrl={current.trailer?.embed_url}
+        title={current.title_english || current.title}
+      />
     </div>
   );
 };

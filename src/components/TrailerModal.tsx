@@ -11,7 +11,7 @@ interface TrailerModalProps {
 }
 
 const TrailerModal: React.FC<TrailerModalProps> = ({ isOpen, onClose, embedUrl, title }) => {
-  if (!embedUrl) return null;
+  if (!isOpen) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -24,14 +24,20 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ isOpen, onClose, embedUrl, 
             <X className="h-4 w-4 text-cyber-accent" />
           </DialogClose>
         </DialogHeader>
-        <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-md">
-          <iframe 
-            src={embedUrl}
-            className="absolute top-0 left-0 w-full h-full"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
+        {embedUrl ? (
+          <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-md">
+            <iframe 
+              src={embedUrl}
+              className="absolute top-0 left-0 w-full h-full"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <div className="py-12 text-center">
+            <p className="text-gray-400">Trailer tidak tersedia untuk anime ini.</p>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
