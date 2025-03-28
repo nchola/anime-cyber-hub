@@ -1,12 +1,98 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useState, useEffect } from "react";
+import Navbar from "@/components/Navbar";
+import HeroSection from "@/components/HeroSection";
+import AnimeGrid from "@/components/AnimeGrid";
+import Footer from "@/components/Footer";
+import { getTopAnime, getSeasonalAnime, getUpcomingAnime } from "@/services/animeService";
+import { Anime } from "@/types/anime";
 
 const Index = () => {
+  const [topAnime, setTopAnime] = useState<Anime[]>([]);
+  const [seasonalAnime, setSeasonalAnime] = useState<Anime[]>([]);
+  const [upcomingAnime, setUpcomingAnime] = useState<Anime[]>([]);
+  
+  const [loading, setLoading] = useState({
+    top: true,
+    seasonal: true,
+    upcoming: true
+  });
+  
+  const [error, setError] = useState({
+    top: null as string | null,
+    seasonal: null as string | null,
+    upcoming: null as string | null
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch top anime
+        const topResponse = await getTopAnime(1, 12);
+        setTopAnime(topResponse.data);
+        setLoading(prev => ({ ...prev, top: false }));
+      } catch (err) {
+        console.error("Failed to fetch top anime:", err);
+        setError(prev => ({ ...prev, top: "Failed to load top anime" }));
+        setLoading(prev => ({ ...prev, top: false }));
+      }
+
+      try {
+        // Fetch seasonal anime
+        const seasonalResponse = await getSeasonalAnime();
+        setSeasonalAnime(seasonalResponse.data);
+        setLoading(prev => ({ ...prev, seasonal: false }));
+      } catch (err) {
+        console.error("Failed to fetch seasonal anime:", err);
+        setError(prev => ({ ...prev, seasonal: "Failed to load seasonal anime" }));
+        setLoading(prev => ({ ...prev, seasonal: false }));
+      }
+
+      try {
+        // Fetch upcoming anime
+        const upcomingResponse = await getUpcomingAnime(1, 12);
+        setUpcomingAnime(upcomingResponse.data);
+        setLoading(prev => ({ ...prev, upcoming: false }));
+      } catch (err) {
+        console.error("Failed to fetch upcoming anime:", err);
+        setError(prev => ({ ...prev, upcoming: "Failed to load upcoming anime" }));
+        setLoading(prev => ({ ...prev, upcoming: false }));
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-cyber-background noise-bg">
+      <Navbar />
+      
+      <div className="pt-16"> {/* Padding top for navbar */}
+        <HeroSection />
+        
+        <AnimeGrid
+          title="Top Rated Anime"
+          animeList={topAnime}
+          loading={loading.top}
+          error={error.top}
+        />
+        
+        <AnimeGrid
+          title="Seasonal Anime"
+          animeList={seasonalAnime}
+          loading={loading.seasonal}
+          error={error.seasonal}
+        />
+        
+        <AnimeGrid
+          title="Upcoming Anime"
+          animeList={upcomingAnime}
+          loading={loading.upcoming}
+          error={error.upcoming}
+        />
       </div>
+      
+      <Footer />
     </div>
   );
 };

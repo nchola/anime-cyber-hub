@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom theme colors
+				cyber: {
+					background: '#0F0F0F',
+					accent: '#FFD95A',
+					purple: '#8A2BE2',
 				}
 			},
 			borderRadius: {
@@ -68,27 +75,46 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			fontFamily: {
+				orbitron: ['Orbitron', 'sans-serif'],
+				'noto-sans': ['"Noto Sans JP"', 'sans-serif'],
+			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' },
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' },
+				},
+				scanline: {
+					'0%': { transform: 'translateY(0%)' },
+					'100%': { transform: 'translateY(100%)' },
+				},
+				glitch: {
+					'0%': { transform: 'translate(0)' },
+					'20%': { transform: 'translate(-2px, 2px)' },
+					'40%': { transform: 'translate(-2px, -2px)' },
+					'60%': { transform: 'translate(2px, 2px)' },
+					'80%': { transform: 'translate(2px, -2px)' },
+					'100%': { transform: 'translate(0)' },
+				},
+				'pulse-accent': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.7' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'scanline': 'scanline 8s linear infinite',
+				'glitch': 'glitch 0.3s ease forwards',
+				'pulse-accent': 'pulse-accent 2s infinite',
+			},
+			backgroundImage: {
+				'cyber-gradient': 'linear-gradient(45deg, #8A2BE2 0%, #0F0F0F 70%)',
+				'noise-pattern': "url('/noise.png')",
 			}
 		}
 	},

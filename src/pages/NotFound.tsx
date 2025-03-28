@@ -1,25 +1,41 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+
+import React from "react";
+import { useLocation, Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const NotFound = () => {
   const location = useLocation();
 
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
+    <div className="min-h-screen bg-cyber-background noise-bg">
+      <Navbar />
+      
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center px-4">
+          <h1 className="text-6xl font-orbitron font-bold text-cyber-accent mb-4 glitch-hover">404</h1>
+          <div className="relative mb-8">
+            <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-cyber-accent to-transparent"></div>
+          </div>
+          <h2 className="text-2xl text-white font-orbitron mb-6">Page Not Found</h2>
+          <p className="text-gray-400 mb-8 max-w-md mx-auto">
+            The page you're looking for doesn't exist or has been moved to another location.
+          </p>
+          <div className="space-x-4">
+            <Link to="/">
+              <Button className="bg-cyber-accent text-cyber-background font-orbitron">
+                Return to Home
+              </Button>
+            </Link>
+            <Button variant="outline" className="border-cyber-accent text-cyber-accent font-orbitron" onClick={() => window.history.back()}>
+              Go Back
+            </Button>
+          </div>
+        </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };
