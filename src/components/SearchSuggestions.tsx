@@ -81,7 +81,7 @@ const SearchSuggestions = ({
                             }}
                           />
                           <div className="text-xs text-gray-400 truncate">
-                            {anime.type || 'Anime'}{anime.episodes ? `, ${anime.episodes} eps` : ''}
+                            {anime.status || 'Anime'}{anime.episodes ? `, ${anime.episodes} eps` : ''}
                           </div>
                         </div>
                       </div>
