@@ -1,8 +1,8 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { searchAnime } from "@/services/animeService";
+import { searchAnimeRealtime } from "@/services/searchService";
 import Navbar from "@/components/Navbar";
 import AnimeGrid from "@/components/AnimeGrid";
 import Footer from "@/components/Footer";
@@ -14,11 +14,19 @@ const SearchResults = () => {
     data: searchResults,
     isLoading,
     error,
+    refetch
   } = useQuery({
     queryKey: ["animeSearch", query],
-    queryFn: () => searchAnime(query || ""),
+    queryFn: () => searchAnimeRealtime(query || ""),
     enabled: !!query,
   });
+
+  // Refetch when query changes
+  useEffect(() => {
+    if (query) {
+      refetch();
+    }
+  }, [query, refetch]);
 
   return (
     <div className="min-h-screen bg-cyber-background noise-bg">
@@ -32,7 +40,7 @@ const SearchResults = () => {
         </div>
         
         <AnimeGrid
-          animeList={searchResults?.data || []}
+          animeList={searchResults || []}
           title="Anime Found"
           loading={isLoading}
           error={error ? "Failed to load search results" : null}
