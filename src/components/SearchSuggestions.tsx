@@ -39,8 +39,8 @@ const SearchSuggestions = ({
 
   return (
     <div className="absolute z-50 mt-1 w-full bg-cyber-background border border-cyber-accent/30 rounded-md shadow-lg">
-      <Command className="rounded-md">
-        <Command.List className="max-h-60 overflow-auto p-0">
+      <div className="rounded-md">
+        <div className="max-h-60 overflow-auto p-0">
           {results.length === 0 && query.length > 1 ? (
             <div className="py-6 text-center text-sm text-gray-400">
               No results found for "{query}"
@@ -54,7 +54,7 @@ const SearchSuggestions = ({
               >
                 <HoverCard>
                   <HoverCardTrigger asChild>
-                    <Command.Item
+                    <div
                       className={`flex items-center py-2 px-3 cursor-pointer ${
                         index === highlightIndex ? 'bg-cyber-accent/10' : ''
                       }`}
@@ -78,7 +78,7 @@ const SearchSuggestions = ({
                           {anime.genres?.slice(0, 3).map(g => g.name).join(', ')}
                         </div>
                       </div>
-                    </Command.Item>
+                    </div>
                   </HoverCardTrigger>
                   <HoverCardContent side="right" className="w-72 p-0 bg-cyber-background border border-cyber-accent/30">
                     <div className="flex flex-col">
@@ -109,8 +109,8 @@ const SearchSuggestions = ({
               </Link>
             ))
           )}
-        </Command.List>
-      </Command>
+        </div>
+      </div>
     </div>
   );
 };
