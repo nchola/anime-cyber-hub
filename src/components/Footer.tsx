@@ -1,6 +1,5 @@
-
 import React from "react";
-import { Github, Twitter, Instagram } from "lucide-react";
+import { Github, Instagram, Linkedin } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -15,14 +14,14 @@ const Footer = () => {
               A modern cyberpunk-themed anime catalog with a focus on performance and user experience.
             </p>
             <div className="flex space-x-4 mt-4">
-              <a href="#" className="text-gray-400 hover:text-cyber-accent">
+              <a href="https://github.com/nchola" className="text-gray-400 hover:text-cyber-accent" target="_blank" rel="noopener noreferrer">
                 <Github size={18} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-cyber-accent">
-                <Twitter size={18} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-cyber-accent">
+              <a href="https://www.instagram.com/nndncholaa/" className="text-gray-400 hover:text-cyber-accent" target="_blank" rel="noopener noreferrer">
                 <Instagram size={18} />
+              </a>
+              <a href="https://www.linkedin.com/in/mhmmdnanda/" className="text-gray-400 hover:text-cyber-accent" target="_blank" rel="noopener noreferrer">
+                <Linkedin size={18} />
               </a>
             </div>
           </div>
