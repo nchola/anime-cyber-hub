@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import AnimeGrid from "@/components/AnimeGrid";
@@ -141,6 +140,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
             animeList={topAnime}
             loading={loading.top}
             error={error.top}
+            viewMoreLink="/genre/1"
           />
         </TabsContent>
         
@@ -150,6 +150,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
             animeList={seasonalAnime}
             loading={loading.seasonal}
             error={error.seasonal}
+            viewMoreLink="/genre/2"
           />
         </TabsContent>
         
@@ -159,6 +160,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
             animeList={upcomingAnime}
             loading={loading.upcoming}
             error={error.upcoming}
+            viewMoreLink="/genre/10"
           />
         </TabsContent>
         

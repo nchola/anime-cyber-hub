@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Anime } from "@/types/anime";
 import AnimeCard from "./AnimeCard";

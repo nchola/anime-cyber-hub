@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import AnimeDetail from "./pages/AnimeDetail";
 import NotFound from "./pages/NotFound";
+import GenrePage from "./pages/GenrePage";
 
 const queryClient = new QueryClient();
 
@@ -17,7 +18,7 @@ const App = () => (
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/anime/:id" element={<AnimeDetail />} />
-        <Route path="/genre/:id" element={<NotFound />} />
+        <Route path="/genre/:id" element={<GenrePage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
