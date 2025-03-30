@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import AnimeDetail from "./pages/AnimeDetail";
 import NotFound from "./pages/NotFound";
 import GenrePage from "./pages/GenrePage";
+import SearchResults from "./pages/SearchResults";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
         <Route path="/" element={<Index />} />
         <Route path="/anime/:id" element={<AnimeDetail />} />
         <Route path="/genre/:id" element={<GenrePage />} />
+        <Route path="/search/:query" element={<SearchResults />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
