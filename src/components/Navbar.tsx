@@ -8,6 +8,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { getSearchSuggestions } from "@/services/searchService";
 import { Anime } from "@/types/anime";
 import SearchSuggestions from "@/components/SearchSuggestions";
+import SignInDialog from "@/components/SignInDialog";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -15,6 +16,7 @@ const Navbar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [signInOpen, setSignInOpen] = useState(false);
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
   
@@ -145,9 +147,18 @@ const Navbar = () => {
               />
             </div>
             
-            <button className="py-1 px-4 bg-cyber-accent text-cyber-background rounded-md text-sm font-medium hover:bg-opacity-80 transition-colors">
+            <Button 
+              onClick={() => setSignInOpen(true)}
+              className="py-1 px-4 bg-cyber-accent text-cyber-background rounded-md text-sm font-medium hover:bg-opacity-80 transition-colors"
+            >
               Sign In
-            </button>
+            </Button>
+            
+            {/* Sign In Dialog */}
+            <SignInDialog 
+              open={signInOpen} 
+              onOpenChange={setSignInOpen} 
+            />
           </div>
         </div>
       </div>
