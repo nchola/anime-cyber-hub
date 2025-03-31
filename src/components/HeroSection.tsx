@@ -109,7 +109,7 @@ const HeroSection = () => {
   const current = featuredAnime[currentIndex];
   
   return (
-    <div className="w-full h-[600px] relative overflow-hidden bg-cyber-background noise-bg">
+    <div className="w-full h-screen relative overflow-hidden bg-cyber-background noise-bg">
       {/* Glowing border at the top */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
@@ -168,17 +168,17 @@ const HeroSection = () => {
         ))}
       </div>
       
-      {/* Animated rank badge */}
-      <div className="absolute top-10 left-10 z-20 bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent">
-        #{currentIndex + 1} Most Favorited Anime
-      </div>
-      
       {/* Content Section */}
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
           <div className="max-w-3xl">
-            {/* Title with glow effect */}
-            <h1 className="text-5xl md:text-6xl font-orbitron font-bold mb-4 glitch-hover text-white shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+            {/* Most Favorited Anime Badge integrated with span */}
+            <span className="inline-block bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent mb-4">
+              #{currentIndex + 1} Most Favorited Anime
+            </span>
+            
+            {/* Title with glow effect - reduced by 30% */}
+            <h1 className="text-3xl md:text-4xl font-orbitron font-bold mb-4 glitch-hover text-white shadow-[0_0_10px_rgba(255,255,255,0.3)]">
               {current.title_english || current.title}
             </h1>
             
@@ -205,10 +205,14 @@ const HeroSection = () => {
               )}
             </div>
             
-            {/* Synopsis with glass effect */}
+            {/* Synopsis with glass effect - truncated with ellipsis */}
             <div className="backdrop-blur-md bg-black/30 border border-cyber-accent/10 rounded-lg p-4 mb-6 transition-all duration-500 hover:bg-black/40">
               <p className="text-gray-300 line-clamp-3">
-                {current.synopsis || "Belum ada deskripsi tersedia untuk anime ini."}
+                {current.synopsis ? 
+                  current.synopsis.length > 180 ? 
+                    `${current.synopsis.substring(0, 180)}...` : 
+                    current.synopsis 
+                  : "Belum ada deskripsi tersedia untuk anime ini."}
               </p>
             </div>
             
