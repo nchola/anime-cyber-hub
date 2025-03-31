@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import { Search, UserPlus } from "lucide-react";
+import { Search, UserPlus, User, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,23 @@ import { getSearchSuggestions } from "@/services/searchService";
 import { Anime } from "@/types/anime";
 import SearchSuggestions from "@/components/SearchSuggestions";
 import SignInDialog from "@/components/SignInDialog";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger
+} from "@/components/ui/navigation-menu";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,8 +34,48 @@ const Navbar = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [signInOpen, setSignInOpen] = useState(false);
+  
+  // State untuk autentikasi
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [avatar, setAvatar] = useState('');
+  
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  
+  // Cek status login dari localStorage saat komponen dimuat
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userJson = localStorage.getItem('user');
+    
+    if (token && userJson) {
+      try {
+        const userData = JSON.parse(userJson);
+        setIsLoggedIn(true);
+        setUsername(userData.username || 'User');
+        setAvatar(userData.avatar || '');
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        // Bersihkan localStorage jika data rusak
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+    }
+  }, []);
+  
+  // Fungsi logout
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    setUsername('');
+    setAvatar('');
+    toast({
+      title: "Logout Berhasil",
+      description: "Anda telah keluar dari akun",
+    });
+  };
   
   // Debounce search query
   const debouncedSearchTerm = useDebounce(searchQuery, 300);
@@ -102,25 +159,66 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-40 bg-cyber-background/80 backdrop-blur-md border-b border-cyber-accent/20">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="text-cyber-accent text-2xl font-orbitron font-bold">
-              CYBER<span className="text-white">ANIME</span>
-            </span>
-          </Link>
-          
-          <div className="hidden md:flex space-x-8 font-orbitron text-sm">
-            <Link to="/" className="text-white hover:text-cyber-accent transition-colors">
-              HOME
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-2">
+              <span className="text-cyber-accent text-2xl font-orbitron font-bold">
+                CYBER<span className="text-white">ANIME</span>
+              </span>
             </Link>
-            <Link to="/anime" className="text-white hover:text-cyber-accent transition-colors">
-              ANIME
-            </Link>
-            <Link to="/genre" className="text-white hover:text-cyber-accent transition-colors">
-              GENRES
-            </Link>
-            <Link to="/seasonal" className="text-white hover:text-cyber-accent transition-colors">
-              SEASONAL
-            </Link>
+            
+            <div className="hidden md:flex ml-8">
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <Link to="/" className="text-white hover:text-cyber-accent transition-colors px-4 py-2 font-orbitron text-sm">
+                      HOME
+                    </Link>
+                  </NavigationMenuItem>
+                  
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger className="bg-transparent text-white hover:text-cyber-accent hover:bg-transparent font-orbitron text-sm">
+                      EXPLORE
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent className="bg-cyber-background/95 border border-cyber-accent/30 p-4 min-w-[16rem] backdrop-blur-md">
+                      <ul className="grid gap-3">
+                        <li>
+                          <NavigationMenuLink asChild>
+                            <Link to="/anime" className="flex items-center gap-2 p-2 hover:bg-cyber-accent/10 rounded-md transition-colors">
+                              <span className="text-cyber-accent">•</span>
+                              <span className="text-white">All Anime</span>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                        <li>
+                          <NavigationMenuLink asChild>
+                            <Link to="/seasonal" className="flex items-center gap-2 p-2 hover:bg-cyber-accent/10 rounded-md transition-colors">
+                              <span className="text-cyber-accent">•</span>
+                              <span className="text-white">Seasonal</span>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                        <li>
+                          <NavigationMenuLink asChild>
+                            <Link to="/genre" className="flex items-center gap-2 p-2 hover:bg-cyber-accent/10 rounded-md transition-colors">
+                              <span className="text-cyber-accent">•</span>
+                              <span className="text-white">Genres</span>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                  
+                  {isLoggedIn && (
+                    <NavigationMenuItem>
+                      <Link to="/bookmark" className="text-white hover:text-cyber-accent transition-colors px-4 py-2 font-orbitron text-sm">
+                        BOOKMARKS
+                      </Link>
+                    </NavigationMenuItem>
+                  )}
+                </NavigationMenuList>
+              </NavigationMenu>
+            </div>
           </div>
           
           <div className="flex items-center gap-4">
@@ -156,37 +254,89 @@ const Navbar = () => {
               />
             </div>
             
-            <div className="flex items-center gap-2">
-              <Button 
-                onClick={() => setSignInOpen(true)}
-                variant="default"
-                className="py-1 px-4 bg-cyber-accent text-cyber-background rounded-md text-sm font-medium hover:bg-opacity-80 transition-colors"
-              >
-                Sign In
-              </Button>
-              
-              <Button
-                onClick={() => {
-                  setSignInOpen(true);
-                  // Trigger the Sign Up dialog through Sign In dialog
-                  setTimeout(() => {
-                    document.querySelector('[aria-label="Sign up"]')?.dispatchEvent(
-                      new MouseEvent('click', { bubbles: true })
-                    );
-                  }, 100);
-                }}
-                variant="outline"
-                className="hidden md:flex py-1 px-4 border-cyber-accent text-cyber-accent rounded-md text-sm font-medium hover:bg-cyber-accent/10 transition-colors gap-1 items-center"
-              >
-                <UserPlus className="h-3.5 w-3.5" />
-                Sign Up
-              </Button>
-            </div>
+            {/* Tampilkan menu sesuai status login */}
+            {isLoggedIn ? (
+              <div className="flex items-center gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      className="relative h-8 w-8 rounded-full overflow-hidden border border-cyber-accent/50 focus:ring-0 focus:ring-offset-0"
+                    >
+                      {avatar ? (
+                        <img src={avatar} alt={username} className="h-full w-full object-cover" />
+                      ) : (
+                        <User className="h-4 w-4 text-cyber-accent" />
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 bg-cyber-background/95 border border-cyber-accent/30 backdrop-blur-md">
+                    <DropdownMenuLabel className="font-orbitron text-cyber-accent">
+                      {username}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-cyber-accent/20" />
+                    <DropdownMenuItem className="cursor-pointer hover:bg-cyber-accent/10 focus:bg-cyber-accent/10">
+                      <Link to="/profile" className="flex w-full items-center">Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer hover:bg-cyber-accent/10 focus:bg-cyber-accent/10">
+                      <Link to="/bookmark" className="flex w-full items-center">Bookmarks</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer hover:bg-cyber-accent/10 focus:bg-cyber-accent/10">
+                      <Link to="/settings" className="flex w-full items-center">Settings</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-cyber-accent/20" />
+                    <DropdownMenuItem 
+                      onClick={handleLogout} 
+                      className="text-red-500 cursor-pointer hover:bg-red-500/10 focus:bg-red-500/10 flex items-center gap-2"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button 
+                  onClick={() => setSignInOpen(true)}
+                  variant="default"
+                  className="py-1 px-4 bg-cyber-accent text-cyber-background rounded-md text-sm font-medium hover:bg-opacity-80 transition-colors"
+                >
+                  Sign In
+                </Button>
+                
+                <Button
+                  onClick={() => {
+                    setSignInOpen(true);
+                    // Trigger the Sign Up dialog through Sign In dialog
+                    setTimeout(() => {
+                      document.querySelector('[aria-label="Sign up"]')?.dispatchEvent(
+                        new MouseEvent('click', { bubbles: true })
+                      );
+                    }, 100);
+                  }}
+                  variant="outline"
+                  className="hidden md:flex py-1 px-4 border-cyber-accent text-cyber-accent rounded-md text-sm font-medium hover:bg-cyber-accent/10 transition-colors gap-1 items-center"
+                >
+                  <UserPlus className="h-3.5 w-3.5" />
+                  Sign Up
+                </Button>
+              </div>
+            )}
             
             {/* Sign In Dialog with Sign Up capability */}
             <SignInDialog 
               open={signInOpen} 
               onOpenChange={setSignInOpen} 
+              onLoginSuccess={(userData) => {
+                setIsLoggedIn(true);
+                setUsername(userData.username || 'User');
+                setAvatar(userData.avatar || '');
+                toast({
+                  title: "Login Berhasil",
+                  description: `Selamat datang kembali, ${userData.username || 'User'}!`,
+                });
+              }}
             />
           </div>
         </div>

@@ -1,54 +1,40 @@
 
-import React from "react";
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
 import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Mail, Lock, Eye, EyeOff, User, UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
-const signUpSchema = z.object({
-  username: z.string().min(3, { message: "Username must be at least 3 characters" }),
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters" }),
+// Validasi skema pendaftaran
+const signupSchema = z.object({
+  username: z.string().min(3, "Username minimal 3 karakter"),
+  email: z.string().email("Email tidak valid").min(1, "Email wajib diisi"),
+  password: z.string().min(6, "Password minimal 6 karakter"),
+  confirmPassword: z.string().min(6, "Konfirmasi password minimal 6 karakter"),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "Password dan konfirmasi password harus sama",
   path: ["confirmPassword"],
 });
-
-type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 interface SignUpDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSignInClick: () => void;
+  onBackToLogin: () => void;
 }
 
-const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSignInClick }) => {
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+const SignUpDialog = ({ open, onOpenChange, onBackToLogin }: SignUpDialogProps) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  
-  const form = useForm<SignUpFormValues>({
-    resolver: zodResolver(signUpSchema),
+
+  const form = useForm<z.infer<typeof signupSchema>>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       username: "",
       email: "",
@@ -57,41 +43,71 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSignI
     },
   });
 
-  const onSubmit = async (data: SignUpFormValues) => {
+  const onSubmit = async (data: z.infer<typeof signupSchema>) => {
+    setIsLoading(true);
+    
     try {
-      // Here you would typically connect to your authentication service
-      console.log("Sign up data:", data);
+      // Simulasi panggilan API pendaftaran
+      console.log("Signup data:", data);
       
-      // Mock successful registration for demonstration
+      // Simulasi penundaan respons server
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Simulasi user data yang akan disimpan ke localStorage
+      const userData = {
+        id: "user" + Math.floor(Math.random() * 10000),
+        username: data.username,
+        email: data.email,
+        avatar: `https://api.dicebear.com/7.x/personas/svg?seed=${data.username}`,
+        token: "simulated_jwt_token_" + Math.random().toString(36).substr(2, 9)
+      };
+      
+      // Simpan token dan data user ke localStorage
+      localStorage.setItem("token", userData.token);
+      localStorage.setItem("user", JSON.stringify(userData));
+      
+      // Sukses pendaftaran
       toast({
-        title: "Registration successful",
-        description: "Welcome to CyberAnime! You can now sign in.",
+        title: "Pendaftaran Berhasil",
+        description: "Akun Anda telah berhasil dibuat. Selamat datang di CyberAnime!",
       });
       
-      // Close the dialog
+      // Tutup dialog
       onOpenChange(false);
       
-      // Reset the form
-      form.reset();
+      // Refresh halaman untuk memperbarui state di Navbar
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (error) {
-      console.error("Sign up error:", error);
+      console.error("Signup error:", error);
       toast({
-        title: "Registration failed",
-        description: "An error occurred during registration. Please try again.",
+        title: "Pendaftaran Gagal",
+        description: "Terjadi kesalahan saat mendaftarkan akun Anda",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-cyber-background border border-cyber-accent/30 shadow-[0_0_25px_rgba(255,217,90,0.2)]">
+      <DialogContent className="bg-cyber-background text-white border border-cyber-accent/30 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-2xl font-orbitron text-cyber-accent">
-            CREATE ACCOUNT
+            Sign Up
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
-            Join CyberAnime to track your favorite anime and discover new ones
+          <DialogDescription>
+            Buat akun baru untuk menjelajahi dunia anime
           </DialogDescription>
         </DialogHeader>
         
@@ -102,17 +118,14 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSignI
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white">Username</FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        placeholder="Enter username"
-                        className="pl-10 bg-cyber-background border border-cyber-accent/30"
-                        {...field}
-                      />
-                    </FormControl>
-                    <User className="absolute left-3 top-3 h-4 w-4 text-cyber-accent/60" />
-                  </div>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="username" 
+                      {...field} 
+                      className="bg-cyber-background/50 border-cyber-accent/30 focus-visible:ring-cyber-accent/50"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -123,17 +136,14 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSignI
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white">Email</FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        placeholder="your@email.com"
-                        className="pl-10 bg-cyber-background border border-cyber-accent/30"
-                        {...field}
-                      />
-                    </FormControl>
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-cyber-accent/60" />
-                  </div>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="name@example.com" 
+                      {...field} 
+                      className="bg-cyber-background/50 border-cyber-accent/30 focus-visible:ring-cyber-accent/50"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -144,31 +154,30 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSignI
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white">Password</FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        className="pl-10 pr-10 bg-cyber-background border border-cyber-accent/30"
-                        {...field}
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input 
+                        type={showPassword ? "text" : "password"} 
+                        placeholder="••••••••" 
+                        {...field} 
+                        className="bg-cyber-background/50 border-cyber-accent/30 focus-visible:ring-cyber-accent/50 pr-10"
                       />
-                    </FormControl>
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-cyber-accent/60" />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3 text-gray-400"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleShowPassword}
+                        className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-cyber-accent"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -179,68 +188,64 @@ const SignUpDialog: React.FC<SignUpDialogProps> = ({ open, onOpenChange, onSignI
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white">Confirm Password</FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        className="pl-10 pr-10 bg-cyber-background border border-cyber-accent/30"
-                        {...field}
+                  <FormLabel>Konfirmasi Password</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input 
+                        type={showConfirmPassword ? "text" : "password"} 
+                        placeholder="••••••••" 
+                        {...field} 
+                        className="bg-cyber-background/50 border-cyber-accent/30 focus-visible:ring-cyber-accent/50 pr-10"
                       />
-                    </FormControl>
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-cyber-accent/60" />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3 text-gray-400"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleShowConfirmPassword}
+                        className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-cyber-accent"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             
-            <div className="flex justify-end items-center pt-2">
-              <div className="text-sm">
-                <span className="text-gray-400">Already have an account? </span>
-                <Button
-                  type="button"
-                  variant="link"
-                  className="p-0 text-cyber-accent hover:text-cyber-accent/80 transition-colors"
-                  onClick={onSignInClick}
-                >
-                  Sign In
-                </Button>
-              </div>
-            </div>
-            
             <DialogFooter className="pt-4">
               <Button 
                 type="submit" 
-                className="w-full bg-cyber-accent text-cyber-background hover:bg-cyber-accent/80 font-orbitron flex items-center justify-center gap-2"
-                disabled={form.formState.isSubmitting}
+                disabled={isLoading}
+                className="w-full bg-cyber-accent text-cyber-background hover:bg-cyber-accent/80"
               >
-                {form.formState.isSubmitting ? (
-                  "Creating Account..."
-                ) : (
+                {isLoading ? (
                   <>
-                    <UserPlus className="h-4 w-4" />
-                    Create Account
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Mendaftarkan...
                   </>
+                ) : (
+                  "Daftar"
                 )}
               </Button>
             </DialogFooter>
           </form>
         </Form>
+        
+        <div className="text-center text-sm">
+          Sudah punya akun?{" "}
+          <Button 
+            variant="link" 
+            onClick={onBackToLogin}
+            className="text-cyber-accent p-0 h-auto"
+          >
+            Login di sini
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
