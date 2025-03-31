@@ -180,7 +180,7 @@ const HeroSection = () => {
                   <Star className="w-3 h-3 fill-cyber-accent text-cyber-accent" /> {current.score.toFixed(1)}
                 </span>
               )}
-              {current.favorites > 0 && (
+              {current.favorites && current.favorites > 0 && (
                 <span className="text-xs font-medium py-1 px-3 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 backdrop-blur-sm flex items-center gap-1">
                   <Heart className="w-3 h-3 fill-pink-500 text-pink-500" /> {current.favorites.toLocaleString()}
                 </span>

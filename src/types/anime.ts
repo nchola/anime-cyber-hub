@@ -30,6 +30,7 @@ export interface Anime {
   scored_by: number;
   rank: number;
   popularity: number;
+  favorites: number;
   episodes: number;
   airing: boolean;
   aired: {
