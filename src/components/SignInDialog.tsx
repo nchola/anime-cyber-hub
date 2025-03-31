@@ -21,8 +21,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import SignUpDialog from "./SignUpDialog";
 
 const signInSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -38,6 +39,7 @@ interface SignInDialogProps {
 
 const SignInDialog: React.FC<SignInDialogProps> = ({ open, onOpenChange }) => {
   const [showPassword, setShowPassword] = React.useState(false);
+  const [signUpOpen, setSignUpOpen] = React.useState(false);
   const { toast } = useToast();
   
   const form = useForm<SignInFormValues>({
@@ -74,109 +76,136 @@ const SignInDialog: React.FC<SignInDialogProps> = ({ open, onOpenChange }) => {
     }
   };
 
+  const handleSignUpClick = () => {
+    onOpenChange(false);
+    setTimeout(() => setSignUpOpen(true), 100);
+  };
+
+  const handleSignInClick = () => {
+    setSignUpOpen(false);
+    setTimeout(() => onOpenChange(true), 100);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-cyber-background border border-cyber-accent/30">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-orbitron text-cyber-accent">
-            SIGN IN
-          </DialogTitle>
-          <DialogDescription className="text-gray-400">
-            Enter your credentials to access your account
-          </DialogDescription>
-        </DialogHeader>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Email</FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        placeholder="your@email.com"
-                        className="pl-10 bg-cyber-background border border-cyber-accent/30"
-                        {...field}
-                      />
-                    </FormControl>
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-cyber-accent/60" />
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Password</FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        className="pl-10 pr-10 bg-cyber-background border border-cyber-accent/30"
-                        {...field}
-                      />
-                    </FormControl>
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-cyber-accent/60" />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3 text-gray-400"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <div className="flex justify-between items-center">
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="text-cyber-accent hover:text-cyber-accent/80 transition-colors"
-                >
-                  Forgot password?
-                </a>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[425px] bg-cyber-background border border-cyber-accent/30 shadow-[0_0_25px_rgba(255,217,90,0.2)]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-orbitron text-cyber-accent">
+              SIGN IN
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Enter your credentials to access your account
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Email</FormLabel>
+                    <div className="relative">
+                      <FormControl>
+                        <Input
+                          placeholder="your@email.com"
+                          className="pl-10 bg-cyber-background border border-cyber-accent/30"
+                          {...field}
+                        />
+                      </FormControl>
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-cyber-accent/60" />
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Password</FormLabel>
+                    <div className="relative">
+                      <FormControl>
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          className="pl-10 pr-10 bg-cyber-background border border-cyber-accent/30"
+                          {...field}
+                        />
+                      </FormControl>
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-cyber-accent/60" />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-0 h-full px-3 text-gray-400"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="flex justify-between items-center">
+                <div className="text-sm">
+                  <a
+                    href="#"
+                    className="text-cyber-accent hover:text-cyber-accent/80 transition-colors"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+                <div className="text-sm">
+                  <span className="text-gray-400">Don't have an account? </span>
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="p-0 text-cyber-accent hover:text-cyber-accent/80 transition-colors"
+                    onClick={handleSignUpClick}
+                  >
+                    Sign up
+                  </Button>
+                </div>
               </div>
-              <div className="text-sm">
-                <span className="text-gray-400">Don't have an account? </span>
-                <a
-                  href="#"
-                  className="text-cyber-accent hover:text-cyber-accent/80 transition-colors"
+              
+              <DialogFooter className="pt-4">
+                <Button 
+                  type="submit" 
+                  className="w-full bg-cyber-accent text-cyber-background hover:bg-cyber-accent/80 font-orbitron flex items-center justify-center gap-2"
+                  disabled={form.formState.isSubmitting}
                 >
-                  Sign up
-                </a>
-              </div>
-            </div>
-            
-            <DialogFooter className="pt-4">
-              <Button 
-                type="submit" 
-                className="w-full bg-cyber-accent text-cyber-background hover:bg-cyber-accent/80"
-                disabled={form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting ? "Signing in..." : "Sign In"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+                  {form.formState.isSubmitting ? (
+                    "Signing in..." 
+                  ) : (
+                    <>
+                      <LogIn className="h-4 w-4" />
+                      Sign In
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <SignUpDialog 
+        open={signUpOpen} 
+        onOpenChange={setSignUpOpen}
+        onSignInClick={handleSignInClick}
+      />
+    </>
   );
 };
 

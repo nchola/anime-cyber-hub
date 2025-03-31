@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import { Search } from "lucide-react";
+import { Search, UserPlus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -112,10 +112,19 @@ const Navbar = () => {
             <Link to="/" className="text-white hover:text-cyber-accent transition-colors">
               HOME
             </Link>
+            <Link to="/anime" className="text-white hover:text-cyber-accent transition-colors">
+              ANIME
+            </Link>
+            <Link to="/genre" className="text-white hover:text-cyber-accent transition-colors">
+              GENRES
+            </Link>
+            <Link to="/seasonal" className="text-white hover:text-cyber-accent transition-colors">
+              SEASONAL
+            </Link>
           </div>
           
-          <div className="flex items-center">
-            <div ref={searchRef} className="relative mr-4">
+          <div className="flex items-center gap-4">
+            <div ref={searchRef} className="relative">
               <form onSubmit={handleSearch}>
                 <Input
                   type="text"
@@ -147,14 +156,34 @@ const Navbar = () => {
               />
             </div>
             
-            <Button 
-              onClick={() => setSignInOpen(true)}
-              className="py-1 px-4 bg-cyber-accent text-cyber-background rounded-md text-sm font-medium hover:bg-opacity-80 transition-colors"
-            >
-              Sign In
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button 
+                onClick={() => setSignInOpen(true)}
+                variant="default"
+                className="py-1 px-4 bg-cyber-accent text-cyber-background rounded-md text-sm font-medium hover:bg-opacity-80 transition-colors"
+              >
+                Sign In
+              </Button>
+              
+              <Button
+                onClick={() => {
+                  setSignInOpen(true);
+                  // Trigger the Sign Up dialog through Sign In dialog
+                  setTimeout(() => {
+                    document.querySelector('[aria-label="Sign up"]')?.dispatchEvent(
+                      new MouseEvent('click', { bubbles: true })
+                    );
+                  }, 100);
+                }}
+                variant="outline"
+                className="hidden md:flex py-1 px-4 border-cyber-accent text-cyber-accent rounded-md text-sm font-medium hover:bg-cyber-accent/10 transition-colors gap-1 items-center"
+              >
+                <UserPlus className="h-3.5 w-3.5" />
+                Sign Up
+              </Button>
+            </div>
             
-            {/* Sign In Dialog */}
+            {/* Sign In Dialog with Sign Up capability */}
             <SignInDialog 
               open={signInOpen} 
               onOpenChange={setSignInOpen} 
