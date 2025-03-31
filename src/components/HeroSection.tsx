@@ -13,6 +13,7 @@ const HeroSection = () => {
   const [featuredAnime, setFeaturedAnime] = useState<Anime[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [trailerModalOpen, setTrailerModalOpen] = useState(false);
   const { toast } = useToast();
@@ -206,14 +207,24 @@ const HeroSection = () => {
             </div>
             
             {/* Synopsis with glass effect - truncated with ellipsis */}
-            <div className="backdrop-blur-md bg-black/30 border border-cyber-accent/10 rounded-lg p-4 mb-6 transition-all duration-500 hover:bg-black/40">
-              <p className="text-gray-300 line-clamp-3">
-                {current.synopsis ? 
-                  current.synopsis.length > 180 ? 
-                    `${current.synopsis.substring(0, 180)}...` : 
-                    current.synopsis 
-                  : "Belum ada deskripsi tersedia untuk anime ini."}
+            <div className="backdrop-blur-md bg-black/30 border border-cyber-accent/10 p-4 mb-6 transition-all duration-500 hover:bg-black/40 mx-0 my-0 rounded-md">
+              <p
+                className={`text-gray-300 text-sm font-thin whitespace-pre-line ${
+                  !isExpanded && "line-clamp-3"
+                }`}
+              >
+                {current.synopsis
+                  ? current.synopsis.replace(/\[Written by MAL Rewrite\]$/g, "")
+                  : "No description found for this anime series."}
               </p>
+              {current.synopsis?.length > 180 && (
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="text-cyber-accent text-xs mt-2 hover:underline"
+                >
+                  {isExpanded ? "Show Less" : "View More"}
+                </button>
+              )}
             </div>
             
             <div className="flex space-x-4">
