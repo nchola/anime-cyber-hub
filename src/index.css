@@ -48,6 +48,13 @@
     background-color: #0F0F0F;
   }
 
+  /* Image rendering optimization */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+  }
+
   /* Scanlines effect container */
   .scanlines {
     @apply pointer-events-none fixed inset-0 z-50 h-screen w-screen overflow-hidden opacity-10;
@@ -202,4 +209,3 @@
     @apply rotate-90;
   }
 }
-

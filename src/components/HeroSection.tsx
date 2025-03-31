@@ -113,14 +113,31 @@ const HeroSection = () => {
       {/* Glowing border at the top */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Background image with improved clarity */}
-      <div 
-        className="absolute inset-0 z-0 bg-cover bg-center transition-all duration-1000 ease-in-out transform scale-110"
-        style={{ 
-          backgroundImage: `url(${current.images.jpg.large_image_url})`,
-          filter: "brightness(0.3) contrast(1.2)"
-        }}
-      />
+      {/* Optimized responsive image with picture element */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        {current && current.images && current.images.jpg && (
+          <picture>
+            {/* WebP format for modern browsers */}
+            <source 
+              type="image/webp"
+              srcSet={`
+                ${current.images.jpg.large_image_url} 1280w,
+                ${current.images.jpg.large_image_url} 1920w
+              `}
+              sizes="100vw"
+            />
+            {/* Fallback image */}
+            <img 
+              src={current.images.jpg.large_image_url}
+              alt={current.title || "Featured anime"}
+              className="w-full h-full object-cover object-center transition-all duration-1000 ease-in-out transform scale-110"
+              style={{ filter: "brightness(0.3) contrast(1.2)" }}
+              loading="eager"
+              decoding="async"
+            />
+          </picture>
+        )}
+      </div>
       
       {/* Geometric patterns overlay */}
       <div className="absolute inset-0 z-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGgxMnYyNEgzNnpNMTIgMThoMTJ2MjRIMTJ6TTI0IDEyaDEydjM2SDI0eiIgc3Ryb2tlPSIjRkZEOTVBIiBzdHJva2Utb3BhY2l0eT0iLjEiIHN0cm9rZS13aWR0aD0iLjUiLz48L2c+PC9zdmc+')] opacity-40"></div>
@@ -156,6 +173,7 @@ const HeroSection = () => {
         #{currentIndex + 1} Most Favorited Anime
       </div>
       
+      {/* Content Section */}
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
           <div className="max-w-3xl">
