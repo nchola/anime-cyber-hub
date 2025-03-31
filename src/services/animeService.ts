@@ -76,6 +76,7 @@ export const getUpcomingAnime = async (page = 1, limit = 12): Promise<AnimeRespo
 export const getAnimeGenres = async () => {
   const response = await fetchWithRetry(`${BASE_URL}/genres/anime`);
   // Filter out sensitive content and return the data array directly
+  return response.data.filter((genre: any) => genre.name !== "Hentai");
 };
 
 // Get anime videos/trailers
