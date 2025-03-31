@@ -107,33 +107,20 @@ const HeroSection = () => {
   }
 
   const current = featuredAnime[currentIndex];
-  // Generate image URLs for different resolutions
-  const largeImageUrl = current.images.jpg.large_image_url;
-  const mediumImageUrl = current.images.jpg.image_url;
-  const smallImageUrl = current.images.jpg.small_image_url;
   
   return (
-    <div className="hero-section w-full h-[600px] relative overflow-hidden bg-cyber-background noise-bg">
+    <div className="w-full h-[600px] relative overflow-hidden bg-cyber-background noise-bg">
       {/* Glowing border at the top */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Background image with improved clarity and responsive srcset */}
-      <div className="absolute inset-0 z-0 bg-center transition-all duration-1000 ease-in-out transform scale-110">
-        <picture>
-          <source media="(min-width: 1024px)" srcSet={largeImageUrl} />
-          <source media="(min-width: 768px)" srcSet={mediumImageUrl} />
-          <img 
-            src={smallImageUrl}
-            alt={current.title}
-            className="w-full h-full object-cover object-center"
-            style={{ 
-              filter: "brightness(0.3) contrast(1.2)",
-              imageRendering: "-webkit-optimize-contrast"
-            }}
-            loading="eager"
-          />
-        </picture>
-      </div>
+      {/* Background image with improved clarity */}
+      <div 
+        className="absolute inset-0 z-0 bg-cover bg-center transition-all duration-1000 ease-in-out transform scale-110"
+        style={{ 
+          backgroundImage: `url(${current.images.jpg.large_image_url})`,
+          filter: "brightness(0.3) contrast(1.2)"
+        }}
+      />
       
       {/* Geometric patterns overlay */}
       <div className="absolute inset-0 z-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGgxMnYyNEgzNnpNMTIgMThoMTJ2MjRIMTJ6TTI0IDEyaDEydjM2SDI0eiIgc3Ryb2tlPSIjRkZEOTVBIiBzdHJva2Utb3BhY2l0eT0iLjEiIHN0cm9rZS13aWR0aD0iLjUiLz48L2c+PC9zdmc+')] opacity-40"></div>
@@ -141,7 +128,7 @@ const HeroSection = () => {
       {/* Diagonal lines pattern */}
       <div className="absolute inset-0 z-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,217,90,0.05)_25%,rgba(255,217,90,0.05)_50%,transparent_50%,transparent_75%,rgba(255,217,90,0.05)_75%)] bg-[length:10px_10px] opacity-30"></div>
       
-      {/* Optimized gradients for better visual clarity */}
+      {/* Gradient overlay */}
       <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-transparent to-black/80"></div>
       
