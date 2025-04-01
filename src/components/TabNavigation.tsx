@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import AnimeGrid from "@/components/AnimeGrid";
@@ -75,7 +76,12 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
         
         // If there are bookmarks, filter the anime lists to find matching items
         if (bookmarkIds.length > 0) {
-          const allAnime = [...topAnime, ...seasonalAnime, ...upcomingAnime];
+          // FIX: Add null checks for arrays before concatenating them
+          const allAnime = [
+            ...(topAnime || []), 
+            ...(seasonalAnime || []), 
+            ...(upcomingAnime || [])
+          ];
           const bookmarked = allAnime.filter(anime => bookmarkIds.includes(anime.mal_id));
           setBookmarkedAnime(bookmarked);
         } else {

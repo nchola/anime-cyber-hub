@@ -37,34 +37,43 @@ const Index = () => {
       try {
         // Fetch top anime
         const topResponse = await getTopAnime(1, 12);
-        setTopAnime(topResponse.data);
+        // Make sure we have a valid array
+        setTopAnime(topResponse?.data || []);
         setLoading(prev => ({ ...prev, top: false }));
       } catch (err) {
         console.error("Failed to fetch top anime:", err);
         setError(prev => ({ ...prev, top: "Failed to load top anime" }));
         setLoading(prev => ({ ...prev, top: false }));
+        // Initialize with empty array to prevent undefined
+        setTopAnime([]);
       }
 
       try {
         // Fetch seasonal anime
         const seasonalResponse = await getSeasonalAnime();
-        setSeasonalAnime(seasonalResponse.data);
+        // Make sure we have a valid array
+        setSeasonalAnime(seasonalResponse?.data || []);
         setLoading(prev => ({ ...prev, seasonal: false }));
       } catch (err) {
         console.error("Failed to fetch seasonal anime:", err);
         setError(prev => ({ ...prev, seasonal: "Failed to load seasonal anime" }));
         setLoading(prev => ({ ...prev, seasonal: false }));
+        // Initialize with empty array to prevent undefined
+        setSeasonalAnime([]);
       }
 
       try {
         // Fetch upcoming anime
         const upcomingResponse = await getUpcomingAnime(1, 12);
-        setUpcomingAnime(upcomingResponse.data);
+        // Make sure we have a valid array
+        setUpcomingAnime(upcomingResponse?.data || []);
         setLoading(prev => ({ ...prev, upcoming: false }));
       } catch (err) {
         console.error("Failed to fetch upcoming anime:", err);
         setError(prev => ({ ...prev, upcoming: "Failed to load upcoming anime" }));
         setLoading(prev => ({ ...prev, upcoming: false }));
+        // Initialize with empty array to prevent undefined
+        setUpcomingAnime([]);
       }
 
       // Ensure minimum loading time for better UX

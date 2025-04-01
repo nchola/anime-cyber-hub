@@ -26,14 +26,33 @@ const fetchWithRetry = async (url: string, retries = 3): Promise<any> => {
       throw new Error(`API error: ${response.status}`);
     }
     
-    return await response.json();
+    const data = await response.json();
+    // Ensure data has the expected structure to prevent "undefined" errors
+    return {
+      data: data.data || [],
+      pagination: data.pagination || { 
+        last_visible_page: 0,
+        has_next_page: false,
+        current_page: 0,
+        items: { count: 0, total: 0, per_page: 0 }
+      }
+    };
   } catch (error) {
     console.error("Fetch error:", error);
     if (retries > 0) {
       console.log(`Retrying... (${retries} left)`);
       return fetchWithRetry(url, retries - 1);
     }
-    throw error;
+    // Return a valid empty response instead of throwing
+    return {
+      data: [],
+      pagination: { 
+        last_visible_page: 0,
+        has_next_page: false,
+        current_page: 0,
+        items: { count: 0, total: 0, per_page: 0 }
+      }
+    };
   }
 };
 
@@ -49,7 +68,17 @@ export const getSeasonalAnime = async (year = new Date().getFullYear(), season =
 
 // Get anime by ID
 export const getAnimeById = async (id: number): Promise<SingleAnimeResponse> => {
-  return fetchWithRetry(`${BASE_URL}/anime/${id}`);
+  try {
+    const result = await fetchWithRetry(`${BASE_URL}/anime/${id}`);
+    return {
+      data: result.data || {}
+    };
+  } catch (error) {
+    console.error(`Failed to fetch anime with ID ${id}:`, error);
+    return {
+      data: {} as any
+    };
+  }
 };
 
 // Search anime
@@ -72,15 +101,34 @@ export const getUpcomingAnime = async (page = 1, limit = 12): Promise<AnimeRespo
   return fetchWithRetry(`${BASE_URL}/seasons/upcoming?page=${page}&limit=${limit}`);
 };
 
-// Get anime genres - UPDATED with correct endpoint
+// Get anime genres - UPDATED with correct endpoint and error handling
 export const getAnimeGenres = async () => {
-  const response = await fetchWithRetry(`${BASE_URL}/genres/anime`);
-  // Filter out sensitive content and return the data array directly
-  return response.data.filter((genre: any) => genre.name !== "Hentai");
+  try {
+    const response = await fetchWithRetry(`${BASE_URL}/genres/anime`);
+    // Filter out sensitive content and return the data array directly
+    if (response && response.data) {
+      return response.data.filter((genre: any) => genre.name !== "Hentai");
+    }
+    return []; // Return empty array if data is missing
+  } catch (error) {
+    console.error("Failed to fetch anime genres:", error);
+    return []; // Return empty array on error
+  }
 };
 
 // Get anime videos/trailers
 export const getAnimeVideos = async (animeId: number) => {
-  return fetchWithRetry(`${BASE_URL}/anime/${animeId}/videos`);
+  try {
+    const response = await fetchWithRetry(`${BASE_URL}/anime/${animeId}/videos`);
+    return response;
+  } catch (error) {
+    console.error(`Failed to fetch videos for anime ID ${animeId}:`, error);
+    return {
+      data: {
+        promo: [],
+        episodes: [],
+        music_videos: []
+      }
+    };
+  }
 };
-

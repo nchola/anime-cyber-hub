@@ -17,7 +17,7 @@ const GenreCloud: React.FC = () => {
       try {
         setLoading(true);
         const genreData = await getAnimeGenres();
-        setGenres(genreData);
+        setGenres(genreData || []); // Add fallback to empty array
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch genres:", err);
@@ -36,8 +36,16 @@ const GenreCloud: React.FC = () => {
 
   // Calculate font size based on genre popularity
   const calculateFontSize = (count: number) => {
-    const min = Math.min(...genres.map(g => g.count || 0));
-    const max = Math.max(...genres.map(g => g.count || 0));
+    // Add null checks and fallbacks for when genres array might be empty
+    if (!genres || genres.length === 0) return 1.0;
+    
+    const counts = genres.map(g => g.count || 0);
+    const min = Math.min(...counts);
+    const max = Math.max(...counts);
+    
+    // Prevent division by zero
+    if (min === max) return 1.0;
+    
     const normalized = (count - min) / (max - min);
     return 0.8 + normalized * 1.2; // Font size between 0.8rem and 2rem
   };
@@ -72,9 +80,10 @@ const GenreCloud: React.FC = () => {
     );
   }
 
+  // FIX: Add check to ensure genres is an array before mapping
   return (
     <div className="flex flex-wrap gap-2 justify-center my-6 px-4">
-      {genres.map((genre) => (
+      {genres && genres.length > 0 ? genres.map((genre) => (
         <button 
           key={genre.mal_id}
           onClick={() => handleGenreClick(genre.mal_id, genre.name)}
@@ -89,7 +98,9 @@ const GenreCloud: React.FC = () => {
         >
           {genre.name}
         </button>
-      ))}
+      )) : (
+        <div className="text-center text-cyber-accent">No genres available</div>
+      )}
     </div>
   );
 };
