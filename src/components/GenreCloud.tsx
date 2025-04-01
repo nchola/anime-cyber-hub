@@ -39,20 +39,20 @@ const GenreCloud: React.FC = () => {
   // Calculate font size based on genre popularity and device size
   const calculateFontSize = (count: number) => {
     // Add null checks and fallbacks for when genres array might be empty
-    if (!genres || genres.length === 0) return isMobile ? 0.7 : 1.0;
+    if (!genres || genres.length === 0) return isMobile ? 0.6 : 1.0;
     
     const counts = genres.map(g => g.count || 0);
     const min = Math.min(...counts);
     const max = Math.max(...counts);
     
     // Prevent division by zero
-    if (min === max) return isMobile ? 0.7 : 1.0;
+    if (min === max) return isMobile ? 0.6 : 1.0;
     
     const normalized = (count - min) / (max - min);
     
     // Smaller font sizes on mobile
     if (isMobile) {
-      return 0.65 + normalized * 0.6; // Font size between 0.65rem and 1.25rem for mobile
+      return 0.55 + normalized * 0.4; // Font size between 0.55rem and 0.95rem for mobile
     }
     
     return 0.8 + normalized * 1.2; // Font size between 0.8rem and 2rem for desktop
@@ -90,12 +90,12 @@ const GenreCloud: React.FC = () => {
 
   // FIX: Add check to ensure genres is an array before mapping
   return (
-    <div className="flex flex-wrap gap-2 justify-center my-6 px-4">
+    <div className="flex flex-wrap gap-1 md:gap-2 justify-center my-4 md:my-6 px-2 md:px-4">
       {genres && genres.length > 0 ? genres.map((genre) => (
         <button 
           key={genre.mal_id}
           onClick={() => handleGenreClick(genre.mal_id, genre.name)}
-          className={`px-2 py-1 rounded-full bg-gradient-to-r from-cyber-purple/40 to-cyber-accent/20 border border-cyber-accent/30 text-white hover:scale-105 hover:shadow-glow transition-all duration-300 ${isMobile ? 'px-2 py-0.5' : 'px-3 py-1.5'}`}
+          className={`rounded-full bg-gradient-to-r from-cyber-purple/40 to-cyber-accent/20 border border-cyber-accent/30 text-white hover:scale-105 hover:shadow-glow transition-all duration-300 ${isMobile ? 'px-1.5 py-0.5 my-0.5' : 'px-3 py-1.5'}`}
           style={{ 
             fontSize: `${calculateFontSize(genre.count || 100)}rem`,
             background: `linear-gradient(45deg, #8A2BE2 0%, #FFD95A 100%)`,

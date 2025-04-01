@@ -76,9 +76,9 @@ const RetroLoader = () => {
         <div className="absolute inset-0 bg-[linear-gradient(transparent_0%,rgba(32,128,32,0.2)_2%,rgba(32,128,32,0.8)_3%,rgba(32,128,32,0.2)_3%,transparent_100%)] bg-[length:100%_100vh] animate-scan"></div>
       </div>
 
-      {/* Arcade Title */}
-      <div className="mb-16 relative z-10">
-        <h1 className={`text-5xl ${pixelFont} font-bold bg-gradient-to-r from-cyber-purple via-cyber-accent to-cyber-purple bg-clip-text text-transparent animate-pulse-accent`}>
+      {/* Arcade Title - Centered */}
+      <div className="mb-16 relative z-10 text-center w-full px-4">
+        <h1 className={`text-5xl ${pixelFont} font-bold bg-gradient-to-r from-cyber-purple via-cyber-accent to-cyber-purple bg-clip-text text-transparent animate-pulse-accent mx-auto`}>
           CYBER ANIME
         </h1>
         <p className={`text-lg ${pixelFont} text-gray-400 text-center mt-2`}>
@@ -154,18 +154,18 @@ const RetroLoader = () => {
         ))}
       </div>
       
-      {/* Loading Text */}
-      <p className={`text-xl ${pixelFont} text-cyan-400 mt-6 ${textBlink ? 'opacity-100' : 'opacity-80'}`}>
+      {/* Loading Text - Centered */}
+      <p className={`text-xl ${pixelFont} text-cyan-400 mt-6 ${textBlink ? 'opacity-100' : 'opacity-80'} text-center w-full`}>
         {loadingText}
       </p>
       
-      {/* Progress Percentage */}
-      <p className={`text-sm ${pixelFont} text-gray-400 mt-2`}>
+      {/* Progress Percentage - Centered */}
+      <p className={`text-sm ${pixelFont} text-gray-400 mt-2 text-center w-full`}>
         {Math.floor(loadingProgress)}%
       </p>
       
       {/* Credits Text */}
-      <div className="absolute bottom-8 text-center">
+      <div className="absolute bottom-8 text-center w-full">
         <p className={`text-sm ${pixelFont} text-gray-500`}>
           © 2025 CYBER ANIME CORPORATION
         </p>

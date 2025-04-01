@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Search, UserPlus, User, LogOut, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -37,7 +36,6 @@ const Navbar = () => {
   const [signInOpen, setSignInOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  // State untuk autentikasi
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [avatar, setAvatar] = useState('');
@@ -47,7 +45,6 @@ const Navbar = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
-  // Cek status login dari localStorage saat komponen dimuat
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userJson = localStorage.getItem('user');
@@ -60,14 +57,12 @@ const Navbar = () => {
         setAvatar(userData.avatar || '');
       } catch (error) {
         console.error("Error parsing user data:", error);
-        // Bersihkan localStorage jika data rusak
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
     }
   }, []);
 
-  // Close mobile menu when navigating or resizing to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
@@ -79,7 +74,6 @@ const Navbar = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // Fungsi logout
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -93,10 +87,8 @@ const Navbar = () => {
     });
   };
   
-  // Debounce search query
   const debouncedSearchTerm = useDebounce(searchQuery, 300);
 
-  // Handle form submission
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -106,16 +98,13 @@ const Navbar = () => {
     }
   };
 
-  // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
       if (suggestions.length > 0 && highlightedIndex >= 0) {
-        // Navigate to the selected anime
         navigate(`/anime/${suggestions[highlightedIndex].mal_id}`);
         setShowSuggestions(false);
       } else if (searchQuery.trim()) {
-        // Search with current query
         navigate(`/search/${encodeURIComponent(searchQuery.trim())}`);
         setShowSuggestions(false);
       }
@@ -134,7 +123,6 @@ const Navbar = () => {
     }
   };
 
-  // Fetch suggestions when debounced search term changes
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (debouncedSearchTerm.length < 2) {
@@ -158,7 +146,6 @@ const Navbar = () => {
     fetchSuggestions();
   }, [debouncedSearchTerm]);
 
-  // Handle click outside to close suggestions
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -174,27 +161,26 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-cyber-background/80 backdrop-blur-md border-b border-cyber-accent/20">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-2 sm:px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <span className="text-cyber-accent text-2xl font-orbitron font-bold">
+              <span className="text-cyber-accent text-xl sm:text-2xl font-orbitron font-bold">
                 CYBER<span className="text-white">ANIME</span>
               </span>
             </Link>
             
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex ml-8">
+            <div className="hidden md:flex ml-6 lg:ml-8">
               <NavigationMenu>
                 <NavigationMenuList>
                   <NavigationMenuItem>
-                    <Link to="/" className="text-white hover:text-cyber-accent transition-colors px-4 py-2 font-orbitron text-sm">
+                    <Link to="/" className="text-white hover:text-cyber-accent transition-colors px-3 lg:px-4 py-2 font-orbitron text-xs lg:text-sm">
                       HOME
                     </Link>
                   </NavigationMenuItem>
                   
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-transparent text-white hover:text-cyber-accent hover:bg-transparent font-orbitron text-sm">
+                    <NavigationMenuTrigger className="bg-transparent text-white hover:text-cyber-accent hover:bg-transparent font-orbitron text-xs lg:text-sm">
                       EXPLORE
                     </NavigationMenuTrigger>
                     <NavigationMenuContent className="bg-cyber-background/95 border border-cyber-accent/30 p-4 min-w-[16rem] backdrop-blur-md">
@@ -229,7 +215,7 @@ const Navbar = () => {
                   
                   {isLoggedIn && (
                     <NavigationMenuItem>
-                      <Link to="/bookmark" className="text-white hover:text-cyber-accent transition-colors px-4 py-2 font-orbitron text-sm">
+                      <Link to="/bookmark" className="text-white hover:text-cyber-accent transition-colors px-3 lg:px-4 py-2 font-orbitron text-xs lg:text-sm">
                         BOOKMARKS
                       </Link>
                     </NavigationMenuItem>
@@ -239,15 +225,14 @@ const Navbar = () => {
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
-            {/* Mobile menu trigger */}
+          <div className="flex items-center gap-2 sm:gap-4">
             <Button 
               variant="ghost" 
               size="icon"
               className="md:hidden text-white hover:text-cyber-accent"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </Button>
 
             <div ref={searchRef} className="relative">
@@ -259,19 +244,18 @@ const Navbar = () => {
                   onKeyDown={handleKeyDown}
                   onFocus={() => searchQuery.length >= 2 && setShowSuggestions(true)}
                   placeholder="Search anime..."
-                  className="py-1 pl-3 pr-10 w-40 md:w-64 bg-cyber-background border border-cyber-accent/30 rounded-md focus:outline-none focus:border-cyber-accent text-sm placeholder-gray-500"
+                  className="py-1 pl-2 pr-8 w-32 sm:w-40 md:w-64 bg-cyber-background border border-cyber-accent/30 rounded-md focus:outline-none focus:border-cyber-accent text-xs md:text-sm placeholder-gray-500"
                 />
                 <Button 
                   type="submit" 
                   variant="ghost" 
                   size="icon"
-                  className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-cyber-accent"
+                  className="absolute right-0 top-0 h-full px-2 text-gray-400 hover:text-cyber-accent"
                 >
-                  <Search className="h-4 w-4" />
+                  <Search className="h-3 w-3 md:h-4 md:w-4" />
                 </Button>
               </form>
               
-              {/* Search suggestions dropdown */}
               <SearchSuggestions
                 results={suggestions}
                 query={searchQuery}
@@ -282,7 +266,6 @@ const Navbar = () => {
               />
             </div>
             
-            {/* Desktop user menu */}
             <div className="hidden md:block">
               {isLoggedIn ? (
                 <div className="flex items-center gap-2">
@@ -290,12 +273,12 @@ const Navbar = () => {
                     <DropdownMenuTrigger asChild>
                       <Button 
                         variant="ghost" 
-                        className="relative h-8 w-8 rounded-full overflow-hidden border border-cyber-accent/50 focus:ring-0 focus:ring-offset-0"
+                        className="relative h-7 w-7 md:h-8 md:w-8 rounded-full overflow-hidden border border-cyber-accent/50 focus:ring-0 focus:ring-offset-0"
                       >
                         {avatar ? (
                           <img src={avatar} alt={username} className="h-full w-full object-cover" />
                         ) : (
-                          <User className="h-4 w-4 text-cyber-accent" />
+                          <User className="h-3 w-3 md:h-4 md:w-4 text-cyber-accent" />
                         )}
                       </Button>
                     </DropdownMenuTrigger>
@@ -329,7 +312,7 @@ const Navbar = () => {
                   <Button 
                     onClick={() => setSignInOpen(true)}
                     variant="default"
-                    className="py-1 px-4 bg-cyber-accent text-cyber-background rounded-md text-sm font-medium hover:bg-opacity-80 transition-colors"
+                    className="py-1 px-3 md:px-4 bg-cyber-accent text-cyber-background rounded-md text-xs md:text-sm font-medium hover:bg-opacity-80 transition-colors"
                   >
                     Sign In
                   </Button>
@@ -337,7 +320,6 @@ const Navbar = () => {
                   <Button
                     onClick={() => {
                       setSignInOpen(true);
-                      // Trigger the Sign Up dialog through Sign In dialog
                       setTimeout(() => {
                         document.querySelector('[aria-label="Sign up"]')?.dispatchEvent(
                           new MouseEvent('click', { bubbles: true })
@@ -345,9 +327,9 @@ const Navbar = () => {
                       }, 100);
                     }}
                     variant="outline"
-                    className="hidden md:flex py-1 px-4 border-cyber-accent text-cyber-accent rounded-md text-sm font-medium hover:bg-cyber-accent/10 transition-colors gap-1 items-center"
+                    className="hidden md:flex py-1 px-3 md:px-4 border-cyber-accent text-cyber-accent rounded-md text-xs md:text-sm font-medium hover:bg-cyber-accent/10 transition-colors gap-1 items-center"
                   >
-                    <UserPlus className="h-3.5 w-3.5" />
+                    <UserPlus className="h-3 w-3 md:h-3.5 md:w-3.5" />
                     Sign Up
                   </Button>
                 </div>
@@ -357,7 +339,6 @@ const Navbar = () => {
         </div>
       </div>
       
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-cyber-background/95 backdrop-blur-md border-b border-cyber-accent/30 animate-fade-in">
           <div className="px-4 pt-2 pb-6 space-y-4">
@@ -401,64 +382,30 @@ const Navbar = () => {
               )}
             </div>
             
-            {/* Mobile Auth Buttons */}
-            {isLoggedIn ? (
-              <div className="flex flex-col space-y-2 pt-2 border-t border-cyber-accent/20">
-                <div className="px-3 py-2 font-orbitron text-cyber-accent">
-                  {username}
-                </div>
-                <Link 
-                  to="/profile" 
-                  className="text-white hover:text-cyber-accent px-3 py-2 rounded-md hover:bg-cyber-accent/10 transition-colors flex items-center gap-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <User className="h-4 w-4" />
-                  Profile
-                </Link>
-                <button 
-                  onClick={handleLogout}
-                  className="text-left text-red-500 px-3 py-2 rounded-md hover:bg-red-500/10 transition-colors flex items-center gap-2"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Log out
-                </button>
+            <div className="flex flex-col space-y-2 pt-2 border-t border-cyber-accent/20">
+              <div className="px-3 py-2 font-orbitron text-cyber-accent">
+                {username}
               </div>
-            ) : (
-              <div className="flex flex-col space-y-2 pt-2 border-t border-cyber-accent/20">
-                <Button 
-                  onClick={() => {
-                    setSignInOpen(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  variant="default"
-                  className="w-full bg-cyber-accent text-cyber-background rounded-md text-sm font-medium hover:bg-opacity-80 transition-colors"
-                >
-                  Sign In
-                </Button>
-                <Button
-                  onClick={() => {
-                    setSignInOpen(true);
-                    setMobileMenuOpen(false);
-                    // Trigger the Sign Up dialog through Sign In dialog
-                    setTimeout(() => {
-                      document.querySelector('[aria-label="Sign up"]')?.dispatchEvent(
-                        new MouseEvent('click', { bubbles: true })
-                      );
-                    }, 100);
-                  }}
-                  variant="outline"
-                  className="w-full border-cyber-accent text-cyber-accent rounded-md text-sm font-medium hover:bg-cyber-accent/10 transition-colors flex items-center justify-center gap-1"
-                >
-                  <UserPlus className="h-3.5 w-3.5" />
-                  Sign Up
-                </Button>
-              </div>
-            )}
+              <Link 
+                to="/profile" 
+                className="text-white hover:text-cyber-accent px-3 py-2 rounded-md hover:bg-cyber-accent/10 transition-colors flex items-center gap-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <User className="h-4 w-4" />
+                Profile
+              </Link>
+              <button 
+                onClick={handleLogout}
+                className="text-left text-red-500 px-3 py-2 rounded-md hover:bg-red-500/10 transition-colors flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Log out
+              </button>
+            </div>
           </div>
         </div>
       )}
       
-      {/* Sign In Dialog with Sign Up capability */}
       <SignInDialog 
         open={signInOpen} 
         onOpenChange={setSignInOpen} 
