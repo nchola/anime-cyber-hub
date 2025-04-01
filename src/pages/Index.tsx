@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import TabNavigation from "@/components/TabNavigation";
 import GenreCloud from "@/components/GenreCloud";
+import RetroGameAnimation from "@/components/RetroGameAnimation";
 import Footer from "@/components/Footer";
 import RetroLoader from "@/components/RetroLoader";
 import { getTopAnime, getSeasonalAnime, getUpcomingAnime } from "@/services/animeService";
@@ -108,12 +109,20 @@ const Index = () => {
           error={error}
         />
         
-        {/* Genre Cloud moved here, right before the footer */}
-        <div className="container mx-auto px-4 py-8 mb-8">
+        {/* Genre Cloud section */}
+        <div className="container mx-auto px-4 py-8 mb-4">
           <h2 className="text-2xl font-orbitron text-cyber-accent text-center mb-4">
             Explore By Genre
           </h2>
           <GenreCloud />
+        </div>
+        
+        {/* Retro Game Animation section - NEW */}
+        <div className="container mx-auto px-4 mb-8">
+          <h2 className="text-2xl font-orbitron text-cyber-accent text-center mb-4">
+            Retro Arcade Zone
+          </h2>
+          <RetroGameAnimation />
         </div>
       </div>
       
