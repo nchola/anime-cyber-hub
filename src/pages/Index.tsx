@@ -5,6 +5,7 @@ import HeroSection from "@/components/HeroSection";
 import TabNavigation from "@/components/TabNavigation";
 import GenreCloud from "@/components/GenreCloud";
 import Footer from "@/components/Footer";
+import RetroLoader from "@/components/RetroLoader";
 import { getTopAnime, getSeasonalAnime, getUpcomingAnime } from "@/services/animeService";
 import { Anime } from "@/types/anime";
 
@@ -25,7 +26,13 @@ const Index = () => {
     upcoming: null as string | null
   });
 
+  const [pageLoading, setPageLoading] = useState(true);
+
   useEffect(() => {
+    // Simulate initial loading time (min 1.5 seconds for loader visibility)
+    const minLoadTime = 1500;
+    const startTime = Date.now();
+
     const fetchData = async () => {
       try {
         // Fetch top anime
@@ -59,10 +66,23 @@ const Index = () => {
         setError(prev => ({ ...prev, upcoming: "Failed to load upcoming anime" }));
         setLoading(prev => ({ ...prev, upcoming: false }));
       }
+
+      // Ensure minimum loading time for better UX
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, minLoadTime - elapsedTime);
+      
+      setTimeout(() => {
+        setPageLoading(false);
+      }, remainingTime);
     };
 
     fetchData();
   }, []);
+
+  // Show retro loader while page is loading
+  if (pageLoading) {
+    return <RetroLoader />;
+  }
 
   return (
     <div className="min-h-screen bg-cyber-background noise-bg">

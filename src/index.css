@@ -171,6 +171,38 @@
       transform: scaleX(1);
     }
   }
+
+  /* Retro Loading Animations */
+  @keyframes scanline {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(100vh); }
+  }
+
+  @keyframes flicker {
+    0%, 100% { opacity: 0; }
+    5%, 9% { opacity: 0.1; }
+    6%, 8% { opacity: 0.3; }
+    7% { opacity: 0.2; }
+    10%, 70% { opacity: 0; }
+    72% { opacity: 0.4; }
+    77% { opacity: 0; }
+    85% { opacity: 0.1; }
+    95%, 97% { opacity: 0; }
+    96% { opacity: 0.3; }
+  }
+
+  @keyframes scan {
+    from { background-position: 0 -100vh; }
+    to { background-position: 0 100vh; }
+  }
+  
+  .animate-scan {
+    animation: scan 4s linear infinite;
+  }
+
+  .animate-flicker {
+    animation: flicker 5s infinite;
+  }
   
   /* Utility class for hiding scrollbars */
   .scrollbar-hide {
