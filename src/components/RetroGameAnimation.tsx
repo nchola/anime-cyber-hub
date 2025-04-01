@@ -150,8 +150,8 @@ const RetroGameAnimation: React.FC = () => {
       });
     };
     
-    // Change direction randomly at intersections
-    const changeDirectionRandomly = (x: number, y: number, currentDirection: string): string => {
+    // Find valid directions at current position
+    const getValidDirections = (x: number, y: number, currentDirection: string): string[] => {
       const possibleDirections = ["left", "right", "up", "down"];
       const oppositeDirections: {[key: string]: string} = {
         "left": "right",
@@ -166,7 +166,7 @@ const RetroGameAnimation: React.FC = () => {
       );
       
       // Test each direction to see if it's valid
-      const validDirections = filteredDirections.filter(dir => {
+      return filteredDirections.filter(dir => {
         let testX = x;
         let testY = y;
         
@@ -179,60 +179,180 @@ const RetroGameAnimation: React.FC = () => {
         
         return isOnPath(testX, testY, dir);
       });
-      
-      // If no valid directions, keep current
-      if (validDirections.length === 0) {
+    };
+    
+    // Determine if character is at an intersection
+    const isAtIntersection = (x: number, y: number): boolean => {
+      const validDirections = getValidDirections(x, y, "none");
+      return validDirections.length > 1; // More than one valid direction = intersection
+    };
+    
+    // IMPROVED: Change direction based on weighted choices for ghosts
+    // This makes their movement more strategic and less random
+    const getGhostNextDirection = (
+      ghostX: number, 
+      ghostY: number, 
+      currentDirection: string, 
+      targetX: number, 
+      targetY: number
+    ): string => {
+      // If not at an intersection, keep current direction
+      if (!isAtIntersection(ghostX, ghostY)) {
         return currentDirection;
       }
       
-      // Change direction with 20% probability when at intersection
-      if (Math.random() > 0.8) {
+      const validDirections = getValidDirections(ghostX, ghostY, currentDirection);
+      
+      if (validDirections.length === 0) {
+        // Handle edge case - if no valid directions, try to turn around
+        const oppositeDirections: {[key: string]: string} = {
+          "left": "right",
+          "right": "left",
+          "up": "down",
+          "down": "up"
+        };
+        return oppositeDirections[currentDirection];
+      }
+      
+      // Assign weights to directions based on distance to pacman
+      const directionWeights = validDirections.map(dir => {
+        let nextX = ghostX;
+        let nextY = ghostY;
+        
+        switch (dir) {
+          case "left": nextX -= 10; break;
+          case "right": nextX += 10; break;
+          case "up": nextY -= 10; break;
+          case "down": nextY += 10; break;
+        }
+        
+        // Calculate distance to target after this move
+        const distance = Math.hypot(nextX - targetX, nextY - targetY);
+        
+        // Create a weight (inverse of distance, so closer = higher weight)
+        return {
+          direction: dir,
+          weight: 1000 / (distance + 1) // Add 1 to avoid division by zero
+        };
+      });
+      
+      // 80% chance to pick weighted direction, 20% chance to pick random
+      if (Math.random() < 0.8) {
+        // Sort by weight and pick highest (closest to pacman) with some randomness
+        directionWeights.sort((a, b) => b.weight - a.weight);
+        
+        // Add some randomness - sometimes pick second best option
+        const index = Math.random() < 0.3 && directionWeights.length > 1 ? 1 : 0;
+        return directionWeights[index].direction;
+      } else {
+        // Random choice (for unpredictability)
         return validDirections[Math.floor(Math.random() * validDirections.length)];
       }
-      
-      return currentDirection;
     };
     
-    // Randomly change ghost direction occasionally
-    const updateGhostDirection = (ghostX: number, ghostY: number, currentDirection: string) => {
-      if (Math.random() > 0.95) {
-        return changeDirectionRandomly(ghostX, ghostY, currentDirection);
-      }
-      return currentDirection;
-    };
-    
-    // Move character along path
-    const moveCharacter = (x: number, y: number, direction: string, speed: number) => {
-      let newX = x;
-      let newY = y;
+    // IMPROVED: Helper function to find path turns
+    const needsToTurn = (x: number, y: number, direction: string): boolean => {
+      let nextX = x;
+      let nextY = y;
       
       switch (direction) {
+        case "left": nextX -= 10; break;
+        case "right": nextX += 10; break;
+        case "up": nextY -= 10; break;
+        case "down": nextY += 10; break;
+      }
+      
+      return !isOnPath(nextX, nextY, direction);
+    };
+    
+    // IMPROVED: Get next direction for Pacman with more intelligent path following
+    const getPacmanNextDirection = (x: number, y: number, currentDirection: string): string => {
+      // Continue in current direction if possible
+      if (!needsToTurn(x, y, currentDirection)) {
+        return currentDirection;
+      }
+      
+      const validDirections = getValidDirections(x, y, currentDirection);
+      
+      if (validDirections.length === 0) {
+        // Handle edge case - if truly stuck, try to reverse direction
+        const oppositeDirections: {[key: string]: string} = {
+          "left": "right",
+          "right": "left",
+          "up": "down",
+          "down": "up"
+        };
+        return oppositeDirections[currentDirection];
+      }
+      
+      // At an intersection or forced turn
+      // Prefer to continue in same general direction (horizontal/vertical)
+      const isHorizontal = currentDirection === "left" || currentDirection === "right";
+      
+      // First try to maintain same orientation
+      const sameOrientationDirections = validDirections.filter(dir => {
+        const dirIsHorizontal = dir === "left" || dir === "right";
+        return dirIsHorizontal === isHorizontal;
+      });
+      
+      if (sameOrientationDirections.length > 0) {
+        return sameOrientationDirections[Math.floor(Math.random() * sameOrientationDirections.length)];
+      }
+      
+      // If can't maintain orientation, pick a random valid direction
+      return validDirections[Math.floor(Math.random() * validDirections.length)];
+    };
+    
+    // IMPROVED: Move character along path with better handling of turns and edges
+    const moveCharacter = (
+      x: number, 
+      y: number, 
+      direction: string, 
+      speed: number, 
+      isGhost: boolean = false,
+      targetX: number = 0, 
+      targetY: number = 0
+    ) => {
+      let newX = x;
+      let newY = y;
+      let newDirection = direction;
+      
+      // First, determine if we need to change direction
+      if (isGhost) {
+        // Ghosts have special targeting behavior
+        newDirection = getGhostNextDirection(x, y, direction, targetX, targetY);
+      } else {
+        // Pacman follows paths with some randomness
+        if (needsToTurn(x, y, direction) || (isAtIntersection(x, y) && Math.random() < 0.1)) {
+          newDirection = getPacmanNextDirection(x, y, direction);
+        }
+      }
+      
+      // Now move in the determined direction
+      switch (newDirection) {
         case "left": newX -= speed; break;
         case "right": newX += speed; break;
         case "up": newY -= speed; break;
         case "down": newY += speed; break;
       }
       
-      // If new position is on a path, update
-      if (isOnPath(newX, newY, direction)) {
-        return { x: newX, y: newY };
+      // Ensure new position is on a path
+      if (isOnPath(newX, newY, newDirection)) {
+        return { x: newX, y: newY, direction: newDirection };
       }
       
-      // If not on path, try to find a valid direction
-      const newDirection = changeDirectionRandomly(x, y, direction);
-      
-      if (newDirection !== direction) {
-        // Try the new direction
-        switch (newDirection) {
-          case "left": return { x: x - speed, y: y, direction: newDirection };
-          case "right": return { x: x + speed, y: y, direction: newDirection };
-          case "up": return { x: x, y: y - speed, direction: newDirection };
-          case "down": return { x: x, y: y + speed, direction: newDirection };
-        }
+      // If not on path, try changing direction but keep current position
+      return { x, y, direction: newDirection };
+    };
+    
+    // IMPROVED: Wraparound logic for characters going off-screen
+    const handleWrapAround = (pos: number, size: number, dimension: number): number => {
+      if (pos < -size) {
+        return dimension + size;
+      } else if (pos > dimension + size) {
+        return -size;
       }
-      
-      // If stuck, try to go back
-      return { x, y };
+      return pos;
     };
     
     // Draw pacman with correct orientation
@@ -322,11 +442,33 @@ const RetroGameAnimation: React.FC = () => {
       ctx.fill();
     };
     
+    // IMPROVED: Track time for behavior changes
+    let gameTime = 0;
+    let ghostsScatterMode = true;
+    let scatterTargetX1 = 0;
+    let scatterTargetY1 = 0;
+    let scatterTargetX2 = canvas.width;
+    let scatterTargetY2 = 0;
+    
     // Animation function
     const animate = () => {
       // Clear canvas
       ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Update game time
+      gameTime += 1;
+      
+      // Switch ghost behavior between scatter and chase every few seconds
+      if (gameTime % 600 === 0) {
+        ghostsScatterMode = !ghostsScatterMode;
+        
+        // Update scatter targets for variety
+        scatterTargetX1 = Math.random() < 0.5 ? 0 : canvas.width;
+        scatterTargetY1 = Math.random() < 0.5 ? 0 : canvas.height;
+        scatterTargetX2 = Math.random() < 0.5 ? 0 : canvas.width;
+        scatterTargetY2 = Math.random() < 0.5 ? 0 : canvas.height;
+      }
       
       // Draw maze-like paths
       ctx.strokeStyle = "#1a1a6c";
@@ -349,35 +491,73 @@ const RetroGameAnimation: React.FC = () => {
         }
       });
       
-      // Update pacman movement
+      // Update pacman movement - never stops, always follows paths
       const pacmanMove = moveCharacter(pacmanX, pacmanY, pacmanDirection, pacmanSpeed);
       pacmanX = pacmanMove.x;
       pacmanY = pacmanMove.y;
+      pacmanDirection = pacmanMove.direction;
       
-      if (pacmanMove.direction) {
-        pacmanDirection = pacmanMove.direction;
+      // Determine ghost targets
+      let ghost1TargetX = pacmanX;
+      let ghost1TargetY = pacmanY;
+      let ghost2TargetX = pacmanX;
+      let ghost2TargetY = pacmanY;
+      
+      if (ghostsScatterMode) {
+        // In scatter mode, go to corners
+        ghost1TargetX = scatterTargetX1;
+        ghost1TargetY = scatterTargetY1;
+        ghost2TargetX = scatterTargetX2;
+        ghost2TargetY = scatterTargetY2;
+      } else {
+        // In chase mode, red ghost targets pacman directly
+        ghost1TargetX = pacmanX;
+        ghost1TargetY = pacmanY;
+        
+        // Blue ghost targets position ahead of Pacman
+        const lookAheadDistance = 80;
+        switch (pacmanDirection) {
+          case "right": ghost2TargetX = pacmanX + lookAheadDistance; break;
+          case "left": ghost2TargetX = pacmanX - lookAheadDistance; break;
+          case "up": ghost2TargetY = pacmanY - lookAheadDistance; break;
+          case "down": ghost2TargetY = pacmanY + lookAheadDistance; break;
+        }
       }
       
-      // Update ghost movements
-      const ghostMove = moveCharacter(ghostX, ghostY, ghostDirection, ghostSpeed);
+      // Update ghost movements with targeting
+      const ghostMove = moveCharacter(
+        ghostX, 
+        ghostY, 
+        ghostDirection, 
+        ghostSpeed, 
+        true, 
+        ghost1TargetX, 
+        ghost1TargetY
+      );
       ghostX = ghostMove.x;
       ghostY = ghostMove.y;
+      ghostDirection = ghostMove.direction;
       
-      if (ghostMove.direction) {
-        ghostDirection = ghostMove.direction;
-      } else {
-        ghostDirection = updateGhostDirection(ghostX, ghostY, ghostDirection);
-      }
-      
-      const ghost2Move = moveCharacter(ghost2X, ghost2Y, ghost2Direction, ghost2Speed);
+      const ghost2Move = moveCharacter(
+        ghost2X, 
+        ghost2Y, 
+        ghost2Direction, 
+        ghost2Speed, 
+        true, 
+        ghost2TargetX, 
+        ghost2TargetY
+      );
       ghost2X = ghost2Move.x;
       ghost2Y = ghost2Move.y;
+      ghost2Direction = ghost2Move.direction;
       
-      if (ghost2Move.direction) {
-        ghost2Direction = ghost2Move.direction;
-      } else {
-        ghost2Direction = updateGhostDirection(ghost2X, ghost2Y, ghost2Direction);
-      }
+      // Handle wraparound for all characters
+      pacmanX = handleWrapAround(pacmanX, PACMAN_SIZE, canvas.width);
+      pacmanY = handleWrapAround(pacmanY, PACMAN_SIZE, canvas.height);
+      ghostX = handleWrapAround(ghostX, GHOST_SIZE, canvas.width);
+      ghostY = handleWrapAround(ghostY, GHOST_SIZE, canvas.height);
+      ghost2X = handleWrapAround(ghost2X, GHOST_SIZE, canvas.width);
+      ghost2Y = handleWrapAround(ghost2Y, GHOST_SIZE, canvas.height);
       
       // Update pacman mouth animation
       pacmanMouth += 0.2 * mouthDirection;
@@ -407,21 +587,10 @@ const RetroGameAnimation: React.FC = () => {
       ctx.textAlign = "left";
       ctx.fillText(`SCORE: ${currentScore}`, 10, 20);
       
-      // Center-aligned text
-      ctx.textAlign = "center";
-      ctx.fillText("CYBER ARCADE", canvas.width / 2, 20);
-      
       // Right-aligned text
       ctx.textAlign = "right";
       if (!isMobile) {
-        ctx.fillText("LEVEL 1", canvas.width - 10, 20);
-      }
-      
-      // Reset characters if they go off-screen
-      if (pacmanX < -PACMAN_SIZE || pacmanX > canvas.width + PACMAN_SIZE || 
-          pacmanY < -PACMAN_SIZE || pacmanY > canvas.height + PACMAN_SIZE) {
-        pacmanX = canvas.width / 2;
-        pacmanY = canvas.height / 2;
+        ctx.fillText("CYBER ARCADE", canvas.width - 10, 20);
       }
       
       // Check if all dots are collected
@@ -430,6 +599,12 @@ const RetroGameAnimation: React.FC = () => {
         initGame();
         currentScore += 100; // Bonus for completing level
         setScore(currentScore);
+      }
+      
+      // IMPROVED: Visual effects for scatter mode
+      if (ghostsScatterMode && gameTime % 20 < 10) {
+        ctx.fillStyle = "rgba(0, 100, 255, 0.1)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
       
       requestAnimationFrame(animate);
@@ -448,9 +623,6 @@ const RetroGameAnimation: React.FC = () => {
     <div className="w-full bg-black overflow-hidden border-t-4 border-b-4 border-cyber-accent/30 relative">
       {/* Game info positioned to avoid overlap */}
       <div className="absolute top-2 left-2 right-2 flex justify-between items-center">
-        <div className="text-xs text-white font-orbitron hidden sm:block">←→↑↓: MOVE</div>
-        <div className="text-xs text-white font-orbitron">SCORE: {score}</div>
-        <div className="text-xs text-white font-orbitron hidden sm:block">SPACE: POWER</div>
       </div>
       
       <div className="scanlines absolute inset-0 opacity-20"></div>

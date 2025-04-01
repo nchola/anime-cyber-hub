@@ -29,7 +29,7 @@ const AnimeGrid: React.FC<AnimeGridProps> = ({
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-orbitron font-bold mb-6 text-white">
+        <h2 className="text-2xl font-orbitron font-normal mb-6 text-white">
           {title}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6">

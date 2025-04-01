@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Anime } from "@/types/anime";
@@ -84,6 +83,18 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, index = 0 }) => {
     }
   };
 
+  // Get title font size class based on title length
+  const getTitleFontSizeClass = () => {
+    const title = anime.title_english || anime.title;
+    if (title.length > 30) {
+      return "text-xs"; // Extra small for very long titles
+    } else if (title.length > 20) {
+      return "text-sm"; // Small for long titles
+    } else {
+      return "text-base"; // Default size for normal titles
+    }
+  };
+
   return (
     <>
       <div 
@@ -147,7 +158,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, index = 0 }) => {
             
             {/* Hover info overlay */}
             <div className={`absolute inset-0 bg-gradient-to-t from-cyber-background to-transparent/30 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
-              <p className="text-white text-sm line-clamp-3">
+              <p className="text-white text-xs line-clamp-6">
                 {anime.synopsis || "No synopsis available."}
               </p>
             </div>
@@ -155,9 +166,12 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, index = 0 }) => {
           
           {/* Title and info */}
           <div className="p-3">
-            <h3 className="font-orbitron text-white font-medium line-clamp-1 group-hover:text-cyber-accent transition-colors">
-              {anime.title_english || anime.title}
-            </h3>
+            {/* Dynamic font size based on title length */}
+            <div className="min-h-[40px] flex items-center">
+              <h3 className={`font-orbitron text-white font-light ${getTitleFontSizeClass()} line-clamp-2 group-hover:text-cyber-accent transition-colors`}>
+                {anime.title_english || anime.title}
+              </h3>
+            </div>
             
             {/* Genres */}
             <div className="mt-2 flex flex-wrap gap-1">
