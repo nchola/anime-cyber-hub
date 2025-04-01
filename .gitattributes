@@ -1,0 +1,3 @@
+
+# Hide .mailmap from Git's standard listing
+.mailmap export-ignore
