@@ -4,6 +4,7 @@ import { getAnimeGenres } from "@/services/animeService";
 import { Genre } from "@/types/anime";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const GenreCloud: React.FC = () => {
   const [genres, setGenres] = useState<Genre[]>([]);
@@ -11,6 +12,7 @@ const GenreCloud: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -34,20 +36,26 @@ const GenreCloud: React.FC = () => {
     fetchGenres();
   }, [toast]);
 
-  // Calculate font size based on genre popularity
+  // Calculate font size based on genre popularity and device size
   const calculateFontSize = (count: number) => {
     // Add null checks and fallbacks for when genres array might be empty
-    if (!genres || genres.length === 0) return 1.0;
+    if (!genres || genres.length === 0) return isMobile ? 0.7 : 1.0;
     
     const counts = genres.map(g => g.count || 0);
     const min = Math.min(...counts);
     const max = Math.max(...counts);
     
     // Prevent division by zero
-    if (min === max) return 1.0;
+    if (min === max) return isMobile ? 0.7 : 1.0;
     
     const normalized = (count - min) / (max - min);
-    return 0.8 + normalized * 1.2; // Font size between 0.8rem and 2rem
+    
+    // Smaller font sizes on mobile
+    if (isMobile) {
+      return 0.65 + normalized * 0.6; // Font size between 0.65rem and 1.25rem for mobile
+    }
+    
+    return 0.8 + normalized * 1.2; // Font size between 0.8rem and 2rem for desktop
   };
 
   const handleGenreClick = (genreId: number, genreName: string) => {
@@ -87,7 +95,7 @@ const GenreCloud: React.FC = () => {
         <button 
           key={genre.mal_id}
           onClick={() => handleGenreClick(genre.mal_id, genre.name)}
-          className="px-3 py-1.5 rounded-full bg-gradient-to-r from-cyber-purple/40 to-cyber-accent/20 border border-cyber-accent/30 text-white hover:scale-105 hover:shadow-glow transition-all duration-300"
+          className={`px-2 py-1 rounded-full bg-gradient-to-r from-cyber-purple/40 to-cyber-accent/20 border border-cyber-accent/30 text-white hover:scale-105 hover:shadow-glow transition-all duration-300 ${isMobile ? 'px-2 py-0.5' : 'px-3 py-1.5'}`}
           style={{ 
             fontSize: `${calculateFontSize(genre.count || 100)}rem`,
             background: `linear-gradient(45deg, #8A2BE2 0%, #FFD95A 100%)`,

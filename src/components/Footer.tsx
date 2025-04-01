@@ -1,11 +1,15 @@
+
 import React from "react";
 import { Github, Instagram, Linkedin } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Footer = () => {
+  const isMobile = useIsMobile();
+  
   return (
     <footer className="bg-cyber-background noise-bg border-t border-cyber-accent/20 py-10">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className={`grid grid-cols-1 ${isMobile ? 'gap-8' : 'md:grid-cols-4 gap-8'}`}>
           <div>
             <h3 className="text-xl font-orbitron font-bold text-cyber-accent mb-4">
               CYBER<span className="text-white">ANIME</span>
@@ -26,40 +30,77 @@ const Footer = () => {
             </div>
           </div>
           
-          <div>
-            <h4 className="text-white font-orbitron font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-sm">
-              <li><a href="/" className="text-gray-400 hover:text-cyber-accent">Home</a></li>
-              <li><a href="/top" className="text-gray-400 hover:text-cyber-accent">Top Anime</a></li>
-              <li><a href="/seasonal" className="text-gray-400 hover:text-cyber-accent">Seasonal</a></li>
-              <li><a href="/upcoming" className="text-gray-400 hover:text-cyber-accent">Upcoming</a></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="text-white font-orbitron font-semibold mb-4">Genres</h4>
-            <ul className="space-y-2 text-sm">
-              <li><a href="/genre/1" className="text-gray-400 hover:text-cyber-accent">Action</a></li>
-              <li><a href="/genre/2" className="text-gray-400 hover:text-cyber-accent">Adventure</a></li>
-              <li><a href="/genre/4" className="text-gray-400 hover:text-cyber-accent">Comedy</a></li>
-              <li><a href="/genre/8" className="text-gray-400 hover:text-cyber-accent">Drama</a></li>
-              <li><a href="/genre/10" className="text-gray-400 hover:text-cyber-accent">Fantasy</a></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="text-white font-orbitron font-semibold mb-4">Legal</h4>
-            <ul className="space-y-2 text-sm">
-              <li><a href="/terms" className="text-gray-400 hover:text-cyber-accent">Terms of Service</a></li>
-              <li><a href="/privacy" className="text-gray-400 hover:text-cyber-accent">Privacy Policy</a></li>
-              <li><a href="/about" className="text-gray-400 hover:text-cyber-accent">About Us</a></li>
-              <li><a href="/contact" className="text-gray-400 hover:text-cyber-accent">Contact</a></li>
-            </ul>
-          </div>
+          {/* Mobile: horizontal links, Desktop: vertical columns */}
+          {isMobile ? (
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <h4 className="text-white font-orbitron font-semibold mb-3 text-sm">Quick Links</h4>
+                <ul className="space-y-1 text-xs">
+                  <li><a href="/" className="text-gray-400 hover:text-cyber-accent">Home</a></li>
+                  <li><a href="/top" className="text-gray-400 hover:text-cyber-accent">Top Anime</a></li>
+                  <li><a href="/seasonal" className="text-gray-400 hover:text-cyber-accent">Seasonal</a></li>
+                  <li><a href="/upcoming" className="text-gray-400 hover:text-cyber-accent">Upcoming</a></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="text-white font-orbitron font-semibold mb-3 text-sm">Genres</h4>
+                <ul className="space-y-1 text-xs">
+                  <li><a href="/genre/1" className="text-gray-400 hover:text-cyber-accent">Action</a></li>
+                  <li><a href="/genre/2" className="text-gray-400 hover:text-cyber-accent">Adventure</a></li>
+                  <li><a href="/genre/4" className="text-gray-400 hover:text-cyber-accent">Comedy</a></li>
+                  <li><a href="/genre/8" className="text-gray-400 hover:text-cyber-accent">Drama</a></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="text-white font-orbitron font-semibold mb-3 text-sm">Legal</h4>
+                <ul className="space-y-1 text-xs">
+                  <li><a href="/terms" className="text-gray-400 hover:text-cyber-accent">Terms</a></li>
+                  <li><a href="/privacy" className="text-gray-400 hover:text-cyber-accent">Privacy</a></li>
+                  <li><a href="/about" className="text-gray-400 hover:text-cyber-accent">About Us</a></li>
+                  <li><a href="/contact" className="text-gray-400 hover:text-cyber-accent">Contact</a></li>
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div>
+                <h4 className="text-white font-orbitron font-semibold mb-4">Quick Links</h4>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="/" className="text-gray-400 hover:text-cyber-accent">Home</a></li>
+                  <li><a href="/top" className="text-gray-400 hover:text-cyber-accent">Top Anime</a></li>
+                  <li><a href="/seasonal" className="text-gray-400 hover:text-cyber-accent">Seasonal</a></li>
+                  <li><a href="/upcoming" className="text-gray-400 hover:text-cyber-accent">Upcoming</a></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="text-white font-orbitron font-semibold mb-4">Genres</h4>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="/genre/1" className="text-gray-400 hover:text-cyber-accent">Action</a></li>
+                  <li><a href="/genre/2" className="text-gray-400 hover:text-cyber-accent">Adventure</a></li>
+                  <li><a href="/genre/4" className="text-gray-400 hover:text-cyber-accent">Comedy</a></li>
+                  <li><a href="/genre/8" className="text-gray-400 hover:text-cyber-accent">Drama</a></li>
+                  <li><a href="/genre/10" className="text-gray-400 hover:text-cyber-accent">Fantasy</a></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="text-white font-orbitron font-semibold mb-4">Legal</h4>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="/terms" className="text-gray-400 hover:text-cyber-accent">Terms of Service</a></li>
+                  <li><a href="/privacy" className="text-gray-400 hover:text-cyber-accent">Privacy Policy</a></li>
+                  <li><a href="/about" className="text-gray-400 hover:text-cyber-accent">About Us</a></li>
+                  <li><a href="/contact" className="text-gray-400 hover:text-cyber-accent">Contact</a></li>
+                </ul>
+              </div>
+            </>
+          )}
         </div>
         
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-500 text-sm">
+          <p className={`text-gray-500 ${isMobile ? 'text-xs' : 'text-sm'}`}>
             Data provided by <a href="https://jikan.moe/" className="text-cyber-accent hover:underline">Jikan API</a>. 
             This site is not affiliated with MyAnimeList or any anime production companies.
           </p>

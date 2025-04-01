@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Anime } from "@/types/anime";
 import AnimeCard from "./AnimeCard";
@@ -5,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AnimeGridProps {
   animeList: Anime[];
@@ -21,6 +23,8 @@ const AnimeGrid: React.FC<AnimeGridProps> = ({
   error = null,
   viewMoreLink
 }) => {
+  const isMobile = useIsMobile();
+  
   // Render loading skeletons
   if (loading) {
     return (
@@ -28,7 +32,7 @@ const AnimeGrid: React.FC<AnimeGridProps> = ({
         <h2 className="text-2xl font-orbitron font-bold mb-6 text-white">
           {title}
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
           {Array(12).fill(0).map((_, index) => (
             <div key={index} className="cyber-card">
               <Skeleton className="aspect-[3/4] w-full rounded-t-md bg-gray-800" />
@@ -79,7 +83,7 @@ const AnimeGrid: React.FC<AnimeGridProps> = ({
           </Link>
         )}
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
         {animeList.map((anime, index) => (
           <AnimeCard key={anime.mal_id} anime={anime} index={index} />
         ))}
