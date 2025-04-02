@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Search, UserPlus, User, LogOut, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -27,6 +28,7 @@ import {
   NavigationMenuTrigger
 } from "@/components/ui/navigation-menu";
 import { signOut } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");

@@ -1,12 +1,5 @@
 
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize the Supabase client
-// Note: These are public keys that can be exposed in client-side code
-const supabaseUrl = 'https://your-supabase-project-url.supabase.co';
-const supabaseAnonKey = 'your-supabase-anon-key';
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from '@/integrations/supabase/client';
 
 // Authentication helper functions
 export async function signUpWithEmail(email: string, password: string, username: string) {
