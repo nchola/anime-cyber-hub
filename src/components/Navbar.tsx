@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Search, UserPlus, User, LogOut, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -303,16 +302,6 @@ const Navbar = () => {
                         {username}
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator className="bg-cyber-accent/20" />
-                      <DropdownMenuItem className="cursor-pointer hover:bg-cyber-accent/10 focus:bg-cyber-accent/10">
-                        <Link to="/profile" className="flex w-full items-center">Profile</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer hover:bg-cyber-accent/10 focus:bg-cyber-accent/10">
-                        <Link to="/bookmark" className="flex w-full items-center">Bookmarks</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer hover:bg-cyber-accent/10 focus:bg-cyber-accent/10">
-                        <Link to="/settings" className="flex w-full items-center">Settings</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator className="bg-cyber-accent/20" />
                       <DropdownMenuItem 
                         onClick={handleLogout} 
                         className="text-red-500 cursor-pointer hover:bg-red-500/10 focus:bg-red-500/10 flex items-center gap-2"
@@ -398,26 +387,20 @@ const Navbar = () => {
               )}
             </div>
             
-            <div className="flex flex-col space-y-2 pt-2 border-t border-cyber-accent/20">
-              <div className="px-3 py-2 font-orbitron text-cyber-accent">
-                {username}
+            {isLoggedIn && (
+              <div className="flex flex-col space-y-2 pt-2 border-t border-cyber-accent/20">
+                <div className="px-3 py-2 font-orbitron text-cyber-accent">
+                  {username}
+                </div>
+                <button 
+                  onClick={handleLogout}
+                  className="text-left text-red-500 px-3 py-2 rounded-md hover:bg-red-500/10 transition-colors flex items-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Log out
+                </button>
               </div>
-              <Link 
-                to="/profile" 
-                className="text-white hover:text-cyber-accent px-3 py-2 rounded-md hover:bg-cyber-accent/10 transition-colors flex items-center gap-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <User className="h-4 w-4" />
-                Profile
-              </Link>
-              <button 
-                onClick={handleLogout}
-                className="text-left text-red-500 px-3 py-2 rounded-md hover:bg-red-500/10 transition-colors flex items-center gap-2"
-              >
-                <LogOut className="h-4 w-4" />
-                Log out
-              </button>
-            </div>
+            )}
           </div>
         </div>
       )}

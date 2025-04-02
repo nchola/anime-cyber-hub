@@ -2,6 +2,7 @@
 import React from "react";
 import { Github, Instagram, Linkedin } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const isMobile = useIsMobile();
@@ -36,30 +37,30 @@ const Footer = () => {
               <div>
                 <h4 className="text-white font-orbitron font-semibold mb-3 text-sm">Quick Links</h4>
                 <ul className="space-y-1 text-xs">
-                  <li><a href="/" className="text-gray-400 hover:text-cyber-accent">Home</a></li>
-                  <li><a href="/top" className="text-gray-400 hover:text-cyber-accent">Top Anime</a></li>
-                  <li><a href="/seasonal" className="text-gray-400 hover:text-cyber-accent">Seasonal</a></li>
-                  <li><a href="/upcoming" className="text-gray-400 hover:text-cyber-accent">Upcoming</a></li>
+                  <li><Link to="/" className="text-gray-400 hover:text-cyber-accent">Home</Link></li>
+                  <li><Link to="/top" className="text-gray-400 hover:text-cyber-accent">Top Anime</Link></li>
+                  <li><Link to="/seasonal" className="text-gray-400 hover:text-cyber-accent">Seasonal</Link></li>
+                  <li><Link to="/upcoming" className="text-gray-400 hover:text-cyber-accent">Upcoming</Link></li>
                 </ul>
               </div>
               
               <div>
                 <h4 className="text-white font-orbitron font-semibold mb-3 text-sm">Genres</h4>
                 <ul className="space-y-1 text-xs">
-                  <li><a href="/genre/1" className="text-gray-400 hover:text-cyber-accent">Action</a></li>
-                  <li><a href="/genre/2" className="text-gray-400 hover:text-cyber-accent">Adventure</a></li>
-                  <li><a href="/genre/4" className="text-gray-400 hover:text-cyber-accent">Comedy</a></li>
-                  <li><a href="/genre/8" className="text-gray-400 hover:text-cyber-accent">Drama</a></li>
+                  <li><Link to="/genre/1" className="text-gray-400 hover:text-cyber-accent">Action</Link></li>
+                  <li><Link to="/genre/2" className="text-gray-400 hover:text-cyber-accent">Adventure</Link></li>
+                  <li><Link to="/genre/4" className="text-gray-400 hover:text-cyber-accent">Comedy</Link></li>
+                  <li><Link to="/genre/8" className="text-gray-400 hover:text-cyber-accent">Drama</Link></li>
                 </ul>
               </div>
               
               <div>
                 <h4 className="text-white font-orbitron font-semibold mb-3 text-sm">Legal</h4>
                 <ul className="space-y-1 text-xs">
-                  <li><a href="/terms" className="text-gray-400 hover:text-cyber-accent">Terms</a></li>
-                  <li><a href="/privacy" className="text-gray-400 hover:text-cyber-accent">Privacy</a></li>
-                  <li><a href="/about" className="text-gray-400 hover:text-cyber-accent">About Us</a></li>
-                  <li><a href="/contact" className="text-gray-400 hover:text-cyber-accent">Contact</a></li>
+                  <li><Link to="/terms" className="text-gray-400 hover:text-cyber-accent">Terms</Link></li>
+                  <li><Link to="/privacy" className="text-gray-400 hover:text-cyber-accent">Privacy</Link></li>
+                  <li><Link to="/about" className="text-gray-400 hover:text-cyber-accent">About Us</Link></li>
+                  <li><Link to="/contact" className="text-gray-400 hover:text-cyber-accent">Contact</Link></li>
                 </ul>
               </div>
             </div>
@@ -68,31 +69,31 @@ const Footer = () => {
               <div>
                 <h4 className="text-white font-orbitron font-semibold mb-4">Quick Links</h4>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="/" className="text-gray-400 hover:text-cyber-accent">Home</a></li>
-                  <li><a href="/top" className="text-gray-400 hover:text-cyber-accent">Top Anime</a></li>
-                  <li><a href="/seasonal" className="text-gray-400 hover:text-cyber-accent">Seasonal</a></li>
-                  <li><a href="/upcoming" className="text-gray-400 hover:text-cyber-accent">Upcoming</a></li>
+                  <li><Link to="/" className="text-gray-400 hover:text-cyber-accent">Home</Link></li>
+                  <li><Link to="/top" className="text-gray-400 hover:text-cyber-accent">Top Anime</Link></li>
+                  <li><Link to="/seasonal" className="text-gray-400 hover:text-cyber-accent">Seasonal</Link></li>
+                  <li><Link to="/upcoming" className="text-gray-400 hover:text-cyber-accent">Upcoming</Link></li>
                 </ul>
               </div>
               
               <div>
                 <h4 className="text-white font-orbitron font-semibold mb-4">Genres</h4>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="/genre/1" className="text-gray-400 hover:text-cyber-accent">Action</a></li>
-                  <li><a href="/genre/2" className="text-gray-400 hover:text-cyber-accent">Adventure</a></li>
-                  <li><a href="/genre/4" className="text-gray-400 hover:text-cyber-accent">Comedy</a></li>
-                  <li><a href="/genre/8" className="text-gray-400 hover:text-cyber-accent">Drama</a></li>
-                  <li><a href="/genre/10" className="text-gray-400 hover:text-cyber-accent">Fantasy</a></li>
+                  <li><Link to="/genre/1" className="text-gray-400 hover:text-cyber-accent">Action</Link></li>
+                  <li><Link to="/genre/2" className="text-gray-400 hover:text-cyber-accent">Adventure</Link></li>
+                  <li><Link to="/genre/4" className="text-gray-400 hover:text-cyber-accent">Comedy</Link></li>
+                  <li><Link to="/genre/8" className="text-gray-400 hover:text-cyber-accent">Drama</Link></li>
+                  <li><Link to="/genre/10" className="text-gray-400 hover:text-cyber-accent">Fantasy</Link></li>
                 </ul>
               </div>
               
               <div>
                 <h4 className="text-white font-orbitron font-semibold mb-4">Legal</h4>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="/terms" className="text-gray-400 hover:text-cyber-accent">Terms of Service</a></li>
-                  <li><a href="/privacy" className="text-gray-400 hover:text-cyber-accent">Privacy Policy</a></li>
-                  <li><a href="/about" className="text-gray-400 hover:text-cyber-accent">About Us</a></li>
-                  <li><a href="/contact" className="text-gray-400 hover:text-cyber-accent">Contact</a></li>
+                  <li><Link to="/terms" className="text-gray-400 hover:text-cyber-accent">Terms of Service</Link></li>
+                  <li><Link to="/privacy" className="text-gray-400 hover:text-cyber-accent">Privacy Policy</Link></li>
+                  <li><Link to="/about" className="text-gray-400 hover:text-cyber-accent">About Us</Link></li>
+                  <li><Link to="/contact" className="text-gray-400 hover:text-cyber-accent">Contact</Link></li>
                 </ul>
               </div>
             </>
