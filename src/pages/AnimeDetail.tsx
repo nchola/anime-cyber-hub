@@ -210,11 +210,9 @@ const AnimeDetail = () => {
               <div className="mb-8">
                 <h3 className="text-xl font-orbitron text-cyber-accent mb-3">Synopsis</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  {anime.synopsis || "No synopsis available."}
+                  {anime.synopsis ? anime.synopsis.replace(/\[Written by MAL Rewrite\]$/g, "") : "No description found for this anime series."}
                 </p>
               </div>
-              
-              {/* Studios */}
               {anime.studios && anime.studios.length > 0 && (
                 <div className="mb-8">
                   <h3 className="text-xl font-orbitron text-cyber-accent mb-3">Studios</h3>

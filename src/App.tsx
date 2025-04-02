@@ -26,7 +26,7 @@ const App = () => (
         {/* New stub routes for navbar and footer links */}
         <Route path="/anime" element={<StubPage title="All Anime" />} />
         <Route path="/seasonal" element={<StubPage title="Seasonal Anime" />} />
-        <Route path="/genre" element={<StubPage title="Genres" />} />
+        <Route path="/genre" element={<GenrePage />} />
         <Route path="/bookmark" element={<StubPage title="Bookmarks" />} />
         <Route path="/terms" element={<StubPage title="Terms of Service" />} />
         <Route path="/privacy" element={<StubPage title="Privacy Policy" />} />
