@@ -26,6 +26,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger
 } from "@/components/ui/navigation-menu";
+import { signOut } from "@/lib/supabase";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,21 +47,24 @@ const Navbar = () => {
   const isMobile = useIsMobile();
   
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userJson = localStorage.getItem('user');
-    
-    if (token && userJson) {
+    const checkUserLogin = async () => {
       try {
-        const userData = JSON.parse(userJson);
-        setIsLoggedIn(true);
-        setUsername(userData.username || 'User');
-        setAvatar(userData.avatar || '');
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session) {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            setIsLoggedIn(true);
+            setUsername(user.user_metadata.username || 'User');
+            setAvatar(user.user_metadata.avatar || '');
+          }
+        }
       } catch (error) {
-        console.error("Error parsing user data:", error);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        console.error("Error checking auth status:", error);
       }
-    }
+    };
+    
+    checkUserLogin();
   }, []);
 
   useEffect(() => {
@@ -74,13 +78,23 @@ const Navbar = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const handleLogout = async () => {
+    const { error } = await signOut();
+    
+    if (error) {
+      toast({
+        title: "Logout Gagal",
+        description: "Terjadi kesalahan saat logout",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsLoggedIn(false);
     setUsername('');
     setAvatar('');
     setMobileMenuOpen(false);
+    
     toast({
       title: "Logout Berhasil",
       description: "Anda telah keluar dari akun",

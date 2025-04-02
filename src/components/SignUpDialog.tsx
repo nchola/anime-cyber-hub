@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -9,6 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { signUpWithEmail } from "@/lib/supabase";
 
 // Validasi skema pendaftaran
 const signupSchema = z.object({
@@ -47,43 +47,36 @@ const SignUpDialog = ({ open, onOpenChange, onBackToLogin }: SignUpDialogProps) 
     setIsLoading(true);
     
     try {
-      // Simulasi panggilan API pendaftaran
-      console.log("Signup data:", data);
+      // Register user with Supabase
+      const { data: authData, error } = await signUpWithEmail(
+        data.email,
+        data.password,
+        data.username
+      );
       
-      // Simulasi penundaan respons server
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (error) {
+        throw new Error(error.message);
+      }
       
-      // Simulasi user data yang akan disimpan ke localStorage
-      const userData = {
-        id: "user" + Math.floor(Math.random() * 10000),
-        username: data.username,
-        email: data.email,
-        avatar: `https://api.dicebear.com/7.x/personas/svg?seed=${data.username}`,
-        token: "simulated_jwt_token_" + Math.random().toString(36).substr(2, 9)
-      };
-      
-      // Simpan token dan data user ke localStorage
-      localStorage.setItem("token", userData.token);
-      localStorage.setItem("user", JSON.stringify(userData));
-      
-      // Sukses pendaftaran
+      // Successful signup
       toast({
         title: "Pendaftaran Berhasil",
-        description: "Akun Anda telah berhasil dibuat. Selamat datang di CyberAnime!",
+        description: "Akun Anda telah berhasil dibuat. Silahkan periksa email Anda untuk konfirmasi.",
       });
       
-      // Tutup dialog
+      // Close dialog
       onOpenChange(false);
       
-      // Refresh halaman untuk memperbarui state di Navbar
+      // Go back to login
       setTimeout(() => {
-        window.location.reload();
+        onBackToLogin();
       }, 500);
+      
     } catch (error) {
       console.error("Signup error:", error);
       toast({
         title: "Pendaftaran Gagal",
-        description: "Terjadi kesalahan saat mendaftarkan akun Anda",
+        description: error instanceof Error ? error.message : "Terjadi kesalahan saat mendaftarkan akun Anda",
         variant: "destructive",
       });
     } finally {

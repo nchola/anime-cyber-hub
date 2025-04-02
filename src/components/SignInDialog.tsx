@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import SignUpDialog from "@/components/SignUpDialog";
+import { signInWithEmail } from "@/lib/supabase";
 
 // Validasi skema login
 const loginSchema = z.object({
@@ -41,24 +42,28 @@ const SignInDialog = ({ open, onOpenChange, onLoginSuccess }: SignInDialogProps)
     setIsLoading(true);
     
     try {
-      // Simulasi panggilan API login
-      console.log("Login data:", data);
+      // Sign in with Supabase
+      const { data: authData, error } = await signInWithEmail(
+        data.email,
+        data.password
+      );
       
-      // Simulasi penundaan respons server
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (error) {
+        throw new Error(error.message);
+      }
       
-      // Simulasi user data yang akan disimpan ke localStorage
+      if (!authData || !authData.user) {
+        throw new Error("Login gagal: Data user tidak ditemukan");
+      }
+      
+      // Get user metadata
       const userData = {
-        id: "user123",
-        username: "CyberFan22",
-        email: data.email,
-        avatar: "https://i.pravatar.cc/300",
-        token: "simulated_jwt_token_12345"
+        id: authData.user.id,
+        email: authData.user.email,
+        username: authData.user.user_metadata.username || 'User',
+        avatar: authData.user.user_metadata.avatar || `https://api.dicebear.com/7.x/personas/svg?seed=${authData.user.user_metadata.username}`,
+        token: authData.session.access_token
       };
-      
-      // Simpan token dan data user ke localStorage
-      localStorage.setItem("token", userData.token);
-      localStorage.setItem("user", JSON.stringify(userData));
       
       // Sukses login
       toast({
@@ -77,7 +82,7 @@ const SignInDialog = ({ open, onOpenChange, onLoginSuccess }: SignInDialogProps)
       console.error("Login error:", error);
       toast({
         title: "Login Gagal",
-        description: "Email atau password tidak valid",
+        description: error instanceof Error ? error.message : "Email atau password tidak valid",
         variant: "destructive",
       });
     } finally {
