@@ -1,7 +1,8 @@
 
 # CyberAnime Hub
 
-![CyberAnime Hub](https://placeholder-for-banner-image.com)
+![CyberAnime Hub]![image](https://github.com/user-attachments/assets/36183971-f755-4362-b990-08e51dac5c52)
+
 
 CyberAnime Hub is a modern, cyberpunk-themed anime database web application that allows users to discover, browse, and keep track of their favorite anime series and movies.
 
@@ -94,4 +95,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Made with ❤️ by [Your Name]
+Made by [Nchola]
