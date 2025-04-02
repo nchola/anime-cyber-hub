@@ -60,9 +60,10 @@ CyberAnime Hub is a modern, cyberpunk-themed anime database web application that
 5. Open your browser and navigate to `http://localhost:5173`
 
 ## 📸 Screenshots
-
+![Loading Screens Page]![image](https://github.com/user-attachments/assets/8d1b8f27-3563-42b0-9fe4-037dbca48096)
 ![Home Page](https://github.com/user-attachments/assets/36183971-f755-4362-b990-08e51dac5c52)
 ![Anime List](https://github.com/user-attachments/assets/2edb2cd6-9017-463a-933c-65e6bace1758)
+![Search Suggestion](https://github.com/user-attachments/assets/c61f8093-c781-46a3-b56c-2fd0eda2dfc2)
 ![Anime Detail](https://github.com/user-attachments/assets/f32881ee-a190-4caf-8506-841cefa7a2e7)
 ![Retro Arcade & Genres](https://github.com/user-attachments/assets/85aa38c1-c2da-4efe-9c11-da6323ca303c)
 
