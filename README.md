@@ -1,9 +1,4 @@
-
 # CyberAnime Hub
-
-![CyberAnime Hub]![image](https://github.com/user-attachments/assets/36183971-f755-4362-b990-08e51dac5c52)
-
-
 CyberAnime Hub is a modern, cyberpunk-themed anime database web application that allows users to discover, browse, and keep track of their favorite anime series and movies.
 
 ## 🚀 Features
@@ -38,7 +33,7 @@ CyberAnime Hub is a modern, cyberpunk-themed anime database web application that
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/cyber-anime-hub.git
+   git clone https://github.com/nchola/cyber-anime-hub.git
    cd cyber-anime-hub
    ```
 
@@ -66,9 +61,10 @@ CyberAnime Hub is a modern, cyberpunk-themed anime database web application that
 
 ## 📸 Screenshots
 
-![Home Page](https://placeholder-for-screenshot-1.com)
-![Anime Details](https://placeholder-for-screenshot-2.com)
-![Retro Arcade](https://placeholder-for-screenshot-3.com)
+![Home Page](https://github.com/user-attachments/assets/36183971-f755-4362-b990-08e51dac5c52)
+![Anime List](https://github.com/user-attachments/assets/2edb2cd6-9017-463a-933c-65e6bace1758)
+![Anime Detail](https://github.com/user-attachments/assets/f32881ee-a190-4caf-8506-841cefa7a2e7)
+![Retro Arcade & Genres](https://github.com/user-attachments/assets/85aa38c1-c2da-4efe-9c11-da6323ca303c)
 
 ## 🌟 Upcoming Features
 
@@ -77,14 +73,6 @@ CyberAnime Hub is a modern, cyberpunk-themed anime database web application that
 - Watch history tracking
 - Social sharing capabilities
 - Advanced filtering options
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/cyber-anime-hub/issues).
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgements
 
