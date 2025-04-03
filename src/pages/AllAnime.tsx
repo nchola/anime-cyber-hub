@@ -6,7 +6,6 @@ import { Anime } from "@/types/anime";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimeGrid from "@/components/AnimeGrid";
-import HeroSection from "@/components/HeroSection";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const AllAnime = () => {
@@ -49,13 +48,16 @@ const AllAnime = () => {
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
-      <HeroSection 
-        title="All Anime Collection"
-        subtitle="Discover the best anime from across the universe"
-        ctaText="Explore Genres"
-        ctaLink="/genre"
-        imageUrl="https://cdn.myanimelist.net/images/anime/5/73199.jpg"
-      />
+      <div className="bg-gradient-to-b from-cyber-background via-cyber-background/80 to-cyber-background py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-cyber-accent mb-4">
+            All Anime Collection
+          </h1>
+          <p className="text-lg text-gray-300 mb-8">
+            Discover the best anime from across the universe
+          </p>
+        </div>
+      </div>
       
       <div className="pt-12 pb-16">
         <div className="container mx-auto px-4">

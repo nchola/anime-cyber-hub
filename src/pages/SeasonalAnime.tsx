@@ -6,7 +6,6 @@ import { Anime } from "@/types/anime";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimeGrid from "@/components/AnimeGrid";
-import HeroSection from "@/components/HeroSection";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const getCurrentSeason = () => {
@@ -66,13 +65,16 @@ const SeasonalAnime = () => {
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
-      <HeroSection 
-        title={`${currentSeason} ${currentYear} Anime`}
-        subtitle="Stay updated with the freshest seasonal releases"
-        ctaText="View All Anime"
-        ctaLink="/anime"
-        imageUrl="https://cdn.myanimelist.net/images/anime/1935/127974.jpg"
-      />
+      <div className="bg-gradient-to-b from-cyber-background via-cyber-background/80 to-cyber-background py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-cyber-accent mb-4">
+            {currentSeason} {currentYear} Anime
+          </h1>
+          <p className="text-lg text-gray-300 mb-8">
+            Stay updated with the freshest seasonal releases
+          </p>
+        </div>
+      </div>
       
       <div className="pt-12 pb-16">
         <div className="container mx-auto px-4">

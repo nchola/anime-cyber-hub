@@ -76,6 +76,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ manga = false }) => {
           />
         ) : (
           <AnimeGrid
+            title=""
             animeList={results as Anime[]}
             loading={loading}
             error={error}

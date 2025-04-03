@@ -141,6 +141,30 @@ export const getSearchSuggestions = async (query: string, limit = 5): Promise<An
 };
 
 // Real API search (for when user submits the search)
+export const searchAnime = async (query: string, page = 1): Promise<AnimeResponse> => {
+  if (!query) {
+    return {
+      pagination: { last_visible_page: 0, has_next_page: false, current_page: 1, items: { count: 0, total: 0, per_page: 0 } },
+      data: []
+    };
+  }
+  
+  try {
+    const response = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&page=${page}&limit=24`);
+    if (!response.ok) throw new Error('Failed to fetch anime search results');
+    
+    const data: AnimeResponse = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error searching anime:', error);
+    return {
+      pagination: { last_visible_page: 0, has_next_page: false, current_page: 1, items: { count: 0, total: 0, per_page: 0 } },
+      data: []
+    };
+  }
+};
+
+// Original function with different name remains for backward compatibility
 export const searchAnimeRealtime = async (query: string): Promise<Anime[]> => {
   if (!query) return [];
   

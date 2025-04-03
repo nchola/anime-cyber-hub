@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Settings, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -206,13 +206,9 @@ const MangaReader = ({ manga, onClose }: MangaReaderProps) => {
             orientation="horizontal" 
             className="w-full max-w-4xl mx-auto h-full"
             setApi={setApi}
-            currentIndex={currentPage}
             opts={{
               align: "center",
               containScroll: "trimSnaps"
-            }}
-            onSelect={(index) => {
-              setCurrentPage(index);
             }}
           >
             <CarouselContent className="h-full">
