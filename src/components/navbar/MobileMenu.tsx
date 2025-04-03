@@ -46,11 +46,25 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
             SEASONAL
           </Link>
           <Link 
+            to="/upcoming" 
+            className="text-white hover:text-cyber-accent font-orbitron text-base px-3 py-2 rounded-md hover:bg-cyber-accent/10 transition-colors"
+            onClick={onItemClick}
+          >
+            UPCOMING
+          </Link>
+          <Link 
             to="/genre" 
             className="text-white hover:text-cyber-accent font-orbitron text-base px-3 py-2 rounded-md hover:bg-cyber-accent/10 transition-colors"
             onClick={onItemClick}
           >
             GENRES
+          </Link>
+          <Link 
+            to="/top" 
+            className="text-white hover:text-cyber-accent font-orbitron text-base px-3 py-2 rounded-md hover:bg-cyber-accent/10 transition-colors"
+            onClick={onItemClick}
+          >
+            TOP RATED
           </Link>
           {isLoggedIn && (
             <Link 

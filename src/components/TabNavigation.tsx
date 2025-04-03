@@ -146,7 +146,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
             animeList={topAnime}
             loading={loading.top}
             error={error.top}
-            viewMoreLink="/genre/1"
+            viewMoreLink="/anime" // Changed from /genre/1 to /anime
           />
         </TabsContent>
         
@@ -156,7 +156,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
             animeList={seasonalAnime}
             loading={loading.seasonal}
             error={error.seasonal}
-            viewMoreLink="/genre/2"
+            viewMoreLink="/seasonal" // Changed from /genre/2 to /seasonal
           />
         </TabsContent>
         
@@ -166,7 +166,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
             animeList={upcomingAnime}
             loading={loading.upcoming}
             error={error.upcoming}
-            viewMoreLink="/genre/10"
+            viewMoreLink="/upcoming" // Changed from /genre/10 to /upcoming
           />
         </TabsContent>
         
