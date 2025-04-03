@@ -1,14 +1,58 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Manga } from "@/types/manga";
-import { Book } from "lucide-react";
+import { Book, Bookmark, BookmarkCheck } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface MangaCardProps {
   manga: Manga;
 }
 
 const MangaCard: React.FC<MangaCardProps> = ({ manga }) => {
+  const { toast } = useToast();
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  
+  useEffect(() => {
+    // Check if manga is bookmarked
+    const bookmarkedManga = JSON.parse(localStorage.getItem('bookmarkedManga') || '[]');
+    const isFound = bookmarkedManga.some((item: Manga) => item.mal_id === manga.mal_id);
+    setIsBookmarked(isFound);
+  }, [manga.mal_id]);
+
+  const handleBookmark = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const bookmarkedManga = JSON.parse(localStorage.getItem('bookmarkedManga') || '[]');
+      
+      if (isBookmarked) {
+        // Remove from bookmarks
+        const updatedBookmarks = bookmarkedManga.filter((item: Manga) => item.mal_id !== manga.mal_id);
+        localStorage.setItem('bookmarkedManga', JSON.stringify(updatedBookmarks));
+        setIsBookmarked(false);
+        toast({
+          description: `${manga.title} removed from bookmarks`,
+        });
+      } else {
+        // Add to bookmarks
+        bookmarkedManga.push(manga);
+        localStorage.setItem('bookmarkedManga', JSON.stringify(bookmarkedManga));
+        setIsBookmarked(true);
+        toast({
+          description: `${manga.title} added to bookmarks`,
+        });
+      }
+    } catch (error) {
+      console.error('Error updating bookmarks:', error);
+      toast({
+        variant: "destructive",
+        description: "Failed to update bookmarks",
+      });
+    }
+  };
+
   return (
     <Link 
       to={`/manga/${manga.mal_id}`}
@@ -45,6 +89,19 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga }) => {
             </div>
           )}
         </div>
+        
+        {/* Bookmark Button */}
+        <button
+          onClick={handleBookmark}
+          className="absolute bottom-2 right-2 bg-cyber-background/80 p-1.5 rounded-full border border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/20 transition-colors z-10"
+          aria-label={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
+        >
+          {isBookmarked ? (
+            <BookmarkCheck className="h-4 w-4" />
+          ) : (
+            <Bookmark className="h-4 w-4" />
+          )}
+        </button>
       </div>
       
       {/* Info Section */}

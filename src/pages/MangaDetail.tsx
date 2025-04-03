@@ -1,20 +1,28 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getMangaById } from "@/services/mangaService";
+import { getMangaById, getPopularMangaByGenre } from "@/services/mangaService";
 import { Manga } from "@/types/manga";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Star, Calendar, Book, BarChart, Users, Bookmark } from "lucide-react";
+import { Star, Calendar, Book, BarChart, Users, Bookmark, BookmarkCheck, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import MangaReader from "@/components/MangaReader";
+import MangaGrid from "@/components/MangaGrid";
 
 const MangaDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [manga, setManga] = useState<Manga | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [showReader, setShowReader] = useState(false);
+  const [relatedManga, setRelatedManga] = useState<Manga[]>([]);
+  const [relatedLoading, setRelatedLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchMangaDetails = async () => {
@@ -24,6 +32,17 @@ const MangaDetail = () => {
         setLoading(true);
         const response = await getMangaById(parseInt(id));
         setManga(response.data);
+        
+        // Check if manga is bookmarked
+        const bookmarkedManga = JSON.parse(localStorage.getItem('bookmarkedManga') || '[]');
+        const isFound = bookmarkedManga.some((item: Manga) => item.mal_id === response.data.mal_id);
+        setIsBookmarked(isFound);
+        
+        // Fetch related manga if there's a genre
+        if (response.data.genres && response.data.genres.length > 0) {
+          fetchRelatedManga(response.data.genres[0].mal_id);
+        }
+        
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch manga details:", err);
@@ -32,8 +51,54 @@ const MangaDetail = () => {
       }
     };
 
+    const fetchRelatedManga = async (genreId: number) => {
+      try {
+        setRelatedLoading(true);
+        const response = await getPopularMangaByGenre(genreId);
+        // Filter out the current manga
+        const filteredManga = response.data.filter((m: Manga) => m.mal_id !== parseInt(id || '0'));
+        setRelatedManga(filteredManga.slice(0, 6));
+        setRelatedLoading(false);
+      } catch (err) {
+        console.error("Failed to fetch related manga:", err);
+        setRelatedLoading(false);
+      }
+    };
+
     fetchMangaDetails();
   }, [id]);
+
+  const handleBookmark = () => {
+    if (!manga) return;
+    
+    try {
+      const bookmarkedManga = JSON.parse(localStorage.getItem('bookmarkedManga') || '[]');
+      
+      if (isBookmarked) {
+        // Remove from bookmarks
+        const updatedBookmarks = bookmarkedManga.filter((item: Manga) => item.mal_id !== manga.mal_id);
+        localStorage.setItem('bookmarkedManga', JSON.stringify(updatedBookmarks));
+        setIsBookmarked(false);
+        toast({
+          description: `${manga.title} removed from bookmarks`,
+        });
+      } else {
+        // Add to bookmarks
+        bookmarkedManga.push(manga);
+        localStorage.setItem('bookmarkedManga', JSON.stringify(bookmarkedManga));
+        setIsBookmarked(true);
+        toast({
+          description: `${manga.title} added to bookmarks`,
+        });
+      }
+    } catch (error) {
+      console.error('Error updating bookmarks:', error);
+      toast({
+        variant: "destructive",
+        description: "Failed to update bookmarks",
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -97,6 +162,11 @@ const MangaDetail = () => {
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
+      {/* Manga Reader Modal */}
+      {showReader && manga && (
+        <MangaReader manga={manga} onClose={() => setShowReader(false)} />
+      )}
+      
       {/* Background image with overlay */}
       <div className="relative pt-16">
         <div 
@@ -106,6 +176,17 @@ const MangaDetail = () => {
         <div className="absolute top-0 left-0 right-0 h-[400px] bg-gradient-to-b from-cyber-background/50 via-cyber-background/70 to-cyber-background" />
         
         <div className="container mx-auto px-4 py-12 relative z-10">
+          {/* Quick Links Navigation */}
+          <div className="mb-8 flex items-center text-sm text-gray-400">
+            <Link to="/" className="hover:text-cyber-accent">Home</Link>
+            <ChevronRight className="h-4 w-4 mx-1" />
+            <Link to="/manga" className="hover:text-cyber-accent">Manga</Link>
+            <ChevronRight className="h-4 w-4 mx-1" />
+            <span className="text-cyber-accent truncate max-w-[200px]">
+              {manga.title_english || manga.title}
+            </span>
+          </div>
+          
           <div className="flex flex-col md:flex-row gap-8">
             {/* Manga Image */}
             <div className="w-full md:w-1/3 lg:w-1/4">
@@ -118,12 +199,22 @@ const MangaDetail = () => {
               </div>
               
               <div className="mt-6 space-y-3">
-                <Button variant="outline" className="w-full border-cyber-accent text-cyber-accent font-orbitron flex gap-2 items-center justify-center">
-                  <Bookmark size={16} />
-                  Add to Bookmarks
+                <Button 
+                  variant="outline" 
+                  onClick={handleBookmark}
+                  className={`w-full ${isBookmarked ? 'bg-cyber-accent/20' : ''} border-cyber-accent text-cyber-accent font-orbitron flex gap-2 items-center justify-center`}
+                >
+                  {isBookmarked ? (
+                    <><BookmarkCheck size={16} /> Remove Bookmark</>
+                  ) : (
+                    <><Bookmark size={16} /> Add to Bookmarks</>
+                  )}
                 </Button>
 
-                <Button className="w-full bg-cyber-accent text-cyber-background font-orbitron flex gap-2 items-center justify-center">
+                <Button 
+                  onClick={() => setShowReader(true)}
+                  className="w-full bg-cyber-accent text-cyber-background font-orbitron flex gap-2 items-center justify-center"
+                >
                   <Book size={16} />
                   Read Now
                 </Button>
@@ -177,12 +268,13 @@ const MangaDetail = () => {
               {/* Genres */}
               <div className="flex flex-wrap gap-2 mb-6">
                 {manga.genres.map((genre) => (
-                  <span 
+                  <Link
+                    to={`/genre/${genre.mal_id}`}
                     key={genre.mal_id}
-                    className="text-sm font-medium py-1 px-3 rounded-full bg-gradient-to-r from-cyber-purple/30 to-cyber-background/60 text-cyber-accent border border-cyber-accent/30"
+                    className="text-sm font-medium py-1 px-3 rounded-full bg-gradient-to-r from-cyber-purple/30 to-cyber-background/60 text-cyber-accent border border-cyber-accent/30 hover:from-cyber-purple/40 hover:border-cyber-accent/50 transition-colors"
                   >
                     {genre.name}
-                  </span>
+                  </Link>
                 ))}
               </div>
               
@@ -219,6 +311,37 @@ const MangaDetail = () => {
                   <div>
                     <p className="text-xs text-gray-400">Popularity</p>
                     <p className="text-white font-orbitron">#{manga.popularity || "N/A"}</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Immersive Reading Preview */}
+              <div className="mb-8">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-orbitron text-white">Immersive Reading Experience</h3>
+                  <Button 
+                    onClick={() => setShowReader(true)}
+                    className="bg-cyber-accent text-cyber-background font-orbitron flex gap-2 items-center"
+                  >
+                    <Book size={16} /> Start Reading
+                  </Button>
+                </div>
+                
+                <div className="cyber-card p-1 mb-6">
+                  <div 
+                    className="relative aspect-[16/9] bg-cyber-background/50 border border-cyber-accent/20 rounded overflow-hidden bg-center bg-cover cursor-pointer"
+                    onClick={() => setShowReader(true)}
+                    style={{ backgroundImage: `url(${manga.images.jpg.large_image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-cyber-background via-transparent to-transparent flex items-center justify-center">
+                      <div className="absolute bottom-4 left-4 text-white">
+                        <h4 className="text-lg font-orbitron">Dive into the story</h4>
+                        <p className="text-sm text-gray-300">Click to start your reading journey</p>
+                      </div>
+                      <Button className="bg-cyber-accent/90 text-cyber-background">
+                        Read Now
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -274,7 +397,12 @@ const MangaDetail = () => {
                   <div className="bg-cyber-background/40 border border-cyber-accent/20 rounded-md p-4 mb-4">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="font-orbitron text-cyber-accent">Latest Chapters</h3>
-                      <Button variant="outline" size="sm" className="border-cyber-accent/30 text-cyber-accent">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-cyber-accent/30 text-cyber-accent"
+                        onClick={() => setShowReader(true)}
+                      >
                         View All
                       </Button>
                     </div>
@@ -283,39 +411,40 @@ const MangaDetail = () => {
                       {[...Array(5)].map((_, index) => (
                         <div key={index} className="flex justify-between items-center pb-3 border-b border-cyber-accent/10">
                           <div>
-                            <Link to="#" className="text-white hover:text-cyber-accent">
+                            <button 
+                              onClick={() => setShowReader(true)} 
+                              className="text-white hover:text-cyber-accent"
+                            >
                               Chapter {manga.chapters ? manga.chapters - index : 100 - index}
-                            </Link>
+                            </button>
                             <p className="text-gray-400 text-sm">Released 2 days ago</p>
                           </div>
-                          <Button variant="outline" size="sm" className="border-cyber-accent/30 text-cyber-accent">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-cyber-accent/30 text-cyber-accent"
+                            onClick={() => setShowReader(true)}
+                          >
                             Read
                           </Button>
                         </div>
                       ))}
                     </div>
                   </div>
-                  
-                  {/* Reading Interface Preview */}
-                  <div className="cyber-card p-1 mt-6">
-                    <div className="bg-cyber-background/80 rounded p-4">
-                      <h3 className="text-cyber-accent font-orbitron mb-4">Reading Interface</h3>
-                      <div className="relative aspect-[16/9] bg-cyber-background/90 border border-cyber-accent/20 rounded overflow-hidden flex justify-center">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <Button className="bg-cyber-accent/90 text-cyber-background">
-                            Start Reading
-                          </Button>
-                        </div>
-                        <img 
-                          src={manga.images.jpg.large_image_url}
-                          alt="Reading preview"
-                          className="h-full object-contain opacity-30"
-                        />
-                      </div>
-                    </div>
-                  </div>
                 </TabsContent>
               </Tabs>
+              
+              {/* Related Manga */}
+              {relatedManga.length > 0 && (
+                <div className="mt-10">
+                  <h3 className="text-xl font-orbitron text-white mb-4">Related Manga</h3>
+                  <MangaGrid 
+                    mangaList={relatedManga}
+                    loading={relatedLoading}
+                    error={null}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

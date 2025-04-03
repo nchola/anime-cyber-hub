@@ -27,6 +27,7 @@ const App = () => (
         <Route path="/anime/:id" element={<AnimeDetail />} />
         <Route path="/genre/:id" element={<GenrePage />} />
         <Route path="/search/:query" element={<SearchResults />} />
+        <Route path="/search/manga/:query" element={<SearchResults type="manga" />} />
         
         {/* Updated routes with proper pages */}
         <Route path="/anime" element={<AllAnime />} />
@@ -41,6 +42,7 @@ const App = () => (
         <Route path="/upcoming" element={<UpcomingAnime />} />
         <Route path="/manga" element={<MangaPage />} />
         <Route path="/manga/:id" element={<MangaDetail />} />
+        <Route path="/manga/recent" element={<StubPage title="Recent Manga" />} />
         
         <Route path="*" element={<NotFound />} />
       </Routes>

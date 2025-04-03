@@ -1,14 +1,16 @@
 
 import React, { useState, useEffect } from "react";
-import { getTopManga, getRecentManga } from "@/services/mangaService";
-import { Manga } from "@/types/manga";
+import { getTopManga, getRecentManga, getMangaGenres } from "@/services/mangaService";
+import { Manga, MangaGenre } from "@/types/manga";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MangaGrid from "@/components/MangaGrid";
+import MangaGenreCloud from "@/components/MangaGenreCloud";
 import { Button } from "@/components/ui/button";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Search, ChevronRight } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const MangaPage = () => {
   const [popularManga, setPopularManga] = useState<Manga[]>([]);
@@ -18,19 +20,28 @@ const MangaPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [popularGenres, setPopularGenres] = useState<MangaGenre[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchManga = async () => {
       try {
         setLoading(true);
-        const [topResponse, recentResponse] = await Promise.all([
+        const [topResponse, recentResponse, genresResponse] = await Promise.all([
           getTopManga(currentPage, 24),
-          getRecentManga(1, 6)
+          getRecentManga(1, 6),
+          getMangaGenres()
         ]);
         
         setPopularManga(topResponse.data);
         setRecentManga(recentResponse.data);
+        
+        // Get top 5 genres with most manga
+        const sortedGenres = genresResponse.data
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 5);
+        setPopularGenres(sortedGenres);
+        
         setTotalPages(Math.min(10, Math.ceil(topResponse.pagination.items.total / 24)));
         setLoading(false);
       } catch (err) {
@@ -51,7 +62,7 @@ const MangaPage = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search/${encodeURIComponent(searchQuery)}`);
+      navigate(`/search/manga/${encodeURIComponent(searchQuery)}`);
     }
   };
 
@@ -91,23 +102,27 @@ const MangaPage = () => {
               </Button>
             </form>
           </div>
+          
+          {/* Quick Links */}
+          <div className="flex justify-center mt-8 gap-4 flex-wrap">
+            <Link to="/manga">
+              <Button variant="outline" className="border-cyber-accent/30 text-cyber-accent">All Manga</Button>
+            </Link>
+            {popularGenres.map(genre => (
+              <Link key={genre.mal_id} to={`/genre/${genre.mal_id}`}>
+                <Button variant="outline" className="border-cyber-accent/30 text-cyber-accent">{genre.name}</Button>
+              </Link>
+            ))}
+            <Link to="/bookmark">
+              <Button variant="outline" className="border-cyber-accent/30 text-cyber-accent">Bookmarks</Button>
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* New Releases Section */}
-      <div className="container mx-auto px-4 py-8">
-        <MangaGrid
-          title="New Releases"
-          mangaList={recentManga}
-          loading={loading}
-          error={null}
-          viewMoreLink="/manga/recent"
-        />
-      </div>
-
-      {/* Reading Experience Preview Section */}
-      <div className="bg-cyber-purple/10 py-12 my-8">
-        <div className="container mx-auto px-4">
+      {/* Reading Experience Preview Section (Moved up) */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="bg-cyber-purple/10 p-8 rounded-lg border border-cyber-accent/20 mb-12">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-1/2">
               <h2 className="text-3xl font-orbitron text-white mb-4">Immersive Reading Experience</h2>
@@ -157,71 +172,134 @@ const MangaPage = () => {
             </div>
           </div>
         </div>
-      </div>
+      
+        {/* New Releases Section */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-orbitron text-white">New Releases</h2>
+            <Link to="/manga/recent" className="flex items-center text-cyber-accent hover:text-cyber-accent/80 transition-colors text-sm">
+              View All <ChevronRight className="h-4 w-4 ml-1" />
+            </Link>
+          </div>
+          
+          <MangaGrid
+            mangaList={recentManga}
+            loading={loading}
+            error={null}
+          />
+        </div>
+        
+        {/* Genre Cloud Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-orbitron text-white mb-6">Browse by Genre</h2>
+          <MangaGenreCloud />
+        </div>
+      
+        {/* Tabs for Different Manga Categories */}
+        <div className="mb-8">
+          <Tabs defaultValue="popular">
+            <div className="flex justify-between items-center mb-4">
+              <TabsList className="bg-cyber-background/40 border border-cyber-accent/20">
+                <TabsTrigger value="popular" className="data-[state=active]:text-cyber-accent">Popular</TabsTrigger>
+                <TabsTrigger value="trending" className="data-[state=active]:text-cyber-accent">Trending</TabsTrigger>
+                <TabsTrigger value="upcoming" className="data-[state=active]:text-cyber-accent">Upcoming</TabsTrigger>
+              </TabsList>
+              
+              <Link to="/manga" className="text-cyber-accent hover:text-cyber-accent/80 transition-colors text-sm flex items-center">
+                View All <ChevronRight className="h-4 w-4 ml-1" />
+              </Link>
+            </div>
 
-      {/* Popular Manga Section with Pagination */}
-      <div className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-orbitron text-white mb-6">Popular Manga</h2>
-        
-        <MangaGrid
-          mangaList={popularManga}
-          loading={loading}
-          error={error}
-        />
-        
-        {!loading && !error && popularManga.length > 0 && totalPages > 1 && (
-          <Pagination className="my-10">
-            <PaginationContent>
-              {currentPage > 1 && (
-                <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
-                  />
-                </PaginationItem>
-              )}
-              
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum = 1;
-                
-                if (totalPages <= 5) {
-                  pageNum = i + 1;
-                } else if (currentPage <= 3) {
-                  pageNum = i + 1;
-                } else if (currentPage >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i;
-                } else {
-                  pageNum = currentPage - 2 + i;
-                }
-                
-                return (
-                  <PaginationItem key={i}>
-                    <PaginationLink
-                      isActive={currentPage === pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`cursor-pointer ${
-                        currentPage === pageNum 
-                          ? "border-cyber-accent bg-cyber-accent/20 text-cyber-accent" 
-                          : "border-cyber-accent/30 text-white hover:bg-cyber-accent/10"
-                      }`}
-                    >
-                      {pageNum}
-                    </PaginationLink>
+            <TabsContent value="popular">
+              <MangaGrid
+                mangaList={popularManga.slice(0, 12)}
+                loading={loading}
+                error={error}
+              />
+            </TabsContent>
+            
+            <TabsContent value="trending">
+              <MangaGrid
+                mangaList={popularManga.slice(12, 24)}
+                loading={loading}
+                error={error}
+              />
+            </TabsContent>
+            
+            <TabsContent value="upcoming">
+              <MangaGrid
+                mangaList={recentManga}
+                loading={loading}
+                error={error}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        {/* Popular Manga Section with Pagination */}
+        <div>
+          <h2 className="text-2xl font-orbitron text-white mb-6">All Manga</h2>
+          
+          <MangaGrid
+            mangaList={popularManga}
+            loading={loading}
+            error={error}
+          />
+          
+          {!loading && !error && popularManga.length > 0 && totalPages > 1 && (
+            <Pagination className="my-10">
+              <PaginationContent>
+                {currentPage > 1 && (
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
+                    />
                   </PaginationItem>
-                );
-              })}
-              
-              {currentPage < totalPages && (
-                <PaginationItem>
-                  <PaginationNext 
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
-                  />
-                </PaginationItem>
-              )}
-            </PaginationContent>
-          </Pagination>
-        )}
+                )}
+                
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum = 1;
+                  
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <PaginationItem key={i}>
+                      <PaginationLink
+                        isActive={currentPage === pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`cursor-pointer ${
+                          currentPage === pageNum 
+                            ? "border-cyber-accent bg-cyber-accent/20 text-cyber-accent" 
+                            : "border-cyber-accent/30 text-white hover:bg-cyber-accent/10"
+                        }`}
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+                
+                {currentPage < totalPages && (
+                  <PaginationItem>
+                    <PaginationNext 
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
+                    />
+                  </PaginationItem>
+                )}
+              </PaginationContent>
+            </Pagination>
+          )}
+        </div>
       </div>
       
       <Footer />

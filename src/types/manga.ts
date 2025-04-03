@@ -89,6 +89,7 @@ export interface Manga {
     name: string;
     url: string;
   }[];
+  isBookmarked?: boolean;
 }
 
 export interface MangaResponse {
@@ -104,3 +105,14 @@ export interface MangaResponse {
   };
   data: Manga[];
 }
+
+export interface MangaGenre {
+  mal_id: number;
+  name: string;
+  count: number;
+}
+
+export interface MangaGenresResponse {
+  data: MangaGenre[];
+}
+
