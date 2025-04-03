@@ -48,9 +48,25 @@ const NavLinks: React.FC<NavLinksProps> = ({ isLoggedIn }) => {
               </li>
               <li>
                 <NavigationMenuLink asChild>
+                  <Link to="/upcoming" className="flex items-center gap-2 p-2 hover:bg-cyber-accent/10 rounded-md transition-colors">
+                    <span className="text-cyber-accent">•</span>
+                    <span className="text-white">Upcoming</span>
+                  </Link>
+                </NavigationMenuLink>
+              </li>
+              <li>
+                <NavigationMenuLink asChild>
                   <Link to="/genre" className="flex items-center gap-2 p-2 hover:bg-cyber-accent/10 rounded-md transition-colors">
                     <span className="text-cyber-accent">•</span>
                     <span className="text-white">Genres</span>
+                  </Link>
+                </NavigationMenuLink>
+              </li>
+              <li>
+                <NavigationMenuLink asChild>
+                  <Link to="/top" className="flex items-center gap-2 p-2 hover:bg-cyber-accent/10 rounded-md transition-colors">
+                    <span className="text-cyber-accent">•</span>
+                    <span className="text-white">Top Rated</span>
                   </Link>
                 </NavigationMenuLink>
               </li>

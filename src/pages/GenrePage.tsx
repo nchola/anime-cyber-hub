@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Anime } from "@/types/anime";
 import { getAnimeByGenre, getAnimeGenres } from "@/services/animeService";
@@ -8,6 +8,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimeGrid from "@/components/AnimeGrid";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import GenreCloud from "@/components/GenreCloud";
+import { Button } from "@/components/ui/button";
 
 const GenrePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,21 +19,31 @@ const GenrePage = () => {
   const [genreName, setGenreName] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [genres, setGenres] = useState<any[]>([]);
+  const [featuredAnime, setFeaturedAnime] = useState<Anime | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchGenreName = async () => {
+    const fetchGenres = async () => {
       try {
-        const genres = await getAnimeGenres();
-        const genre = genres.find(g => g.mal_id === Number(id));
-        if (genre) {
-          setGenreName(genre.name);
+        const genresData = await getAnimeGenres();
+        setGenres(genresData);
+        
+        if (id) {
+          const genre = genresData.find(g => g.mal_id === Number(id));
+          if (genre) {
+            setGenreName(genre.name);
+          }
         }
       } catch (error) {
-        console.error("Error fetching genre name:", error);
+        console.error("Error fetching genres:", error);
       }
     };
 
+    fetchGenres();
+  }, [id]);
+
+  useEffect(() => {
     const fetchAnimeByGenre = async () => {
       if (!id) return;
       
@@ -40,6 +52,15 @@ const GenrePage = () => {
         const response = await getAnimeByGenre(Number(id), currentPage);
         setAnimeList(response.data);
         setTotalPages(Math.min(10, Math.ceil(response.pagination.items.total / 12)));
+        
+        // Set a featured anime (first with a good image)
+        if (response.data.length > 0) {
+          const featured = response.data.find(anime => 
+            anime.images?.jpg?.large_image_url && !anime.images.jpg.large_image_url.includes('questionmark')
+          ) || response.data[0];
+          setFeaturedAnime(featured);
+        }
+        
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch anime by genre:", err);
@@ -53,7 +74,6 @@ const GenrePage = () => {
       }
     };
 
-    fetchGenreName();
     fetchAnimeByGenre();
   }, [id, currentPage, toast]);
 
@@ -66,12 +86,70 @@ const GenrePage = () => {
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
-      <div className="pt-24 pb-16">
+      {/* Genre Hero Section */}
+      <div className="relative pt-16">
+        {featuredAnime && (
+          <div 
+            className="absolute top-0 left-0 right-0 h-[400px] bg-cover bg-center opacity-20 blur-sm"
+            style={{ backgroundImage: `url(${featuredAnime.images.jpg.large_image_url})` }}
+          />
+        )}
+        <div className="absolute top-0 left-0 right-0 h-[400px] bg-gradient-to-b from-cyber-background/50 via-cyber-background/70 to-cyber-background" />
+        
+        <div className="container mx-auto px-4 pt-12 pb-8 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-3xl md:text-5xl font-orbitron font-bold text-white mb-4">
+              {id ? `${genreName} Anime` : 'Browse by Genre'}
+            </h1>
+            <p className="text-lg text-gray-300 mb-8">
+              {id 
+                ? `Discover the best ${genreName} anime in our collection`
+                : 'Explore anime across different genres and find your next favorite series'
+              }
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Genre Cloud - only show when not viewing a specific genre */}
+      {!id && (
+        <div className="container mx-auto px-4 py-8">
+          <div className="bg-cyber-background/60 border border-cyber-accent/30 rounded-lg p-8 mb-10">
+            <h2 className="text-2xl font-orbitron text-cyber-accent mb-6">Popular Genres</h2>
+            <GenreCloud genres={genres} />
+          </div>
+        </div>
+      )}
+      
+      {/* Quick Genre Navigation - show for specific genre */}
+      {id && (
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-wrap gap-2 justify-center mb-10">
+            {genres.slice(0, 10).map(genre => (
+              <Link key={genre.mal_id} to={`/genre/${genre.mal_id}`}>
+                <Button 
+                  variant={Number(id) === genre.mal_id ? "default" : "outline"}
+                  className={Number(id) === genre.mal_id 
+                    ? "bg-cyber-accent text-cyber-background" 
+                    : "border-cyber-accent/30 text-white hover:bg-cyber-accent/10"}
+                  size="sm"
+                >
+                  {genre.name}
+                </Button>
+              </Link>
+            ))}
+            <Link to="/genre">
+              <Button variant="outline" className="border-cyber-accent/30 text-white hover:bg-cyber-accent/10" size="sm">
+                View All
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
+      
+      {/* Anime Grid */}
+      {id && (
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-cyber-accent mb-6">
-            {genreName ? `${genreName} Anime` : 'Genre Anime'}
-          </h1>
-          
           <AnimeGrid
             title=""
             animeList={animeList}
@@ -92,7 +170,6 @@ const GenrePage = () => {
                 )}
                 
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  // Simple pagination logic to show 5 pages around current page
                   let pageNum = 1;
                   
                   if (totalPages <= 5) {
@@ -134,7 +211,32 @@ const GenrePage = () => {
             </Pagination>
           )}
         </div>
-      </div>
+      )}
+      
+      {/* Popular Genre Cards - show on main genre page */}
+      {!id && (
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {genres.slice(0, 6).map(genre => (
+              <Link key={genre.mal_id} to={`/genre/${genre.mal_id}`} className="block">
+                <div className="cyber-card p-6 h-full bg-gradient-to-br from-cyber-background/90 to-cyber-background border border-cyber-accent/30 rounded-lg hover:border-cyber-accent/60 transition-all group">
+                  <h3 className="text-xl font-orbitron text-cyber-accent mb-2 group-hover:text-white transition-colors">
+                    {genre.name}
+                  </h3>
+                  <p className="text-gray-400 mb-4">
+                    {genre.count} titles
+                  </p>
+                  <div className="mt-auto pt-4 text-right">
+                    <span className="text-cyber-accent text-sm group-hover:underline">
+                      Explore →
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
       
       <Footer />
     </div>
