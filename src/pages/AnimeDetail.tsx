@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getAnimeById } from "@/services/animeService";
 import { Anime } from "@/types/anime";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Star, Calendar, Clock, BarChart, Users, Tv, Heart, Bookmark } from "lucide-react";
+import { Star, Calendar, Clock, BarChart, Users, Tv, Bookmark } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 
@@ -117,14 +116,9 @@ const AnimeDetail = () => {
               </div>
               
               <div className="mt-6 space-y-3">
-                <Button className="w-full bg-cyber-accent text-cyber-background font-orbitron flex gap-2 items-center justify-center">
-                  <Heart size={16} />
-                  Add to Favorites
-                </Button>
-                
                 <Button variant="outline" className="w-full border-cyber-accent text-cyber-accent font-orbitron flex gap-2 items-center justify-center">
                   <Bookmark size={16} />
-                  Bookmark
+                  Add to Bookmarks
                 </Button>
               </div>
             </div>

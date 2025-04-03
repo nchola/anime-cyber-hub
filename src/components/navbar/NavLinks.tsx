@@ -1,10 +1,10 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { 
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger
 } from "@/components/ui/navigation-menu";
@@ -57,11 +57,31 @@ const NavLinks: React.FC<NavLinksProps> = ({ isLoggedIn }) => {
               
               <NavigationMenuLink asChild>
                 <Link
+                  to="/upcoming"
+                  className="flex items-center gap-2 p-2 hover:bg-cyber-accent/10 rounded-md transition-colors group"
+                >
+                  <span className="text-cyber-accent group-hover:animate-pulse">▹</span>
+                  <span className="text-white">Upcoming</span>
+                </Link>
+              </NavigationMenuLink>
+              
+              <NavigationMenuLink asChild>
+                <Link
                   to="/genre"
                   className="flex items-center gap-2 p-2 hover:bg-cyber-accent/10 rounded-md transition-colors group"
                 >
                   <span className="text-cyber-accent group-hover:animate-pulse">▹</span>
                   <span className="text-white">Genres</span>
+                </Link>
+              </NavigationMenuLink>
+              
+              <NavigationMenuLink asChild>
+                <Link
+                  to="/manga"
+                  className="flex items-center gap-2 p-2 hover:bg-cyber-accent/10 rounded-md transition-colors group"
+                >
+                  <span className="text-cyber-accent group-hover:animate-pulse">▹</span>
+                  <span className="text-white">Manga</span>
                 </Link>
               </NavigationMenuLink>
             </ul>
@@ -83,6 +103,13 @@ const NavLinks: React.FC<NavLinksProps> = ({ isLoggedIn }) => {
       </NavigationMenuList>
     </NavigationMenu>
   );
+};
+
+const NavigationMenuLink = ({ asChild, ...props }: { asChild?: boolean; className?: string; children: React.ReactNode }) => {
+  if (asChild) {
+    return React.cloneElement(props.children as React.ReactElement, { className: props.className });
+  }
+  return <div {...props} />;
 };
 
 export default NavLinks;

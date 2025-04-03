@@ -86,15 +86,15 @@ const GenrePage = () => {
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
-      {/* Genre Hero Section */}
+      {/* Genre Hero Section - Fixed height to prevent overlapping */}
       <div className="relative pt-16">
         {featuredAnime && (
           <div 
-            className="absolute top-0 left-0 right-0 h-[400px] bg-cover bg-center opacity-20 blur-sm"
+            className="absolute top-0 left-0 right-0 h-[300px] bg-cover bg-center opacity-20 blur-sm"
             style={{ backgroundImage: `url(${featuredAnime.images.jpg.large_image_url})` }}
           />
         )}
-        <div className="absolute top-0 left-0 right-0 h-[400px] bg-gradient-to-b from-cyber-background/50 via-cyber-background/70 to-cyber-background" />
+        <div className="absolute top-0 left-0 right-0 h-[300px] bg-gradient-to-b from-cyber-background/50 via-cyber-background/70 to-cyber-background" />
         
         <div className="container mx-auto px-4 pt-12 pb-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -113,17 +113,17 @@ const GenrePage = () => {
       
       {/* Genre Cloud - only show when not viewing a specific genre */}
       {!id && (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 mt-4">
           <div className="bg-cyber-background/60 border border-cyber-accent/30 rounded-lg p-8 mb-10">
             <h2 className="text-2xl font-orbitron text-cyber-accent mb-6">Popular Genres</h2>
-            <GenreCloud genres={genres} />
+            <GenreCloud />
           </div>
         </div>
       )}
       
       {/* Quick Genre Navigation - show for specific genre */}
       {id && (
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-4 mt-4">
           <div className="flex flex-wrap gap-2 justify-center mb-10">
             {genres.slice(0, 10).map(genre => (
               <Link key={genre.mal_id} to={`/genre/${genre.mal_id}`}>
@@ -147,9 +147,9 @@ const GenrePage = () => {
         </div>
       )}
       
-      {/* Anime Grid */}
+      {/* Anime Grid - with proper spacing to avoid overlapping */}
       {id && (
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 mt-4">
           <AnimeGrid
             title=""
             animeList={animeList}
@@ -213,7 +213,7 @@ const GenrePage = () => {
         </div>
       )}
       
-      {/* Popular Genre Cards - show on main genre page */}
+      {/* Popular Genre Cards - show on main genre page with better spacing */}
       {!id && (
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

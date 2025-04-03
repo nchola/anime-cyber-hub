@@ -12,6 +12,8 @@ import StubPage from "./pages/StubPage";
 import AllAnime from "./pages/AllAnime";
 import SeasonalAnime from "./pages/SeasonalAnime";
 import UpcomingAnime from "./pages/UpcomingAnime";
+import MangaPage from "./pages/MangaPage";
+import MangaDetail from "./pages/MangaDetail";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +39,8 @@ const App = () => (
         <Route path="/contact" element={<StubPage title="Contact Us" />} />
         <Route path="/top" element={<AllAnime />} />
         <Route path="/upcoming" element={<UpcomingAnime />} />
+        <Route path="/manga" element={<MangaPage />} />
+        <Route path="/manga/:id" element={<MangaDetail />} />
         
         <Route path="*" element={<NotFound />} />
       </Routes>

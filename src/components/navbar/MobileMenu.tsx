@@ -60,6 +60,13 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
             GENRES
           </Link>
           <Link 
+            to="/manga" 
+            className="text-white hover:text-cyber-accent font-orbitron text-base px-3 py-2 rounded-md hover:bg-cyber-accent/10 transition-colors"
+            onClick={onItemClick}
+          >
+            MANGA
+          </Link>
+          <Link 
             to="/top" 
             className="text-white hover:text-cyber-accent font-orbitron text-base px-3 py-2 rounded-md hover:bg-cyber-accent/10 transition-colors"
             onClick={onItemClick}
