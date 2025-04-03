@@ -4,35 +4,54 @@ import { Link } from "react-router-dom";
 import { getMangaGenres } from "@/services/mangaService";
 import { MangaGenre } from "@/types/manga";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 const MangaGenreCloud = () => {
   const [genres, setGenres] = useState<MangaGenre[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchGenres = async () => {
       try {
         setLoading(true);
         const response = await getMangaGenres();
-        setGenres(response.data);
+        if (response && response.data) {
+          setGenres(response.data);
+        } else {
+          setError("No genres found");
+          toast({
+            title: "Error loading manga genres",
+            description: "Please try again later",
+            variant: "destructive",
+          });
+        }
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch manga genres:", err);
         setError("Failed to load genres");
+        toast({
+          title: "Error loading manga genres",
+          description: "Please try again later",
+          variant: "destructive",
+        });
         setLoading(false);
       }
     };
 
     fetchGenres();
-  }, []);
+  }, [toast]);
 
   // Calculate font size based on count (popularity)
   const getGenreSize = (count: number) => {
+    if (genres.length === 0) return 1;
+    
     const minCount = Math.min(...genres.map(g => g.count));
     const maxCount = Math.max(...genres.map(g => g.count));
     const range = maxCount - minCount;
-    const normalized = (count - minCount) / range;
+    // Protect against division by zero if all counts are the same
+    const normalized = range === 0 ? 0.5 : (count - minCount) / range;
     return 0.8 + normalized * 0.8; // Font size between 0.8rem and 1.6rem
   };
 

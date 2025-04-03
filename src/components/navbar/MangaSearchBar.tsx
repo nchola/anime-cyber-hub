@@ -69,6 +69,7 @@ const MangaSearchBar = () => {
         setHighlightedIndex(-1);
       } catch (error) {
         console.error("Error fetching manga suggestions:", error);
+        setSuggestions([]);
       } finally {
         setIsLoading(false);
       }
@@ -112,14 +113,16 @@ const MangaSearchBar = () => {
         </Button>
       </form>
       
-      <MangaSearchSuggestions
-        results={suggestions}
-        query={searchQuery}
-        visible={showSuggestions}
-        onItemClick={() => setShowSuggestions(false)}
-        highlightIndex={highlightedIndex}
-        onMouseEnter={setHighlightedIndex}
-      />
+      {showSuggestions && (
+        <MangaSearchSuggestions
+          results={suggestions}
+          query={searchQuery}
+          visible={showSuggestions}
+          onItemClick={() => setShowSuggestions(false)}
+          highlightIndex={highlightedIndex}
+          onMouseEnter={setHighlightedIndex}
+        />
+      )}
     </div>
   );
 };

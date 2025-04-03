@@ -27,7 +27,7 @@ const App = () => (
         <Route path="/anime/:id" element={<AnimeDetail />} />
         <Route path="/genre/:id" element={<GenrePage />} />
         <Route path="/search/:query" element={<SearchResults />} />
-        <Route path="/search/manga/:query" element={<SearchResults type="manga" />} />
+        <Route path="/search/manga/:query" element={<SearchResults manga={true} />} />
         
         {/* Updated routes with proper pages */}
         <Route path="/anime" element={<AllAnime />} />

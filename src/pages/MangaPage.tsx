@@ -11,6 +11,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Search, ChevronRight } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 
 const MangaPage = () => {
   const [popularManga, setPopularManga] = useState<Manga[]>([]);
@@ -22,6 +23,7 @@ const MangaPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [popularGenres, setPopularGenres] = useState<MangaGenre[]>([]);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchManga = async () => {
@@ -33,26 +35,45 @@ const MangaPage = () => {
           getMangaGenres()
         ]);
         
-        setPopularManga(topResponse.data);
-        setRecentManga(recentResponse.data);
+        if (topResponse && topResponse.data) {
+          setPopularManga(topResponse.data);
+          setTotalPages(Math.min(10, Math.ceil(topResponse.pagination.items.total / 24)));
+        } else {
+          setError("Failed to load popular manga");
+          toast({
+            title: "Error loading manga",
+            description: "Could not load popular manga",
+            variant: "destructive",
+          });
+        }
+        
+        if (recentResponse && recentResponse.data) {
+          setRecentManga(recentResponse.data);
+        }
         
         // Get top 5 genres with most manga
-        const sortedGenres = genresResponse.data
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5);
-        setPopularGenres(sortedGenres);
+        if (genresResponse && genresResponse.data) {
+          const sortedGenres = genresResponse.data
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+          setPopularGenres(sortedGenres);
+        }
         
-        setTotalPages(Math.min(10, Math.ceil(topResponse.pagination.items.total / 24)));
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch manga:", err);
         setError("Failed to load manga data");
+        toast({
+          title: "Error loading manga",
+          description: "Please try again later",
+          variant: "destructive",
+        });
         setLoading(false);
       }
     };
 
     fetchManga();
-  }, [currentPage]);
+  }, [currentPage, toast]);
 
   const handlePageChange = (page: number) => {
     window.scrollTo(0, 0);
@@ -120,8 +141,8 @@ const MangaPage = () => {
         </div>
       </div>
 
-      {/* Reading Experience Preview Section (Moved up) */}
       <div className="container mx-auto px-4 py-12">
+        {/* Reading Experience Preview Section (Moved to top as requested) */}
         <div className="bg-cyber-purple/10 p-8 rounded-lg border border-cyber-accent/20 mb-12">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-1/2">
@@ -144,7 +165,18 @@ const MangaPage = () => {
                   <div className="text-sm text-gray-400">Access</div>
                 </div>
               </div>
-              <Button className="bg-cyber-accent text-cyber-background">Start Reading</Button>
+              <Button 
+                className="bg-cyber-accent text-cyber-background"
+                onClick={() => {
+                  if (popularManga.length > 0) {
+                    navigate(`/manga/${popularManga[0].mal_id}`);
+                  } else {
+                    navigate(`/manga`);
+                  }
+                }}
+              >
+                Start Reading
+              </Button>
             </div>
             
             <div className="md:w-1/2">
@@ -159,8 +191,22 @@ const MangaPage = () => {
                     </div>
                   </div>
                   <div className="flex gap-4 overflow-hidden border border-cyber-accent/20 rounded">
-                    <img src="https://cdn.myanimelist.net/images/manga/3/243675.jpg" className="w-1/2 h-64 object-contain bg-gray-900" alt="Manga page preview" />
-                    <img src="https://cdn.myanimelist.net/images/manga/1/268323.jpg" className="w-1/2 h-64 object-contain bg-gray-900" alt="Manga page preview" />
+                    <img 
+                      src="https://cdn.myanimelist.net/images/manga/3/243675.jpg" 
+                      className="w-1/2 h-64 object-contain bg-gray-900" 
+                      alt="Manga page preview" 
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/placeholder.svg';
+                      }}
+                    />
+                    <img 
+                      src="https://cdn.myanimelist.net/images/manga/1/268323.jpg" 
+                      className="w-1/2 h-64 object-contain bg-gray-900" 
+                      alt="Manga page preview" 
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/placeholder.svg';
+                      }}
+                    />
                   </div>
                   <div className="flex justify-between mt-4">
                     <Button variant="outline" size="sm" className="border-cyber-accent/30 text-cyber-accent">← Previous</Button>
@@ -173,7 +219,7 @@ const MangaPage = () => {
           </div>
         </div>
       
-        {/* New Releases Section */}
+        {/* New Releases Section (Moved to second position as requested) */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-orbitron text-white">New Releases</h2>

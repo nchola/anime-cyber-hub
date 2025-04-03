@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Settings, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   Carousel, 
   CarouselContent, 
   CarouselItem, 
-  CarouselNext, 
-  CarouselPrevious
+  CarouselPrevious, 
+  CarouselNext
 } from '@/components/ui/carousel';
 import { getMangaImages } from '@/services/mangaService';
 import { Manga } from '@/types/manga';
@@ -24,27 +24,41 @@ const MangaReader = ({ manga, onClose }: MangaReaderProps) => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [zoom, setZoom] = useState(1);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [api, setApi] = useState<any>(null);
   const { toast } = useToast();
 
-  // Sample manga pages (since API doesn't actually provide chapter pages)
-  const fallbackImages = [
+  // Safe fallback images
+  const fallbackImages = useMemo(() => [
     "https://cdn.myanimelist.net/images/manga/3/243675.jpg",
     "https://cdn.myanimelist.net/images/manga/1/268323.jpg",
     "https://cdn.myanimelist.net/images/manga/3/268228.jpg",
     "https://cdn.myanimelist.net/images/manga/2/253146.jpg",
     "https://cdn.myanimelist.net/images/manga/3/188896.jpg"
-  ];
+  ], []);
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (event.key === 'ArrowRight') {
-      setCurrentPage((prev) => (prev < images.length - 1 ? prev + 1 : prev));
+      setCurrentPage((prev) => {
+        const newPage = prev < images.length - 1 ? prev + 1 : prev;
+        if (api && newPage !== prev) {
+          api.scrollTo(newPage);
+        }
+        return newPage;
+      });
     } else if (event.key === 'ArrowLeft') {
-      setCurrentPage((prev) => (prev > 0 ? prev - 1 : prev));
+      setCurrentPage((prev) => {
+        const newPage = prev > 0 ? prev - 1 : prev;
+        if (api && newPage !== prev) {
+          api.scrollTo(newPage);
+        }
+        return newPage;
+      });
     } else if (event.key === 'Escape') {
       onClose();
     }
-  }, [images.length, onClose]);
+  }, [images.length, onClose, api]);
 
   // Fetch manga images
   useEffect(() => {
@@ -84,7 +98,7 @@ const MangaReader = ({ manga, onClose }: MangaReaderProps) => {
     };
 
     fetchImages();
-  }, [manga.mal_id, manga.images.jpg.large_image_url]);
+  }, [manga.mal_id, manga.images.jpg.large_image_url, fallbackImages, toast]);
 
   // Setup keyboard listener
   useEffect(() => {
@@ -101,6 +115,37 @@ const MangaReader = ({ manga, onClose }: MangaReaderProps) => {
 
   const handleZoomOut = () => {
     setZoom(prev => Math.max(prev - 0.2, 0.6));
+  };
+
+  // Handle fullscreen mode
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+      setFullscreen(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        setFullscreen(false);
+      }
+    }
+  };
+
+  // Ensure correct order of navigation
+  useEffect(() => {
+    if (api) {
+      api.scrollTo(currentPage);
+    }
+  }, [currentPage, api]);
+  
+  // Handle image load errors
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    // Try to load a fallback image
+    const randomFallbackIndex = Math.floor(Math.random() * fallbackImages.length);
+    target.src = fallbackImages[randomFallbackIndex];
+    target.onerror = null; // Prevent infinite loop if fallback also fails
   };
 
   return (
@@ -134,9 +179,10 @@ const MangaReader = ({ manga, onClose }: MangaReaderProps) => {
           <Button 
             variant="outline" 
             size="icon" 
+            onClick={toggleFullscreen}
             className="border-cyber-accent/30 text-cyber-accent"
           >
-            <Settings size={16} />
+            <Monitor size={16} />
           </Button>
           <Button 
             variant="ghost" 
@@ -159,13 +205,14 @@ const MangaReader = ({ manga, onClose }: MangaReaderProps) => {
           <Carousel 
             orientation="horizontal" 
             className="w-full max-w-4xl mx-auto h-full"
-            setApi={(api) => {
-              if (api) {
-                api.scrollTo(currentPage);
-                api.on('select', () => {
-                  setCurrentPage(api.selectedScrollSnap());
-                });
-              }
+            setApi={setApi}
+            currentIndex={currentPage}
+            opts={{
+              align: "center",
+              containScroll: "trimSnaps"
+            }}
+            onSelect={(index) => {
+              setCurrentPage(index);
             }}
           >
             <CarouselContent className="h-full">
@@ -179,10 +226,8 @@ const MangaReader = ({ manga, onClose }: MangaReaderProps) => {
                       src={src} 
                       alt={`Page ${index + 1}`} 
                       className="max-h-full max-w-full object-contain transition-transform"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/placeholder.svg';
-                      }}
-                      loading={index === currentPage ? "eager" : "lazy"}
+                      onError={handleImageError}
+                      loading={Math.abs(index - currentPage) < 2 ? "eager" : "lazy"}
                     />
                   </div>
                 </CarouselItem>

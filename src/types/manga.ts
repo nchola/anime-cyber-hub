@@ -116,3 +116,19 @@ export interface MangaGenresResponse {
   data: MangaGenre[];
 }
 
+export interface MangaImage {
+  jpg: {
+    image_url: string;
+    small_image_url: string;
+    large_image_url: string;
+  };
+  webp: {
+    image_url: string;
+    small_image_url: string;
+    large_image_url: string;
+  };
+}
+
+export interface MangaImagesResponse {
+  data: MangaImage[];
+}

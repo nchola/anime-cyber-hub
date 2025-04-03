@@ -15,9 +15,13 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga }) => {
   
   useEffect(() => {
     // Check if manga is bookmarked
-    const bookmarkedManga = JSON.parse(localStorage.getItem('bookmarkedManga') || '[]');
-    const isFound = bookmarkedManga.some((item: Manga) => item.mal_id === manga.mal_id);
-    setIsBookmarked(isFound);
+    try {
+      const bookmarkedManga = JSON.parse(localStorage.getItem('bookmarkedManga') || '[]');
+      const isFound = bookmarkedManga.some((item: Manga) => item.mal_id === manga.mal_id);
+      setIsBookmarked(isFound);
+    } catch (error) {
+      console.error('Error checking bookmark status:', error);
+    }
   }, [manga.mal_id]);
 
   const handleBookmark = (e: React.MouseEvent) => {
@@ -25,7 +29,13 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga }) => {
     e.stopPropagation();
     
     try {
-      const bookmarkedManga = JSON.parse(localStorage.getItem('bookmarkedManga') || '[]');
+      let bookmarkedManga = [];
+      try {
+        bookmarkedManga = JSON.parse(localStorage.getItem('bookmarkedManga') || '[]');
+      } catch (error) {
+        console.error('Error parsing bookmarks from localStorage:', error);
+        bookmarkedManga = [];
+      }
       
       if (isBookmarked) {
         // Remove from bookmarks
@@ -66,6 +76,9 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga }) => {
             alt={manga.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             loading="lazy"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/placeholder.svg';
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-cyber-background via-transparent to-transparent"></div>
         </div>
@@ -112,7 +125,7 @@ const MangaCard: React.FC<MangaCardProps> = ({ manga }) => {
         
         {/* Genre Tags */}
         <div className="flex flex-wrap gap-1 mt-2">
-          {manga.genres.slice(0, 2).map((genre) => (
+          {manga.genres && manga.genres.slice(0, 2).map((genre) => (
             <span 
               key={genre.mal_id}
               className="text-xs text-gray-300 bg-cyber-background/80 border border-cyber-accent/20 px-2 py-0.5 rounded"
