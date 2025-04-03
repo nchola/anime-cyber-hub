@@ -8,7 +8,7 @@ import MangaGrid from "@/components/MangaGrid";
 import MangaGenreCloud from "@/components/MangaGenreCloud";
 import { Button } from "@/components/ui/button";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { Search, ChevronRight } from "lucide-react";
+import { Search, ChevronRight, Book } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -87,20 +87,28 @@ const MangaPage = () => {
     }
   };
 
+  const handleStartReading = () => {
+    if (popularManga.length > 0) {
+      navigate(`/manga/${popularManga[0].mal_id}`);
+    } else {
+      navigate(`/manga`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
       {/* Hero Section with Featured Manga */}
       <div className="relative pt-16">
-        <div className="absolute top-0 left-0 right-0 h-[400px] bg-cover bg-center opacity-30"
+        <div className="absolute top-0 left-0 right-0 h-[500px] bg-cover bg-center opacity-30"
              style={{ backgroundImage: 'url(https://cdn.myanimelist.net/images/manga/3/268228l.jpg)' }} />
-        <div className="absolute top-0 left-0 right-0 h-[400px] bg-gradient-to-b from-cyber-background via-cyber-background/80 to-cyber-background" />
+        <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-cyber-background via-cyber-background/80 to-cyber-background" />
         
         <div className="container mx-auto px-4 py-16 relative z-10">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-white mb-5">
-              Discover Manga
+            <h1 className="text-4xl md:text-6xl font-orbitron font-bold text-white mb-5">
+              Discover <span className="text-cyber-accent">Manga</span>
             </h1>
             <p className="text-lg text-gray-300 mb-8">
               Explore thousands of manga titles across different genres and demographics
@@ -125,7 +133,7 @@ const MangaPage = () => {
           </div>
           
           {/* Quick Links */}
-          <div className="flex justify-center mt-8 gap-4 flex-wrap">
+          <div className="flex flex-wrap justify-center mt-8 gap-4">
             <Link to="/manga">
               <Button variant="outline" className="border-cyber-accent/30 text-cyber-accent">All Manga</Button>
             </Link>
@@ -142,7 +150,7 @@ const MangaPage = () => {
       </div>
 
       <div className="container mx-auto px-4 py-12">
-        {/* Reading Experience Preview Section (Moved to top as requested) */}
+        {/* Reading Experience Preview Section (At the top as requested) */}
         <div className="bg-cyber-purple/10 p-8 rounded-lg border border-cyber-accent/20 mb-12">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="md:w-1/2">
@@ -166,16 +174,11 @@ const MangaPage = () => {
                 </div>
               </div>
               <Button 
-                className="bg-cyber-accent text-cyber-background"
-                onClick={() => {
-                  if (popularManga.length > 0) {
-                    navigate(`/manga/${popularManga[0].mal_id}`);
-                  } else {
-                    navigate(`/manga`);
-                  }
-                }}
+                className="bg-cyber-accent text-cyber-background flex gap-2 items-center"
+                onClick={handleStartReading}
               >
-                Start Reading
+                <Book size={16} />
+                Start Reading Now
               </Button>
             </div>
             
@@ -195,6 +198,8 @@ const MangaPage = () => {
                       src="https://cdn.myanimelist.net/images/manga/3/243675.jpg" 
                       className="w-1/2 h-64 object-contain bg-gray-900" 
                       alt="Manga page preview" 
+                      onClick={handleStartReading}
+                      className="cursor-pointer transition-transform hover:scale-105"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = '/placeholder.svg';
                       }}
@@ -203,15 +208,31 @@ const MangaPage = () => {
                       src="https://cdn.myanimelist.net/images/manga/1/268323.jpg" 
                       className="w-1/2 h-64 object-contain bg-gray-900" 
                       alt="Manga page preview" 
+                      onClick={handleStartReading}
+                      className="cursor-pointer transition-transform hover:scale-105"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = '/placeholder.svg';
                       }}
                     />
                   </div>
                   <div className="flex justify-between mt-4">
-                    <Button variant="outline" size="sm" className="border-cyber-accent/30 text-cyber-accent">← Previous</Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="border-cyber-accent/30 text-cyber-accent"
+                      onClick={handleStartReading}
+                    >
+                      ← Previous
+                    </Button>
                     <div className="text-white">Page 1/230</div>
-                    <Button variant="outline" size="sm" className="border-cyber-accent/30 text-cyber-accent">Next →</Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="border-cyber-accent/30 text-cyber-accent"
+                      onClick={handleStartReading}
+                    >
+                      Next →
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -233,12 +254,6 @@ const MangaPage = () => {
             loading={loading}
             error={null}
           />
-        </div>
-        
-        {/* Genre Cloud Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-orbitron text-white mb-6">Browse by Genre</h2>
-          <MangaGenreCloud />
         </div>
       
         {/* Tabs for Different Manga Categories */}
@@ -345,6 +360,12 @@ const MangaPage = () => {
               </PaginationContent>
             </Pagination>
           )}
+        </div>
+        
+        {/* Genre Cloud Section - Moved to the bottom before footer */}
+        <div className="my-16">
+          <h2 className="text-2xl font-orbitron text-white text-center mb-6">Browse by Genre</h2>
+          <MangaGenreCloud />
         </div>
       </div>
       

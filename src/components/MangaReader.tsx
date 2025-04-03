@@ -1,13 +1,11 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Settings, Monitor } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   Carousel, 
   CarouselContent, 
-  CarouselItem, 
-  CarouselPrevious, 
-  CarouselNext
+  CarouselItem
 } from '@/components/ui/carousel';
 import { getMangaImages } from '@/services/mangaService';
 import { Manga } from '@/types/manga';

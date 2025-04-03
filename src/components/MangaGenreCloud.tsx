@@ -57,9 +57,9 @@ const MangaGenreCloud = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-wrap gap-2 my-4">
+      <div className="flex flex-wrap gap-3 justify-center my-8 py-4">
         {Array(16).fill(0).map((_, i) => (
-          <Skeleton key={i} className="h-8 w-24 bg-gray-800 rounded-full" />
+          <Skeleton key={i} className="h-8 w-24 rounded-full bg-gray-800/30" />
         ))}
       </div>
     );
@@ -70,7 +70,7 @@ const MangaGenreCloud = () => {
   }
 
   return (
-    <div className="flex flex-wrap gap-2 justify-center my-4">
+    <div className="flex flex-wrap gap-3 justify-center my-8 py-4">
       {genres
         .sort((a, b) => b.count - a.count)
         .slice(0, 36)
@@ -80,7 +80,7 @@ const MangaGenreCloud = () => {
             <Link
               to={`/genre/${genre.mal_id}`}
               key={genre.mal_id}
-              className="text-white hover:text-cyber-accent bg-cyber-background/60 hover:bg-cyber-accent/10 border border-cyber-accent/30 rounded-full px-4 py-1 transition-all"
+              className="bg-cyber-background/70 hover:bg-cyber-accent/20 text-white hover:text-cyber-accent px-4 py-2 rounded-full border border-cyber-accent/30 transition-all hover:border-cyber-accent/70"
               style={{ fontSize: `${fontSize}rem` }}
             >
               {genre.name}
