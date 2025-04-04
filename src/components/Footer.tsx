@@ -41,6 +41,7 @@ const Footer = () => {
                   <li><Link to="/top" className="text-gray-400 hover:text-cyber-accent">Top Anime</Link></li>
                   <li><Link to="/seasonal" className="text-gray-400 hover:text-cyber-accent">Seasonal</Link></li>
                   <li><Link to="/upcoming" className="text-gray-400 hover:text-cyber-accent">Upcoming</Link></li>
+                  <li><Link to="/manga" className="text-gray-400 hover:text-cyber-accent">Manga</Link></li>
                 </ul>
               </div>
               
@@ -73,6 +74,7 @@ const Footer = () => {
                   <li><Link to="/top" className="text-gray-400 hover:text-cyber-accent">Top Anime</Link></li>
                   <li><Link to="/seasonal" className="text-gray-400 hover:text-cyber-accent">Seasonal</Link></li>
                   <li><Link to="/upcoming" className="text-gray-400 hover:text-cyber-accent">Upcoming</Link></li>
+                  <li><Link to="/manga" className="text-gray-400 hover:text-cyber-accent">Manga</Link></li>
                 </ul>
               </div>
               
