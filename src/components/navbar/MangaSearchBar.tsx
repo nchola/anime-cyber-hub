@@ -19,7 +19,7 @@ const MangaSearchBar = () => {
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
   
-  const debouncedSearchTerm = useDebounce(searchQuery, 300);
+  const debouncedSearchTerm = useDebounce(searchQuery, 500);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

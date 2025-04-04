@@ -6,11 +6,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MangaGrid from "@/components/MangaGrid";
 import MangaGenreCloud from "@/components/MangaGenreCloud";
+import PageHeroSection from "@/components/PageHeroSection";
 import { Manga } from "@/types/manga";
 import { getTopManga, getRecentManga, getPopularMangaByGenre } from "@/services/mangaService";
 import { Button } from "@/components/ui/button";
 import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/ui/tabs";
-import TabNavigation from "@/components/TabNavigation";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext } from "@/components/ui/pagination";
 
 const MangaPage = () => {
@@ -36,7 +36,7 @@ const MangaPage = () => {
       const [topResult, recentResult, featuredGenreResult] = await Promise.all([
         getTopManga(currentPage, mangaPerPage),
         getRecentManga(1, 6),
-        getPopularMangaByGenre(1, 1, 6) // Romance genre
+        getPopularMangaByGenre(1, 6) // Romance genre, only need 2 args
       ]);
       
       setTopManga(topResult.data);
@@ -64,29 +64,26 @@ const MangaPage = () => {
 
   useEffect(() => {
     fetchManga();
-  }, [currentPage, toast]);
+  }, [currentPage]);
 
   const handlePageChange = (page: number) => {
     window.scrollTo(0, 0);
     setCurrentPage(page);
   };
 
+  // Get a few featured manga for the hero section
+  const featuredManga = topManga.slice(0, 5);
+
   return (
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
-      <div className="bg-gradient-to-b from-cyber-background via-cyber-background/80 to-cyber-background py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-cyber-accent mb-4">
-            Manga Library
-          </h1>
-          <p className="text-lg text-gray-300 mb-8">
-            Explore the vast world of manga
-          </p>
-          
-          <TabNavigation />
-        </div>
-      </div>
+      <PageHeroSection
+        title="Manga Library"
+        subtitle="Explore the vast world of manga"
+        items={featuredManga}
+        type="manga"
+      />
       
       <div className="pt-12 pb-24">
         <div className="container mx-auto px-4">
@@ -112,7 +109,6 @@ const MangaPage = () => {
                 mangaList={topManga}
                 loading={loading.top}
                 error={error}
-                className="mb-10"
               />
               
               {!loading.top && !error && topManga.length > 0 && (
@@ -179,7 +175,6 @@ const MangaPage = () => {
                 mangaList={recentManga}
                 loading={loading.recent}
                 error={error}
-                className="mb-6"
               />
               
               <div className="text-center mt-6">
@@ -202,7 +197,6 @@ const MangaPage = () => {
               mangaList={featuredGenreManga}
               loading={loading.genre}
               error={error}
-              className="mb-6"
             />
             
             <div className="text-center mt-6">

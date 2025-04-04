@@ -2,16 +2,16 @@
 const BASE_URL = "https://api.jikan.moe/v4";
 
 // Helper function to add a delay to prevent rate limiting
-// Increase base delay to avoid rate limiting errors (429)
-const delayRequest = async (ms = 2000) => {
+// Increase base delay to prevent rate limiting errors (429)
+const delayRequest = async (ms = 4000) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
 // Retry mechanism for API calls that fail due to rate limiting
-const fetchWithRetry = async (url: string, retries = 3, delay = 2000) => {
+const fetchWithRetry = async (url: string, retries = 3, delay = 4000) => {
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
-      // Add delay before each attempt
+      // Add delay before each attempt to prevent rate limiting
       await delayRequest(delay);
       
       const response = await fetch(url);
