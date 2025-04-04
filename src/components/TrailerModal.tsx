@@ -20,9 +20,7 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ isOpen, onClose, embedUrl, 
           <DialogTitle className="text-cyber-accent font-orbitron">
             {title || "Anime Trailer"}
           </DialogTitle>
-          <DialogClose className="w-8 h-8 bg-cyber-background rounded-full flex items-center justify-center border border-cyber-accent/30 hover:rotate-90 transition-transform duration-300">
-            <X className="h-4 w-4 text-cyber-accent" />
-          </DialogClose>
+          
         </DialogHeader>
         {embedUrl ? (
           <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-md">
