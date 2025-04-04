@@ -2,16 +2,25 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { getUpcomingAnime } from "@/services/animeService";
+import { getSeasonUpcoming } from "@/services/searchService";
 import { Anime } from "@/types/anime";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimeGrid from "@/components/AnimeGrid";
+import PageHeroSection from "@/components/PageHeroSection";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const UpcomingAnime = () => {
   const [animeList, setAnimeList] = useState<Anime[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [featuredAnime, setFeaturedAnime] = useState<Anime[]>([]);
+  const [loading, setLoading] = useState({
+    main: true,
+    featured: true
+  });
+  const [error, setError] = useState({
+    main: null as string | null,
+    featured: null as string | null
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const { toast } = useToast();
@@ -19,15 +28,15 @@ const UpcomingAnime = () => {
   useEffect(() => {
     const fetchUpcomingAnime = async () => {
       try {
-        setLoading(true);
+        setLoading(prev => ({ ...prev, main: true }));
         const response = await getUpcomingAnime(currentPage, 24);
         setAnimeList(response.data);
         setTotalPages(Math.min(10, Math.ceil(response.pagination.items.total / 24)));
-        setLoading(false);
+        setLoading(prev => ({ ...prev, main: false }));
       } catch (err) {
         console.error("Failed to fetch upcoming anime:", err);
-        setError("Failed to load upcoming anime. Please try again later.");
-        setLoading(false);
+        setError(prev => ({ ...prev, main: "Failed to load upcoming anime. Please try again later." }));
+        setLoading(prev => ({ ...prev, main: false }));
         toast({
           title: "Error",
           description: "Failed to load upcoming anime. Please try again later.",
@@ -36,7 +45,27 @@ const UpcomingAnime = () => {
       }
     };
 
+    const fetchFeaturedUpcoming = async () => {
+      try {
+        setLoading(prev => ({ ...prev, featured: true }));
+        const response = await getSeasonUpcoming(1, 5);
+        if (response.data && response.data.length > 0) {
+          // Sort by popularity to feature the most anticipated anime
+          const sorted = [...response.data].sort((a, b) => 
+            (b.members || 0) - (a.members || 0)
+          );
+          setFeaturedAnime(sorted.slice(0, 5));
+        }
+        setLoading(prev => ({ ...prev, featured: false }));
+      } catch (err) {
+        console.error("Failed to fetch featured upcoming anime:", err);
+        setError(prev => ({ ...prev, featured: "Failed to load featured upcoming anime" }));
+        setLoading(prev => ({ ...prev, featured: false }));
+      }
+    };
+
     fetchUpcomingAnime();
+    fetchFeaturedUpcoming();
   }, [currentPage, toast]);
 
   const handlePageChange = (page: number) => {
@@ -48,18 +77,16 @@ const UpcomingAnime = () => {
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
-      <div className="bg-gradient-to-b from-cyber-background via-cyber-background/80 to-cyber-background py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-cyber-accent mb-4">
-            Upcoming Anime
-          </h1>
-          <p className="text-lg text-gray-300 mb-8">
-            Get a sneak peek at the future of anime
-          </p>
-        </div>
-      </div>
+      <PageHeroSection
+        title="Upcoming Anime"
+        subtitle="Get a sneak peek at the future of anime"
+        items={featuredAnime}
+        type="anime"
+        loading={loading.featured}
+        error={error.featured}
+      />
       
-      <div className="pt-12 pb-16">
+      <div className="pt-8 pb-16">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-cyber-accent mb-8 text-center">
             Upcoming Releases
@@ -68,11 +95,11 @@ const UpcomingAnime = () => {
           <AnimeGrid
             title=""
             animeList={animeList}
-            loading={loading}
-            error={error}
+            loading={loading.main}
+            error={error.main}
           />
           
-          {!loading && !error && animeList.length > 0 && totalPages > 1 && (
+          {!loading.main && !error.main && animeList.length > 0 && totalPages > 1 && (
             <Pagination className="my-10">
               <PaginationContent>
                 {currentPage > 1 && (

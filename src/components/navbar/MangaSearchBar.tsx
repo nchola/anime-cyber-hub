@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/useDebounce";
-import { getMangaSuggestions } from "@/services/mangaService";
+import { getMangaSearchSuggestions } from "@/services/searchService";
 import { Manga } from "@/types/manga";
 import MangaSearchSuggestions from "@/components/MangaSearchSuggestions";
 
@@ -63,8 +63,8 @@ const MangaSearchBar = () => {
 
       setIsLoading(true);
       try {
-        const results = await getMangaSuggestions(debouncedSearchTerm);
-        setSuggestions(results.data || []);
+        const results = await getMangaSearchSuggestions(debouncedSearchTerm, 5);
+        setSuggestions(results);
         setShowSuggestions(true);
         setHighlightedIndex(-1);
       } catch (error) {
@@ -113,16 +113,14 @@ const MangaSearchBar = () => {
         </Button>
       </form>
       
-      {showSuggestions && (
-        <MangaSearchSuggestions
-          results={suggestions}
-          query={searchQuery}
-          visible={showSuggestions}
-          onItemClick={() => setShowSuggestions(false)}
-          highlightIndex={highlightedIndex}
-          onMouseEnter={setHighlightedIndex}
-        />
-      )}
+      <MangaSearchSuggestions
+        results={suggestions}
+        query={searchQuery}
+        visible={showSuggestions}
+        onItemClick={() => setShowSuggestions(false)}
+        highlightIndex={highlightedIndex}
+        onMouseEnter={setHighlightedIndex}
+      />
     </div>
   );
 };

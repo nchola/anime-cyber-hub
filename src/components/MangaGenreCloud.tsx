@@ -5,12 +5,14 @@ import { getMangaGenres } from "@/services/mangaService";
 import { MangaGenre } from "@/types/manga";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const MangaGenreCloud = () => {
   const [genres, setGenres] = useState<MangaGenre[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -52,21 +54,28 @@ const MangaGenreCloud = () => {
 
   // Calculate font size based on count (popularity)
   const getGenreSize = (count: number) => {
-    if (genres.length === 0) return 1;
+    if (genres.length === 0) return isMobile ? 0.6 : 1.0;
     
-    const minCount = Math.min(...genres.map(g => g.count));
-    const maxCount = Math.max(...genres.map(g => g.count));
+    const minCount = Math.min(...genres.map(g => g.count || 0));
+    const maxCount = Math.max(...genres.map(g => g.count || 0));
     const range = maxCount - minCount;
+    
     // Protect against division by zero if all counts are the same
-    const normalized = range === 0 ? 0.5 : (count - minCount) / range;
-    return 0.8 + normalized * 0.8; // Font size between 0.8rem and 1.6rem
+    const normalized = range === 0 ? 0.5 : ((count - minCount) / range);
+    
+    // Different size ranges for mobile vs desktop
+    if (isMobile) {
+      return 0.55 + normalized * 0.4; // Font size between 0.55rem and 0.95rem for mobile
+    }
+    
+    return 0.8 + normalized * 0.8; // Font size between 0.8rem and 1.6rem for desktop
   };
 
   if (loading) {
     return (
-      <div className="flex flex-wrap gap-3 justify-center my-8 py-4">
+      <div className="flex flex-wrap gap-2 justify-center my-6">
         {Array(16).fill(0).map((_, i) => (
-          <Skeleton key={`skeleton-${i}`} className="h-8 w-24 rounded-full bg-gray-800/30" />
+          <Skeleton key={`skeleton-${i}`} className="h-7 w-16 md:h-8 md:w-24 rounded-full bg-gray-800/30" />
         ))}
       </div>
     );
@@ -89,35 +98,58 @@ const MangaGenreCloud = () => {
       { mal_id: 40, name: "Psychological", count: 70 },
       { mal_id: 7, name: "Mystery", count: 65 }
     ];
+    
     return (
-      <div className="flex flex-wrap gap-3 justify-center my-8 py-4">
-        {fallbackGenres.map((genre) => (
-          <Link
-            to={`/genre/${genre.mal_id}`}
-            key={`fallback-${genre.mal_id}`}
-            className="bg-cyber-background hover:bg-cyber-accent/20 text-white hover:text-cyber-accent px-4 py-2 rounded-full border border-cyber-accent/30 transition-all hover:border-cyber-accent"
-            style={{ fontSize: `${getGenreSize(genre.count)}rem` }}
-          >
-            {genre.name}
-          </Link>
-        ))}
+      <div className="flex flex-wrap gap-1 md:gap-2 justify-center my-4 md:my-6 px-2 md:px-4">
+        {fallbackGenres.map((genre) => {
+          const fontSize = getGenreSize(genre.count);
+          return (
+            <Link
+              to={`/genre/${genre.mal_id}`}
+              key={`fallback-${genre.mal_id}`}
+              className={`rounded-full bg-gradient-to-r from-cyber-purple/40 to-cyber-accent/20 border border-cyber-accent/30 hover:scale-105 hover:shadow-glow transition-all duration-300 ${
+                isMobile ? 'px-1.5 py-0.5 my-0.5' : 'px-3 py-1.5'
+              }`}
+              style={{ 
+                fontSize: `${fontSize}rem`,
+                background: `linear-gradient(45deg, #8A2BE2 0%, #FFD95A 100%)`,
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              {genre.name}
+            </Link>
+          );
+        })}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-wrap gap-3 justify-center my-8 py-4">
+    <div className="flex flex-wrap gap-1 md:gap-2 justify-center my-4 md:my-6 px-2 md:px-4">
       {genres
-        .sort((a, b) => b.count - a.count)
+        .sort((a, b) => (b.count || 0) - (a.count || 0))
         .slice(0, 36)
         .map((genre) => {
-          const fontSize = getGenreSize(genre.count);
+          const fontSize = getGenreSize(genre.count || 0);
+          // Create a unique key with both id and name to avoid duplicates
+          const uniqueKey = `genre-${genre.mal_id}-${genre.name}`;
+          
           return (
             <Link
               to={`/genre/${genre.mal_id}`}
-              key={`genre-${genre.mal_id}`}
-              className="bg-cyber-background hover:bg-cyber-accent/20 text-white hover:text-cyber-accent px-4 py-2 rounded-full border border-cyber-accent/30 transition-all hover:border-cyber-accent"
-              style={{ fontSize: `${fontSize}rem` }}
+              key={uniqueKey}
+              className={`rounded-full bg-gradient-to-r from-cyber-purple/40 to-cyber-accent/20 border border-cyber-accent/30 hover:scale-105 hover:shadow-glow transition-all duration-300 ${
+                isMobile ? 'px-1.5 py-0.5 my-0.5' : 'px-3 py-1.5'
+              }`}
+              style={{ 
+                fontSize: `${fontSize}rem`,
+                background: `linear-gradient(45deg, #8A2BE2 0%, #FFD95A 100%)`,
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
             >
               {genre.name}
             </Link>

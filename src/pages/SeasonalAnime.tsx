@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { getCurrentSeasonAnime } from "@/services/animeService";
 import { getSeasonNow, getSeasonList, getSeasonUpcoming } from "@/services/searchService";
 import { Anime } from "@/types/anime";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimeGrid from "@/components/AnimeGrid";
+import PageHeroSection from "@/components/PageHeroSection";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
@@ -26,17 +26,20 @@ const getCurrentYear = () => {
 
 const SeasonalAnime = () => {
   const [currentAnimeList, setCurrentAnimeList] = useState<Anime[]>([]);
+  const [featuredAnime, setFeaturedAnime] = useState<Anime[]>([]);
   const [upcomingAnimeList, setUpcomingAnimeList] = useState<Anime[]>([]);
   const [seasonList, setSeasonList] = useState<any[]>([]);
   const [loading, setLoading] = useState({
     current: true,
     upcoming: true,
-    list: true
+    list: true,
+    featured: true
   });
   const [error, setError] = useState({
     current: null as string | null,
     upcoming: null as string | null,
-    list: null as string | null
+    list: null as string | null,
+    featured: null as string | null
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -63,6 +66,25 @@ const SeasonalAnime = () => {
           description: "Failed to load current seasonal anime. Please try again later.",
           variant: "destructive",
         });
+      }
+    };
+
+    const fetchFeaturedAnime = async () => {
+      try {
+        setLoading(prev => ({ ...prev, featured: true }));
+        const response = await getSeasonNow(1, 5);
+        if (response.data && response.data.length > 0) {
+          // Sort by popularity/score to feature the best anime
+          const sorted = [...response.data].sort((a, b) => 
+            (b.score || 0) - (a.score || 0)
+          );
+          setFeaturedAnime(sorted.slice(0, 5));
+        }
+        setLoading(prev => ({ ...prev, featured: false }));
+      } catch (err) {
+        console.error("Failed to fetch featured seasonal anime:", err);
+        setError(prev => ({ ...prev, featured: "Failed to load featured seasonal anime" }));
+        setLoading(prev => ({ ...prev, featured: false }));
       }
     };
 
@@ -93,6 +115,7 @@ const SeasonalAnime = () => {
     };
 
     fetchCurrentSeasonAnime();
+    fetchFeaturedAnime();
     fetchUpcomingSeasonAnime();
     fetchSeasonList();
   }, [currentPage, toast]);
@@ -110,18 +133,16 @@ const SeasonalAnime = () => {
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
-      <div className="bg-gradient-to-b from-cyber-background via-cyber-background/80 to-cyber-background py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-cyber-accent mb-4">
-            Seasonal Anime
-          </h1>
-          <p className="text-lg text-gray-300 mb-8">
-            Stay updated with the freshest seasonal releases
-          </p>
-        </div>
-      </div>
+      <PageHeroSection
+        title="Seasonal Anime"
+        subtitle={`Discover the best from ${currentSeason} ${currentYear} season`}
+        items={featuredAnime}
+        type="anime"
+        loading={loading.featured}
+        error={error.featured}
+      />
       
-      <div className="pt-12 pb-16">
+      <div className="pt-8 pb-16">
         <div className="container mx-auto px-4">
           <Tabs defaultValue="current" onValueChange={handleTabChange} className="w-full mb-8">
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
