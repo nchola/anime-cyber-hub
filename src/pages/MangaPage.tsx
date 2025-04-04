@@ -196,20 +196,18 @@ const MangaPage = () => {
                   <div className="flex gap-4 overflow-hidden border border-cyber-accent/20 rounded">
                     <img 
                       src="https://cdn.myanimelist.net/images/manga/3/243675.jpg" 
-                      className="w-1/2 h-64 object-contain bg-gray-900" 
+                      className="w-1/2 h-64 object-contain bg-gray-900 cursor-pointer transition-transform hover:scale-105" 
                       alt="Manga page preview" 
                       onClick={handleStartReading}
-                      className="cursor-pointer transition-transform hover:scale-105"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = '/placeholder.svg';
                       }}
                     />
                     <img 
                       src="https://cdn.myanimelist.net/images/manga/1/268323.jpg" 
-                      className="w-1/2 h-64 object-contain bg-gray-900" 
+                      className="w-1/2 h-64 object-contain bg-gray-900 cursor-pointer transition-transform hover:scale-105" 
                       alt="Manga page preview" 
                       onClick={handleStartReading}
-                      className="cursor-pointer transition-transform hover:scale-105"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = '/placeholder.svg';
                       }}

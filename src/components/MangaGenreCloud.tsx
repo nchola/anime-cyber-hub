@@ -16,8 +16,11 @@ const MangaGenreCloud = () => {
     const fetchGenres = async () => {
       try {
         setLoading(true);
+        console.log("Fetching manga genres...");
         const response = await getMangaGenres();
-        if (response && response.data) {
+        console.log("Manga genres response:", response);
+        
+        if (response && response.data && response.data.length > 0) {
           setGenres(response.data);
         } else {
           setError("No genres found");
@@ -69,6 +72,35 @@ const MangaGenreCloud = () => {
     return <div className="text-cyber-accent text-center py-4">{error}</div>;
   }
 
+  // If no genres are found, provide some fallbacks
+  if (genres.length === 0) {
+    console.log("No genres found, using fallbacks");
+    const fallbackGenres: MangaGenre[] = [
+      { mal_id: 1, name: "Action", count: 100 },
+      { mal_id: 2, name: "Adventure", count: 90 },
+      { mal_id: 4, name: "Comedy", count: 110 },
+      { mal_id: 8, name: "Drama", count: 85 },
+      { mal_id: 10, name: "Fantasy", count: 95 },
+      { mal_id: 27, name: "Shounen", count: 105 },
+      { mal_id: 40, name: "Psychological", count: 70 },
+      { mal_id: 7, name: "Mystery", count: 65 }
+    ];
+    return (
+      <div className="flex flex-wrap gap-3 justify-center my-8 py-4">
+        {fallbackGenres.map((genre) => (
+          <Link
+            to={`/genre/${genre.mal_id}`}
+            key={genre.mal_id}
+            className="bg-cyber-background hover:bg-cyber-accent/20 text-white hover:text-cyber-accent px-4 py-2 rounded-full border border-cyber-accent/30 transition-all hover:border-cyber-accent"
+            style={{ fontSize: `${getGenreSize(genre.count)}rem` }}
+          >
+            {genre.name}
+          </Link>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-wrap gap-3 justify-center my-8 py-4">
       {genres
@@ -80,7 +112,7 @@ const MangaGenreCloud = () => {
             <Link
               to={`/genre/${genre.mal_id}`}
               key={genre.mal_id}
-              className="bg-cyber-background/70 hover:bg-cyber-accent/20 text-white hover:text-cyber-accent px-4 py-2 rounded-full border border-cyber-accent/30 transition-all hover:border-cyber-accent/70"
+              className="bg-cyber-background hover:bg-cyber-accent/20 text-white hover:text-cyber-accent px-4 py-2 rounded-full border border-cyber-accent/30 transition-all hover:border-cyber-accent"
               style={{ fontSize: `${fontSize}rem` }}
             >
               {genre.name}

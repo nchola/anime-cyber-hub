@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/useDebounce";
-import { getSearchSuggestions } from "@/services/searchService";
+import { searchAnime } from "@/services/searchService";
 import { Anime } from "@/types/anime";
 import SearchSuggestions from "@/components/SearchSuggestions";
 
@@ -63,12 +63,17 @@ const SearchBar = () => {
 
       setIsLoading(true);
       try {
-        const results = await getSearchSuggestions(debouncedSearchTerm);
-        setSuggestions(results);
-        setShowSuggestions(true);
-        setHighlightedIndex(-1);
+        const results = await searchAnime(debouncedSearchTerm, 1, 5);
+        if (results && results.data) {
+          setSuggestions(results.data);
+          setShowSuggestions(true);
+          setHighlightedIndex(-1);
+        } else {
+          setSuggestions([]);
+        }
       } catch (error) {
         console.error("Error fetching suggestions:", error);
+        setSuggestions([]);
       } finally {
         setIsLoading(false);
       }

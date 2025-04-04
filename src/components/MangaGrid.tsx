@@ -19,6 +19,13 @@ const MangaGrid: React.FC<MangaGridProps> = ({
   error,
   viewMoreLink,
 }) => {
+  console.log("MangaGrid rendering with:", { 
+    title, 
+    mangaListLength: mangaList?.length, 
+    loading, 
+    error 
+  });
+
   // Loading placeholders
   const renderSkeletons = () => {
     return Array(8)
@@ -66,9 +73,16 @@ const MangaGrid: React.FC<MangaGridProps> = ({
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
         {loading
           ? renderSkeletons()
-          : mangaList.map((manga) => (
-              <MangaCard key={manga.mal_id} manga={manga} />
-            ))}
+          : mangaList && mangaList.length > 0
+            ? mangaList.map((manga) => (
+                <MangaCard key={manga.mal_id} manga={manga} />
+              ))
+            : (
+              <div className="col-span-full text-center py-12 text-gray-400">
+                No manga found. Try adjusting your search or check back later.
+              </div>
+            )
+        }
       </div>
     </div>
   );

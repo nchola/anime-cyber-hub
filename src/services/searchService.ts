@@ -34,3 +34,21 @@ export const searchManga = async (query: string, page = 1, limit = 12) => {
     throw error;
   }
 };
+
+export const getSearchSuggestions = async (query: string, limit = 5) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/anime?q=${encodeURIComponent(query)}&limit=${limit}`
+    );
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch anime suggestions');
+    }
+    
+    const data = await response.json();
+    return data.data || [];
+  } catch (error) {
+    console.error("Error fetching suggestions:", error);
+    return [];
+  }
+};
