@@ -3,6 +3,7 @@ import React from "react";
 import { Manga } from "@/types/manga";
 import MangaCard from "./MangaCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AlertCircle } from "lucide-react";
 
 interface MangaGridProps {
   title?: string;
@@ -31,7 +32,7 @@ const MangaGrid: React.FC<MangaGridProps> = ({
     return Array(8)
       .fill(0)
       .map((_, index) => (
-        <div key={index} className="cyber-card">
+        <div key={`skeleton-${index}`} className="cyber-card">
           <Skeleton className="aspect-[3/4] w-full rounded-t bg-gray-800" />
           <div className="p-4">
             <Skeleton className="h-5 w-2/3 rounded-md bg-gray-800" />
@@ -47,9 +48,10 @@ const MangaGrid: React.FC<MangaGridProps> = ({
   // Error state
   if (error) {
     return (
-      <div className="text-cyber-accent text-center py-12">
-        <p className="text-2xl mb-2">⚠️</p>
-        <p>{error}</p>
+      <div className="text-center py-12 bg-cyber-background/40 rounded-lg border border-cyber-accent/20">
+        <AlertCircle className="mx-auto h-12 w-12 text-cyber-accent mb-4" />
+        <p className="text-xl font-medium text-cyber-accent">{error}</p>
+        <p className="mt-2 text-gray-400">Try refreshing the page or check back later.</p>
       </div>
     );
   }
@@ -75,11 +77,12 @@ const MangaGrid: React.FC<MangaGridProps> = ({
           ? renderSkeletons()
           : mangaList && mangaList.length > 0
             ? mangaList.map((manga) => (
-                <MangaCard key={manga.mal_id} manga={manga} />
+                <MangaCard key={`manga-${manga.mal_id}`} manga={manga} />
               ))
             : (
-              <div className="col-span-full text-center py-12 text-gray-400">
-                No manga found. Try adjusting your search or check back later.
+              <div className="col-span-full text-center py-12 text-gray-400 bg-cyber-background/40 rounded-lg border border-cyber-accent/20">
+                <p className="text-xl mb-2">No manga found</p>
+                <p className="text-sm">Try adjusting your search or check back later.</p>
               </div>
             )
         }

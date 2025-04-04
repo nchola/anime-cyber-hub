@@ -4,25 +4,66 @@ import { Manga, MangaGenresResponse } from "@/types/manga";
 const BASE_URL = "https://api.jikan.moe/v4";
 
 // Helper function to add a delay to prevent rate limiting
-const delayRequest = async (ms = 1000) => {
+const delayRequest = async (ms = 1500) => {
   return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+// Helper function to handle rate limiting
+const handleRateLimit = async (response: Response) => {
+  if (response.status === 429) {
+    console.log("Rate limited, waiting before retry (manga service)...");
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    return false;
+  }
+  return true;
+};
+
+// Generic fetch function with retry logic
+const fetchWithRetry = async (url: string, retries = 3): Promise<any> => {
+  try {
+    // Add delay before request to prevent rate limiting
+    await delayRequest();
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      const isRateLimited = await handleRateLimit(response);
+      if (!isRateLimited && retries > 0) {
+        console.log(`Retrying manga request... (${retries} attempts left)`);
+        return fetchWithRetry(url, retries - 1);
+      }
+      console.error(`API error: ${response.status} ${response.statusText}`);
+      throw new Error(`API error: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error("Fetch error in manga service:", error);
+    if (retries > 0) {
+      console.log(`Retrying manga request... (${retries} attempts left)`);
+      return fetchWithRetry(url, retries - 1);
+    }
+    // Return a valid empty response instead of throwing
+    return {
+      data: [],
+      pagination: { 
+        last_visible_page: 0,
+        has_next_page: false,
+        current_page: 0,
+        items: { count: 0, total: 0, per_page: 0 }
+      }
+    };
+  }
 };
 
 export const getTopManga = async (page = 1, limit = 12) => {
   try {
     console.log(`Fetching top manga: page=${page}, limit=${limit}`);
-    await delayRequest();
     
-    const response = await fetch(
+    const data = await fetchWithRetry(
       `${BASE_URL}/top/manga?page=${page}&limit=${limit}`
     );
     
-    if (!response.ok) {
-      console.error(`Error response from API: ${response.status} ${response.statusText}`);
-      throw new Error('Failed to fetch top manga');
-    }
-    
-    const data = await response.json();
     console.log(`Top manga fetched successfully: ${data?.data?.length} items`);
     return data;
   } catch (error) {
@@ -34,16 +75,9 @@ export const getTopManga = async (page = 1, limit = 12) => {
 export const getMangaById = async (id: number) => {
   try {
     console.log(`Fetching manga details: id=${id}`);
-    await delayRequest();
     
-    const response = await fetch(`${BASE_URL}/manga/${id}/full`);
+    const data = await fetchWithRetry(`${BASE_URL}/manga/${id}/full`);
     
-    if (!response.ok) {
-      console.error(`Error response from API: ${response.status} ${response.statusText}`);
-      throw new Error('Failed to fetch manga details');
-    }
-    
-    const data = await response.json();
     console.log(`Manga details fetched successfully: ${data?.data?.title}`);
     return data;
   } catch (error) {
@@ -55,16 +89,9 @@ export const getMangaById = async (id: number) => {
 export const getMangaGenres = async (): Promise<MangaGenresResponse> => {
   try {
     console.log("Fetching manga genres");
-    await delayRequest();
     
-    const response = await fetch(`${BASE_URL}/genres/manga`);
+    const data = await fetchWithRetry(`${BASE_URL}/genres/manga`);
     
-    if (!response.ok) {
-      console.error(`Error response from API: ${response.status} ${response.statusText}`);
-      throw new Error('Failed to fetch manga genres');
-    }
-    
-    const data = await response.json();
     console.log(`Manga genres fetched successfully: ${data?.data?.length} genres`);
     return data;
   } catch (error) {
@@ -76,18 +103,11 @@ export const getMangaGenres = async (): Promise<MangaGenresResponse> => {
 export const getMangaByGenre = async (genreId: number, page = 1, limit = 12) => {
   try {
     console.log(`Fetching manga by genre: genreId=${genreId}, page=${page}, limit=${limit}`);
-    await delayRequest();
     
-    const response = await fetch(
+    const data = await fetchWithRetry(
       `${BASE_URL}/manga?genres=${genreId}&page=${page}&limit=${limit}`
     );
     
-    if (!response.ok) {
-      console.error(`Error response from API: ${response.status} ${response.statusText}`);
-      throw new Error('Failed to fetch manga by genre');
-    }
-    
-    const data = await response.json();
     console.log(`Manga by genre fetched successfully: ${data?.data?.length} items`);
     return data;
   } catch (error) {
@@ -99,18 +119,11 @@ export const getMangaByGenre = async (genreId: number, page = 1, limit = 12) => 
 export const searchManga = async (query: string, page = 1, limit = 12) => {
   try {
     console.log(`Searching manga: query=${query}, page=${page}, limit=${limit}`);
-    await delayRequest();
     
-    const response = await fetch(
+    const data = await fetchWithRetry(
       `${BASE_URL}/manga?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`
     );
     
-    if (!response.ok) {
-      console.error(`Error response from API: ${response.status} ${response.statusText}`);
-      throw new Error('Failed to search manga');
-    }
-    
-    const data = await response.json();
     console.log(`Manga search results: ${data?.data?.length} items`);
     return data;
   } catch (error) {
@@ -122,18 +135,11 @@ export const searchManga = async (query: string, page = 1, limit = 12) => {
 export const getRecentManga = async (page = 1, limit = 12) => {
   try {
     console.log(`Fetching recent manga: page=${page}, limit=${limit}`);
-    await delayRequest();
     
-    const response = await fetch(
+    const data = await fetchWithRetry(
       `${BASE_URL}/manga?order_by=start_date&sort=desc&page=${page}&limit=${limit}`
     );
     
-    if (!response.ok) {
-      console.error(`Error response from API: ${response.status} ${response.statusText}`);
-      throw new Error('Failed to fetch recent manga');
-    }
-    
-    const data = await response.json();
     console.log(`Recent manga fetched successfully: ${data?.data?.length} items`);
     return data;
   } catch (error) {
@@ -145,16 +151,9 @@ export const getRecentManga = async (page = 1, limit = 12) => {
 export const getMangaImages = async (mangaId: number) => {
   try {
     console.log(`Fetching manga images: mangaId=${mangaId}`);
-    await delayRequest();
     
-    const response = await fetch(`${BASE_URL}/manga/${mangaId}/pictures`);
+    const data = await fetchWithRetry(`${BASE_URL}/manga/${mangaId}/pictures`);
     
-    if (!response.ok) {
-      console.error(`Error response from API: ${response.status} ${response.statusText}`);
-      throw new Error('Failed to fetch manga images');
-    }
-    
-    const data = await response.json();
     console.log(`Manga images fetched successfully: ${data?.data?.length} images`);
     return data;
   } catch (error) {
@@ -166,18 +165,11 @@ export const getMangaImages = async (mangaId: number) => {
 export const getPopularMangaByGenre = async (genreId: number, limit = 6) => {
   try {
     console.log(`Fetching popular manga by genre: genreId=${genreId}, limit=${limit}`);
-    await delayRequest();
     
-    const response = await fetch(
+    const data = await fetchWithRetry(
       `${BASE_URL}/manga?genres=${genreId}&order_by=popularity&sort=asc&limit=${limit}`
     );
     
-    if (!response.ok) {
-      console.error(`Error response from API: ${response.status} ${response.statusText}`);
-      throw new Error('Failed to fetch popular manga by genre');
-    }
-    
-    const data = await response.json();
     console.log(`Popular manga by genre fetched successfully: ${data?.data?.length} items`);
     return data;
   } catch (error) {
@@ -189,18 +181,11 @@ export const getPopularMangaByGenre = async (genreId: number, limit = 6) => {
 export const getMangaSuggestions = async (query: string, limit = 5) => {
   try {
     console.log(`Fetching manga suggestions: query=${query}, limit=${limit}`);
-    await delayRequest();
     
-    const response = await fetch(
+    const data = await fetchWithRetry(
       `${BASE_URL}/manga?q=${encodeURIComponent(query)}&limit=${limit}`
     );
     
-    if (!response.ok) {
-      console.error(`Error response from API: ${response.status} ${response.statusText}`);
-      throw new Error('Failed to fetch manga suggestions');
-    }
-    
-    const data = await response.json();
     console.log(`Manga suggestions fetched successfully: ${data?.data?.length} items`);
     return data;
   } catch (error) {

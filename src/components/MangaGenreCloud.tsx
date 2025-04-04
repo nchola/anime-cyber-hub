@@ -21,7 +21,11 @@ const MangaGenreCloud = () => {
         console.log("Manga genres response:", response);
         
         if (response && response.data && response.data.length > 0) {
-          setGenres(response.data);
+          // Filter out duplicates by creating a Map based on mal_id
+          const uniqueGenres = Array.from(
+            new Map(response.data.map(genre => [genre.mal_id, genre])).values()
+          );
+          setGenres(uniqueGenres);
         } else {
           setError("No genres found");
           toast({
@@ -62,7 +66,7 @@ const MangaGenreCloud = () => {
     return (
       <div className="flex flex-wrap gap-3 justify-center my-8 py-4">
         {Array(16).fill(0).map((_, i) => (
-          <Skeleton key={i} className="h-8 w-24 rounded-full bg-gray-800/30" />
+          <Skeleton key={`skeleton-${i}`} className="h-8 w-24 rounded-full bg-gray-800/30" />
         ))}
       </div>
     );
@@ -90,7 +94,7 @@ const MangaGenreCloud = () => {
         {fallbackGenres.map((genre) => (
           <Link
             to={`/genre/${genre.mal_id}`}
-            key={genre.mal_id}
+            key={`fallback-${genre.mal_id}`}
             className="bg-cyber-background hover:bg-cyber-accent/20 text-white hover:text-cyber-accent px-4 py-2 rounded-full border border-cyber-accent/30 transition-all hover:border-cyber-accent"
             style={{ fontSize: `${getGenreSize(genre.count)}rem` }}
           >
@@ -111,7 +115,7 @@ const MangaGenreCloud = () => {
           return (
             <Link
               to={`/genre/${genre.mal_id}`}
-              key={genre.mal_id}
+              key={`genre-${genre.mal_id}`}
               className="bg-cyber-background hover:bg-cyber-accent/20 text-white hover:text-cyber-accent px-4 py-2 rounded-full border border-cyber-accent/30 transition-all hover:border-cyber-accent"
               style={{ fontSize: `${fontSize}rem` }}
             >
