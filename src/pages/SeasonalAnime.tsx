@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { getCurrentSeasonAnime } from "@/services/animeService";
+import { getSeasonNow, getSeasonList, getSeasonUpcoming } from "@/services/searchService";
 import { Anime } from "@/types/anime";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimeGrid from "@/components/AnimeGrid";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const getCurrentSeason = () => {
   const now = new Date();
@@ -23,42 +25,85 @@ const getCurrentYear = () => {
 };
 
 const SeasonalAnime = () => {
-  const [animeList, setAnimeList] = useState<Anime[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [currentAnimeList, setCurrentAnimeList] = useState<Anime[]>([]);
+  const [upcomingAnimeList, setUpcomingAnimeList] = useState<Anime[]>([]);
+  const [seasonList, setSeasonList] = useState<any[]>([]);
+  const [loading, setLoading] = useState({
+    current: true,
+    upcoming: true,
+    list: true
+  });
+  const [error, setError] = useState({
+    current: null as string | null,
+    upcoming: null as string | null,
+    list: null as string | null
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [activeTab, setActiveTab] = useState("current");
   const { toast } = useToast();
   
   const currentSeason = getCurrentSeason();
   const currentYear = getCurrentYear();
 
   useEffect(() => {
-    const fetchSeasonalAnime = async () => {
+    const fetchCurrentSeasonAnime = async () => {
       try {
-        setLoading(true);
-        const response = await getCurrentSeasonAnime(currentPage, 24);
-        setAnimeList(response.data);
+        setLoading(prev => ({ ...prev, current: true }));
+        const response = await getSeasonNow(currentPage, 24);
+        setCurrentAnimeList(response.data);
         setTotalPages(Math.min(10, Math.ceil(response.pagination.items.total / 24)));
-        setLoading(false);
+        setLoading(prev => ({ ...prev, current: false }));
       } catch (err) {
-        console.error("Failed to fetch seasonal anime:", err);
-        setError("Failed to load seasonal anime. Please try again later.");
-        setLoading(false);
+        console.error("Failed to fetch current seasonal anime:", err);
+        setError(prev => ({ ...prev, current: "Failed to load current seasonal anime. Please try again later." }));
+        setLoading(prev => ({ ...prev, current: false }));
         toast({
           title: "Error",
-          description: "Failed to load seasonal anime. Please try again later.",
+          description: "Failed to load current seasonal anime. Please try again later.",
           variant: "destructive",
         });
       }
     };
 
-    fetchSeasonalAnime();
+    const fetchUpcomingSeasonAnime = async () => {
+      try {
+        setLoading(prev => ({ ...prev, upcoming: true }));
+        const response = await getSeasonUpcoming(1, 24);
+        setUpcomingAnimeList(response.data);
+        setLoading(prev => ({ ...prev, upcoming: false }));
+      } catch (err) {
+        console.error("Failed to fetch upcoming seasonal anime:", err);
+        setError(prev => ({ ...prev, upcoming: "Failed to load upcoming seasonal anime. Please try again later." }));
+        setLoading(prev => ({ ...prev, upcoming: false }));
+      }
+    };
+
+    const fetchSeasonList = async () => {
+      try {
+        setLoading(prev => ({ ...prev, list: true }));
+        const response = await getSeasonList();
+        setSeasonList(response.data);
+        setLoading(prev => ({ ...prev, list: false }));
+      } catch (err) {
+        console.error("Failed to fetch season list:", err);
+        setError(prev => ({ ...prev, list: "Failed to load season list. Please try again later." }));
+        setLoading(prev => ({ ...prev, list: false }));
+      }
+    };
+
+    fetchCurrentSeasonAnime();
+    fetchUpcomingSeasonAnime();
+    fetchSeasonList();
   }, [currentPage, toast]);
 
   const handlePageChange = (page: number) => {
     window.scrollTo(0, 0);
     setCurrentPage(page);
+  };
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
   };
 
   return (
@@ -68,7 +113,7 @@ const SeasonalAnime = () => {
       <div className="bg-gradient-to-b from-cyber-background via-cyber-background/80 to-cyber-background py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-cyber-accent mb-4">
-            {currentSeason} {currentYear} Anime
+            Seasonal Anime
           </h1>
           <p className="text-lg text-gray-300 mb-8">
             Stay updated with the freshest seasonal releases
@@ -78,69 +123,111 @@ const SeasonalAnime = () => {
       
       <div className="pt-12 pb-16">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-cyber-accent mb-8 text-center">
-            Current Season Releases
-          </h1>
+          <Tabs defaultValue="current" onValueChange={handleTabChange} className="w-full mb-8">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
+              <TabsTrigger value="current" className="font-orbitron">Current Season</TabsTrigger>
+              <TabsTrigger value="upcoming" className="font-orbitron">Upcoming</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="current">
+              <h2 className="text-3xl md:text-4xl font-orbitron font-bold text-cyber-accent mb-8 text-center">
+                {currentSeason} {currentYear} Releases
+              </h2>
+              
+              <AnimeGrid
+                title=""
+                animeList={currentAnimeList}
+                loading={loading.current}
+                error={error.current}
+              />
+              
+              {!loading.current && !error.current && currentAnimeList.length > 0 && totalPages > 1 && (
+                <Pagination className="my-10">
+                  <PaginationContent>
+                    {currentPage > 1 && (
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
+                        />
+                      </PaginationItem>
+                    )}
+                    
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum = 1;
+                      
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <PaginationItem key={i}>
+                          <PaginationLink
+                            isActive={currentPage === pageNum}
+                            onClick={() => handlePageChange(pageNum)}
+                            className={`cursor-pointer ${
+                              currentPage === pageNum 
+                                ? "border-cyber-accent bg-cyber-accent/20 text-cyber-accent" 
+                                : "border-cyber-accent/30 text-white hover:bg-cyber-accent/10"
+                            }`}
+                          >
+                            {pageNum}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    })}
+                    
+                    {currentPage < totalPages && (
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
+                        />
+                      </PaginationItem>
+                    )}
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="upcoming">
+              <h2 className="text-3xl md:text-4xl font-orbitron font-bold text-cyber-accent mb-8 text-center">
+                Upcoming Season Releases
+              </h2>
+              
+              <AnimeGrid
+                title=""
+                animeList={upcomingAnimeList}
+                loading={loading.upcoming}
+                error={error.upcoming}
+              />
+            </TabsContent>
+          </Tabs>
           
-          <AnimeGrid
-            title=""
-            animeList={animeList}
-            loading={loading}
-            error={error}
-          />
-          
-          {!loading && !error && animeList.length > 0 && totalPages > 1 && (
-            <Pagination className="my-10">
-              <PaginationContent>
-                {currentPage > 1 && (
-                  <PaginationItem>
-                    <PaginationPrevious 
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
-                    />
-                  </PaginationItem>
-                )}
-                
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNum = 1;
-                  
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = currentPage - 2 + i;
-                  }
-                  
-                  return (
-                    <PaginationItem key={i}>
-                      <PaginationLink
-                        isActive={currentPage === pageNum}
-                        onClick={() => handlePageChange(pageNum)}
-                        className={`cursor-pointer ${
-                          currentPage === pageNum 
-                            ? "border-cyber-accent bg-cyber-accent/20 text-cyber-accent" 
-                            : "border-cyber-accent/30 text-white hover:bg-cyber-accent/10"
-                        }`}
-                      >
-                        {pageNum}
-                      </PaginationLink>
-                    </PaginationItem>
-                  );
-                })}
-                
-                {currentPage < totalPages && (
-                  <PaginationItem>
-                    <PaginationNext 
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
-                    />
-                  </PaginationItem>
-                )}
-              </PaginationContent>
-            </Pagination>
+          {!loading.list && !error.list && seasonList.length > 0 && (
+            <div className="mt-16 bg-cyber-background/40 border border-cyber-accent/20 rounded-lg p-6">
+              <h3 className="text-2xl font-orbitron text-cyber-accent mb-6 text-center">
+                Available Seasons Archive
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {seasonList.slice(0, 12).map((season, index) => (
+                  <div 
+                    key={`${season.year}-${season.season}`}
+                    className="bg-cyber-background/60 border border-cyber-accent/30 hover:border-cyber-accent/70 
+                              rounded-md p-3 text-center cursor-pointer transition-all"
+                  >
+                    <p className="text-cyber-accent font-medium">{season.year}</p>
+                    <p className="text-gray-300 capitalize">{season.season}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </div>
