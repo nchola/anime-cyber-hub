@@ -126,13 +126,14 @@ const HeroSection = () => {
           <img 
             src={current.images.jpg.large_image_url}
             alt={current.title || "Featured anime"}
-            className="w-full h-full object-cover transition-all duration-1000 ease-in-out"
+            className="w-full h-full object-contain transition-all duration-1000 ease-in-out"
             style={{ 
-              filter: "brightness(0.6)",
+              filter: "brightness(1) contrast(1)",
+              objectPosition: "right center"
             }}
             loading="eager"
             width="1280"
-            height="720"
+            height="620"
           />
         )}
       </div>
