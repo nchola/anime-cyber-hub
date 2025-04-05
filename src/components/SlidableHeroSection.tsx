@@ -97,8 +97,11 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
           <img 
             src={current.images.jpg.large_image_url}
             alt={current.title || "Featured anime"}
-            className="w-full h-full object-cover object-center transition-all duration-700 ease-in-out"
-            style={{ filter: "brightness(0.4)" }}
+            className="w-full h-full object-cover transition-all duration-700 ease-in-out"
+            style={{ 
+              filter: "brightness(0.4)",
+              objectPosition: "center 25%" // Position image 25% down from center
+            }}
             loading="lazy"
             width="800"
             height="450"
@@ -123,7 +126,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
             
             <div className="max-w-2xl mx-auto mb-8">
               {/* Fixed title styling to prevent white box overflow */}
-              <h2 className="text-2xl font-orbitron mb-2 text-white inline-block">
+              <h2 className="text-2xl font-orbitron mb-2 text-white block">
                 {current.title_english || current.title}
               </h2>
               

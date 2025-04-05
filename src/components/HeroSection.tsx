@@ -16,6 +16,8 @@ const HeroSection = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [trailerModalOpen, setTrailerModalOpen] = useState(false);
+  const [currentTrailerUrl, setCurrentTrailerUrl] = useState<string | undefined>("");
+  const [currentTrailerTitle, setCurrentTrailerTitle] = useState<string | undefined>("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -70,6 +72,9 @@ const HeroSection = () => {
       });
       return;
     }
+    // Store the current trailer URL and title to prevent it from changing
+    setCurrentTrailerUrl(current.trailer.embed_url);
+    setCurrentTrailerTitle(current.title_english || current.title);
     setTrailerModalOpen(true);
   };
 
@@ -113,16 +118,18 @@ const HeroSection = () => {
     <div className="w-full h-[85vh] relative overflow-hidden bg-cyber-background noise-bg">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Background Image - Fixed positioning issues */}
+      {/* Background Image - Fixed positioning and brightness */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {current && current.images && current.images.jpg && (
           <img 
             src={current.images.jpg.large_image_url}
             alt={current.title || "Featured anime"}
             className="w-full h-full object-cover object-center transition-all duration-1000 ease-in-out"
-            style={{ filter: "brightness(0.4) contrast(1.1)" }}
+            style={{ 
+              filter: "brightness(0.4)",
+              objectPosition: "center 25%" // Position image 25% down from center
+            }}
             loading="eager"
-            fetchPriority="high"
             width="1280"
             height="720"
           />
@@ -135,18 +142,20 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
           <div className="max-w-3xl">
-            <div className="inline-block bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent mb-4">
-              #{currentIndex + 1} Most Favorited Anime
+            <div className="mb-6 flex flex-col gap-4">
+              <div className="inline-block bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent">
+                #{currentIndex + 1} Most Favorited Anime
+              </div>
+              
+              {/* Fixed title styling to prevent layout issues */}
+              <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-white shadow-[0_0_10px_rgba(255,255,255,0.3)] block">
+                {current.title_english || current.title}
+              </h1>
+              
+              <h2 className="text-xl md:text-2xl font-noto-sans opacity-70 text-cyber-accent">
+                {current.title_japanese}
+              </h2>
             </div>
-            
-            {/* Fixed title styling to prevent white box overflow */}
-            <h1 className="text-3xl md:text-4xl font-orbitron font-bold mb-4 text-white shadow-[0_0_10px_rgba(255,255,255,0.3)] inline-block">
-              {current.title_english || current.title}
-            </h1>
-            
-            <h2 className="text-xl md:text-2xl font-noto-sans opacity-70 mb-4 text-cyber-accent">
-              {current.title_japanese}
-            </h2>
             
             <div className="flex flex-wrap gap-2 mb-6">
               {current.genres && current.genres.length > 0 && current.genres.slice(0, 3).map((genre) => (
@@ -240,8 +249,8 @@ const HeroSection = () => {
       <TrailerModal 
         isOpen={trailerModalOpen}
         onClose={() => setTrailerModalOpen(false)}
-        embedUrl={current.trailer?.embed_url}
-        title={current.title_english || current.title}
+        embedUrl={currentTrailerUrl}
+        title={currentTrailerTitle}
       />
     </div>
   );

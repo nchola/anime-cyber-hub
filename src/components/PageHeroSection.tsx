@@ -76,7 +76,7 @@ const PageHeroSection: React.FC<PageHeroSectionProps> = ({
           style={{ 
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundPosition: 'center 25%', // Position image 25% down from center
             backgroundRepeat: 'no-repeat',
           }}
         ></div>
