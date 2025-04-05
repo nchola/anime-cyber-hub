@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Star, Heart } from "lucide-react";
 import { Anime } from "@/types/anime";
@@ -35,15 +36,16 @@ const HeroSection = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (featuredAnime.length > 0) {
+    // Only start the interval after data is loaded
+    if (featuredAnime.length > 0) {
+      const interval = setInterval(() => {
         setCurrentIndex((prevIndex) => 
           prevIndex === featuredAnime.length - 1 ? 0 : prevIndex + 1
         );
-      }
-    }, 8000);
-    
-    return () => clearInterval(interval);
+      }, 8000);
+      
+      return () => clearInterval(interval);
+    }
   }, [featuredAnime.length]);
 
   const handlePrev = () => {
@@ -73,7 +75,7 @@ const HeroSection = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-[600px] relative overflow-hidden bg-cyber-background">
+      <div className="w-full h-[500px] relative overflow-hidden bg-cyber-background">
         <div className="container mx-auto px-4 h-full flex flex-col justify-center">
           <div className="w-full max-w-3xl">
             <Skeleton className="h-12 w-3/4 mb-4 bg-gray-800" />
@@ -89,7 +91,7 @@ const HeroSection = () => {
 
   if (error || featuredAnime.length === 0) {
     return (
-      <div className="w-full h-[600px] relative overflow-hidden bg-cyber-background flex justify-center items-center">
+      <div className="w-full h-[500px] relative overflow-hidden bg-cyber-background flex justify-center items-center">
         <div className="text-center">
           <h2 className="text-2xl font-orbitron text-cyber-accent mb-4">
             {error || "No featured anime available"}
@@ -108,55 +110,26 @@ const HeroSection = () => {
   const current = featuredAnime[currentIndex];
   
   return (
-    <div className="w-full h-screen relative overflow-hidden bg-cyber-background noise-bg">
+    <div className="w-full h-[85vh] relative overflow-hidden bg-cyber-background noise-bg">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
       <div className="absolute inset-0 z-0 overflow-hidden">
         {current && current.images && current.images.jpg && (
-          <picture>
-            <source 
-              type="image/webp"
-              srcSet={`
-                ${current.images.jpg.large_image_url} 1280w,
-                ${current.images.jpg.large_image_url} 1920w
-              `}
-              sizes="100vw"
-            />
-            <img 
-              src={current.images.jpg.large_image_url}
-              alt={current.title || "Featured anime"}
-              className="w-full h-full object-cover object-center transition-all duration-1000 ease-in-out transform scale-110"
-              style={{ filter: "brightness(0.3) contrast(1.2)" }}
-              loading="eager"
-              decoding="async"
-            />
-          </picture>
+          <img 
+            src={current.images.jpg.large_image_url}
+            alt={current.title || "Featured anime"}
+            className="w-full h-full object-cover object-center transition-all duration-1000 ease-in-out transform scale-110"
+            style={{ filter: "brightness(0.3) contrast(1.2)" }}
+            loading="eager"
+            fetchPriority="high"
+            width="1280"
+            height="720"
+          />
         )}
       </div>
       
-      <div className="absolute inset-0 z-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGgxMnYyNEgzNnpNMTIgMThoMTJ2MjRIMTJ6TTI0IDEyaDEydjM2SDI0eiIgc3Ryb2tlPSIjRkZEOTVBIiBzdHJva2Utb3BhY2l0eT0iLjEiIHN0cm9rZS13aWR0aD0iLjUiLz48L2c+PC9zdmc+')] opacity-40"></div>
-      
-      <div className="absolute inset-0 z-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,217,90,0.05)_25%,rgba(255,217,90,0.05)_50%,transparent_50%,transparent_75%,rgba(255,217,90,0.05)_75%)] bg-[length:10px_10px] opacity-30"></div>
-      
       <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-transparent to-black/80"></div>
-      
-      <div className="scanlines absolute inset-0 z-10 opacity-25" />
-      
-      <div className="absolute inset-0 z-10">
-        {[...Array(20)].map((_, index) => (
-          <div 
-            key={index} 
-            className="absolute w-1 h-1 rounded-full bg-cyber-accent/30"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animation: `pulse-accent ${2 + Math.random() * 3}s infinite alternate`,
-              animationDelay: `${Math.random() * 5}s`
-            }}
-          />
-        ))}
-      </div>
       
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
@@ -234,6 +207,7 @@ const HeroSection = () => {
       <button 
         onClick={handlePrev}
         className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-black/30 text-white z-20 hover:bg-black/50 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:scale-110"
+        aria-label="Previous slide"
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
@@ -241,6 +215,7 @@ const HeroSection = () => {
       <button 
         onClick={handleNext}
         className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-black/30 text-white z-20 hover:bg-black/50 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:scale-110"
+        aria-label="Next slide"
       >
         <ChevronRight className="w-6 h-6" />
       </button>

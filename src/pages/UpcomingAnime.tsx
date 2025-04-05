@@ -7,7 +7,7 @@ import { Anime } from "@/types/anime";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimeGrid from "@/components/AnimeGrid";
-import PageHeroSection from "@/components/PageHeroSection";
+import SlidableHeroSection from "@/components/SlidableHeroSection";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const UpcomingAnime = () => {
@@ -77,81 +77,82 @@ const UpcomingAnime = () => {
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
-      <PageHeroSection
-        title="Upcoming Anime"
-        subtitle="Get a sneak peek at the future of anime"
-        items={featuredAnime}
-        type="anime"
-        loading={loading.featured}
-        error={error.featured}
-      />
-      
-      <div className="pt-8 pb-16">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-cyber-accent mb-8 text-center">
-            Upcoming Releases
-          </h1>
-          
-          <AnimeGrid
-            title=""
-            animeList={animeList}
-            loading={loading.main}
-            error={error.main}
-          />
-          
-          {!loading.main && !error.main && animeList.length > 0 && totalPages > 1 && (
-            <Pagination className="my-10">
-              <PaginationContent>
-                {currentPage > 1 && (
-                  <PaginationItem>
-                    <PaginationPrevious 
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
-                    />
-                  </PaginationItem>
-                )}
-                
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNum = 1;
-                  
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = currentPage - 2 + i;
-                  }
-                  
-                  return (
-                    <PaginationItem key={i}>
-                      <PaginationLink
-                        isActive={currentPage === pageNum}
-                        onClick={() => handlePageChange(pageNum)}
-                        className={`cursor-pointer ${
-                          currentPage === pageNum 
-                            ? "border-cyber-accent bg-cyber-accent/20 text-cyber-accent" 
-                            : "border-cyber-accent/30 text-white hover:bg-cyber-accent/10"
-                        }`}
-                      >
-                        {pageNum}
-                      </PaginationLink>
+      <div className="pt-16"> {/* Padding for navbar */}
+        <SlidableHeroSection
+          title="Upcoming Anime"
+          subtitle="Get a sneak peek at the future of anime"
+          items={featuredAnime}
+          loading={loading.featured}
+          error={error.featured}
+        />
+        
+        <div className="pt-8 pb-16">
+          <div className="container mx-auto px-4">
+            <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-cyber-accent mb-8 text-center">
+              Upcoming Releases
+            </h1>
+            
+            <AnimeGrid
+              title=""
+              animeList={animeList}
+              loading={loading.main}
+              error={error.main}
+            />
+            
+            {!loading.main && !error.main && animeList.length > 0 && totalPages > 1 && (
+              <Pagination className="my-10">
+                <PaginationContent>
+                  {currentPage > 1 && (
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
+                      />
                     </PaginationItem>
-                  );
-                })}
-                
-                {currentPage < totalPages && (
-                  <PaginationItem>
-                    <PaginationNext 
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
-                    />
-                  </PaginationItem>
-                )}
-              </PaginationContent>
-            </Pagination>
-          )}
+                  )}
+                  
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum = 1;
+                    
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <PaginationItem key={i}>
+                        <PaginationLink
+                          isActive={currentPage === pageNum}
+                          onClick={() => handlePageChange(pageNum)}
+                          className={`cursor-pointer ${
+                            currentPage === pageNum 
+                              ? "border-cyber-accent bg-cyber-accent/20 text-cyber-accent" 
+                              : "border-cyber-accent/30 text-white hover:bg-cyber-accent/10"
+                          }`}
+                        >
+                          {pageNum}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+                  
+                  {currentPage < totalPages && (
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
+                      />
+                    </PaginationItem>
+                  )}
+                </PaginationContent>
+              </Pagination>
+            )}
+          </div>
         </div>
       </div>
       

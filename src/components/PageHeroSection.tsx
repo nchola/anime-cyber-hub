@@ -2,6 +2,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { AlertCircle } from 'lucide-react';
 import { Anime } from '@/types/anime';
 import { Manga } from '@/types/manga';
 
@@ -15,6 +17,8 @@ interface PageHeroSectionProps {
   };
   items?: Anime[] | Manga[];
   type?: 'anime' | 'manga';
+  loading?: boolean;
+  error?: string | null;
 }
 
 const PageHeroSection: React.FC<PageHeroSectionProps> = ({
@@ -24,7 +28,46 @@ const PageHeroSection: React.FC<PageHeroSectionProps> = ({
   actionButton,
   items,
   type = 'anime',
+  loading = false,
+  error = null,
 }) => {
+  // Render loading state
+  if (loading) {
+    return (
+      <div className="relative bg-gradient-to-b from-cyber-background to-cyber-background/80 py-16 md:py-24">
+        <div className="container relative z-10 mx-auto px-4 text-center">
+          <Skeleton className="mx-auto h-10 w-2/3 max-w-md rounded-md bg-gray-800" />
+          <Skeleton className="mx-auto mt-4 h-6 w-1/2 max-w-sm rounded-md bg-gray-800" />
+          <div className="mt-10 flex items-center justify-center space-x-4 overflow-x-auto py-4">
+            {[...Array(5)].map((_, index) => (
+              <Skeleton 
+                key={index}
+                className="h-24 w-16 rounded-md bg-gray-800 flex-shrink-0 md:h-32 md:w-24" 
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render error state
+  if (error) {
+    return (
+      <div className="relative bg-gradient-to-b from-cyber-background to-cyber-background/80 py-16 md:py-24">
+        <div className="container relative z-10 mx-auto px-4 text-center">
+          <AlertCircle className="mx-auto h-12 w-12 text-cyber-accent mb-4" />
+          <h2 className="mb-4 font-orbitron text-2xl font-bold text-cyber-accent md:text-3xl">
+            {error}
+          </h2>
+          <p className="mx-auto max-w-md text-gray-400">
+            Please try refreshing the page or check back later.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative bg-gradient-to-b from-cyber-background to-cyber-background/80 py-16 md:py-24">
       {backgroundImage && (
@@ -76,6 +119,9 @@ const PageHeroSection: React.FC<PageHeroSectionProps> = ({
                     src={item.images?.jpg?.image_url || '/placeholder.svg'} 
                     alt={item.title}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
+                    width="96"
+                    height="128"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-1 text-center text-xs text-white">
