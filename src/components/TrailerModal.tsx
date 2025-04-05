@@ -47,7 +47,6 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ isOpen, onClose, embedUrl, 
                 title={`${title || "Anime"} trailer`}
                 onLoad={handleIframeLoad}
                 style={{ opacity: isIframeLoaded ? 1 : 0 }}
-                fetchpriority="low"
               />
             </>
           ) : (

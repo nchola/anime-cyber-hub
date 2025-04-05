@@ -113,13 +113,14 @@ const HeroSection = () => {
     <div className="w-full h-[85vh] relative overflow-hidden bg-cyber-background noise-bg">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
+      {/* Background Image - Fixed positioning issues */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {current && current.images && current.images.jpg && (
           <img 
             src={current.images.jpg.large_image_url}
             alt={current.title || "Featured anime"}
-            className="w-full h-full object-cover object-center transition-all duration-1000 ease-in-out transform scale-110"
-            style={{ filter: "brightness(0.3) contrast(1.2)" }}
+            className="w-full h-full object-cover object-center transition-all duration-1000 ease-in-out"
+            style={{ filter: "brightness(0.4) contrast(1.1)" }}
             loading="eager"
             fetchPriority="high"
             width="1280"
@@ -128,17 +129,18 @@ const HeroSection = () => {
         )}
       </div>
       
-      <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
+      <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-transparent to-black/80"></div>
       
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
           <div className="max-w-3xl">
-            <span className="inline-block bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent mb-4">
+            <div className="inline-block bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent mb-4">
               #{currentIndex + 1} Most Favorited Anime
-            </span>
+            </div>
             
-            <h1 className="text-3xl md:text-4xl font-orbitron font-bold mb-4 glitch-hover text-white shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+            {/* Fixed title styling to prevent white box overflow */}
+            <h1 className="text-3xl md:text-4xl font-orbitron font-bold mb-4 text-white shadow-[0_0_10px_rgba(255,255,255,0.3)] inline-block">
               {current.title_english || current.title}
             </h1>
             

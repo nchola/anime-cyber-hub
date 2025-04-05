@@ -91,13 +91,14 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
     <div className="w-full h-[500px] sm:h-[600px] relative overflow-hidden bg-cyber-background noise-bg">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
+      {/* Fixed background image positioning and brightness */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {current && current.images && current.images.jpg && (
           <img 
             src={current.images.jpg.large_image_url}
             alt={current.title || "Featured anime"}
             className="w-full h-full object-cover object-center transition-all duration-700 ease-in-out"
-            style={{ filter: "brightness(0.3)" }}
+            style={{ filter: "brightness(0.4)" }}
             loading="lazy"
             width="800"
             height="450"
@@ -105,7 +106,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
         )}
       </div>
       
-      <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
+      <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
       
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
@@ -121,11 +122,12 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
             )}
             
             <div className="max-w-2xl mx-auto mb-8">
-              <h2 className="text-2xl font-orbitron mb-2 text-white">
+              {/* Fixed title styling to prevent white box overflow */}
+              <h2 className="text-2xl font-orbitron mb-2 text-white inline-block">
                 {current.title_english || current.title}
               </h2>
               
-              <div className="flex flex-wrap justify-center gap-2 mb-4">
+              <div className="flex flex-wrap justify-center gap-2 mb-4 mt-3">
                 {current.genres && current.genres.length > 0 && current.genres.slice(0, 3).map((genre) => (
                   <span key={genre.mal_id} className="text-xs font-medium py-1 px-3 rounded-full bg-cyber-purple/30 text-cyber-accent border border-cyber-accent/30">
                     {genre.name}
