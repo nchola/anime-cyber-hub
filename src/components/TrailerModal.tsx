@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 
@@ -11,6 +11,13 @@ interface TrailerModalProps {
 }
 
 const TrailerModal: React.FC<TrailerModalProps> = ({ isOpen, onClose, embedUrl, title }) => {
+  const [isIframeLoaded, setIsIframeLoaded] = useState(false);
+
+  // We only load the iframe when the modal is open to save resources
+  const handleIframeLoad = () => {
+    setIsIframeLoaded(true);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[800px] bg-cyber-background border-cyber-accent/30">
@@ -25,14 +32,24 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ isOpen, onClose, embedUrl, 
         </DialogHeader>
         <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-md">
           {embedUrl ? (
-            <iframe 
-              src={embedUrl}
-              className="absolute top-0 left-0 w-full h-full"
-              allow="autoplay; encrypted-media; picture-in-picture"
-              allowFullScreen
-              loading="lazy"
-              title={`${title || "Anime"} trailer`}
-            />
+            <>
+              {!isIframeLoaded && (
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black">
+                  <p className="text-cyber-accent">Loading trailer...</p>
+                </div>
+              )}
+              <iframe 
+                src={embedUrl}
+                className="absolute top-0 left-0 w-full h-full"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+                title={`${title || "Anime"} trailer`}
+                onLoad={handleIframeLoad}
+                style={{ opacity: isIframeLoaded ? 1 : 0 }}
+                fetchpriority="low"
+              />
+            </>
           ) : (
             <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black">
               <p className="text-gray-400">Trailer tidak tersedia untuk anime ini.</p>

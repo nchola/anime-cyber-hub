@@ -26,31 +26,36 @@ const MangaGrid: React.FC<MangaGridProps> = ({
   limitItems = 10,
   onViewMore,
 }) => {
-  // Loading placeholders
+  // Loading placeholders with optimized rendering
   const renderSkeletons = () => {
-    return Array(limitItems)
-      .fill(0)
-      .map((_, index) => (
-        <div key={`skeleton-${index}`} className="cyber-card">
-          <Skeleton className="aspect-[3/4] w-full rounded-t bg-gray-800" />
-          <div className="p-4">
-            <Skeleton className="h-5 w-2/3 rounded-md bg-gray-800" />
-            <div className="flex gap-2 mt-3">
-              <Skeleton className="h-4 w-14 rounded-full bg-gray-800" />
-              <Skeleton className="h-4 w-14 rounded-full bg-gray-800" />
-            </div>
+    return Array.from({ length: limitItems }, (_, index) => (
+      <div key={`skeleton-${index}`} className="cyber-card">
+        <Skeleton className="aspect-[3/4] w-full rounded-t bg-gray-800" />
+        <div className="p-4">
+          <Skeleton className="h-5 w-2/3 rounded-md bg-gray-800" />
+          <div className="flex gap-2 mt-3">
+            <Skeleton className="h-4 w-14 rounded-full bg-gray-800" />
+            <Skeleton className="h-4 w-14 rounded-full bg-gray-800" />
           </div>
         </div>
-      ));
+      </div>
+    ));
   };
 
-  // Error state
+  // Error state with fallback to cached content if available
   if (error) {
     return (
       <div className="text-center py-12 bg-cyber-background/40 rounded-lg border border-cyber-accent/20">
         <AlertCircle className="mx-auto h-12 w-12 text-cyber-accent mb-4" />
         <p className="text-xl font-medium text-cyber-accent">{error}</p>
         <p className="mt-2 text-gray-400">Try refreshing the page or check back later.</p>
+        {/* Retry button */}
+        <Button 
+          onClick={() => window.location.reload()} 
+          className="mt-4 bg-cyber-accent text-cyber-background hover:bg-cyber-accent/90"
+        >
+          Retry
+        </Button>
       </div>
     );
   }
