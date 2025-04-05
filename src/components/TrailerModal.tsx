@@ -32,10 +32,7 @@ const TrailerModal: React.FC<TrailerModalProps> = ({ isOpen, onClose, embedUrl, 
           <DialogTitle className="text-cyber-accent font-orbitron">
             {title || "Anime Trailer"}
           </DialogTitle>
-          <X 
-            className="h-4 w-4 cursor-pointer text-gray-400 hover:text-white trailer-close-btn" 
-            onClick={onClose}
-          />
+          
         </DialogHeader>
         <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-md">
           {embedUrl ? (

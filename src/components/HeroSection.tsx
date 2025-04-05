@@ -128,7 +128,7 @@ const HeroSection = () => {
             alt={current.title || "Featured anime"}
             className="w-full h-full object-cover transition-all duration-1000 ease-in-out"
             style={{ 
-              filter: "brightness(0.5)",
+              filter: "brightness(0.6)",
             }}
             loading="eager"
             width="1280"
@@ -149,17 +149,6 @@ const HeroSection = () => {
                   #{currentIndex + 1} Most Favorited
                 </div>
                 
-                {current.score > 0 && (
-                  <span className="text-xs font-medium py-1 px-3 rounded-full bg-cyber-accent/20 text-cyber-accent border border-cyber-accent/30 backdrop-blur-sm flex items-center gap-1">
-                    <Star className="w-3 h-3 fill-cyber-accent text-cyber-accent" /> {current.score.toFixed(1)}
-                  </span>
-                )}
-                
-                {current.favorites && current.favorites > 0 && (
-                  <span className="text-xs font-medium py-1 px-3 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 backdrop-blur-sm flex items-center gap-1">
-                    <Heart className="w-3 h-3 fill-pink-500 text-pink-500" /> {current.favorites.toLocaleString()}
-                  </span>
-                )}
               </div>
               
               {/* Title displayed as block with properly contained background */}
@@ -178,6 +167,17 @@ const HeroSection = () => {
                   {genre.name}
                 </span>
               ))}
+              {current.score > 0 && (
+                  <span className="text-xs font-medium py-1 px-3 rounded-full bg-cyber-accent/20 text-cyber-accent border border-cyber-accent/30 backdrop-blur-sm flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-cyber-accent text-cyber-accent" /> {current.score.toFixed(1)}
+                  </span>
+                )}
+                
+                {current.favorites && current.favorites > 0 && (
+                  <span className="text-xs font-medium py-1 px-3 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 backdrop-blur-sm flex items-center gap-1">
+                    <Heart className="w-3 h-3 fill-pink-500 text-pink-500" /> {current.favorites.toLocaleString()}
+                  </span>
+                )}
             </div>
             
             <div className="backdrop-blur-md bg-black/30 border border-cyber-accent/10 p-4 mb-6 transition-all duration-500 hover:bg-black/40 mx-0 my-0 rounded-md">
