@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import TrailerModal from "@/components/TrailerModal";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const HeroSection = () => {
   const [featuredAnime, setFeaturedAnime] = useState<Anime[]>([]);
@@ -19,6 +20,7 @@ const HeroSection = () => {
   const [currentTrailerUrl, setCurrentTrailerUrl] = useState<string | undefined>("");
   const [currentTrailerTitle, setCurrentTrailerTitle] = useState<string | undefined>("");
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchFeaturedAnime = async () => {
@@ -80,7 +82,7 @@ const HeroSection = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-[500px] relative overflow-hidden bg-cyber-background">
+      <div className="w-full h-screen relative overflow-hidden bg-cyber-background">
         <div className="container mx-auto px-4 h-full flex flex-col justify-center">
           <div className="w-full max-w-3xl">
             <Skeleton className="h-12 w-3/4 mb-4 bg-gray-800" />
@@ -96,7 +98,7 @@ const HeroSection = () => {
 
   if (error || featuredAnime.length === 0) {
     return (
-      <div className="w-full h-[500px] relative overflow-hidden bg-cyber-background flex justify-center items-center">
+      <div className="w-full h-screen relative overflow-hidden bg-cyber-background flex justify-center items-center">
         <div className="text-center">
           <h2 className="text-2xl font-orbitron text-cyber-accent mb-4">
             {error || "No featured anime available"}
@@ -115,19 +117,18 @@ const HeroSection = () => {
   const current = featuredAnime[currentIndex];
   
   return (
-    <div className="w-full h-[85vh] relative overflow-hidden bg-cyber-background noise-bg">
+    <div className="w-full h-screen relative overflow-hidden bg-cyber-background noise-bg">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Background Image - Fixed positioning and brightness */}
+      {/* Background Image - Using object-cover and no objectPosition */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {current && current.images && current.images.jpg && (
           <img 
             src={current.images.jpg.large_image_url}
             alt={current.title || "Featured anime"}
-            className="w-full h-full object-cover object-center transition-all duration-1000 ease-in-out"
+            className="w-full h-full object-cover transition-all duration-1000 ease-in-out"
             style={{ 
-              filter: "brightness(0.4)",
-              objectPosition: "center 25%" // Position image 25% down from center
+              filter: "brightness(0.5)",
             }}
             loading="eager"
             width="1280"
@@ -141,18 +142,32 @@ const HeroSection = () => {
       
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
-          <div className="max-w-3xl">
-            <div className="mb-6 flex flex-col gap-4">
-              <div className="inline-block bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent">
-                #{currentIndex + 1} Most Favorited Anime
+          <div className={`max-w-3xl ${isMobile ? 'scale-80' : ''}`}>
+            <div className="mb-6 flex flex-col gap-2">
+              <div className="flex flex-wrap gap-3 items-center mb-2">
+                <div className="inline-block bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent">
+                  #{currentIndex + 1} Most Favorited
+                </div>
+                
+                {current.score > 0 && (
+                  <span className="text-xs font-medium py-1 px-3 rounded-full bg-cyber-accent/20 text-cyber-accent border border-cyber-accent/30 backdrop-blur-sm flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-cyber-accent text-cyber-accent" /> {current.score.toFixed(1)}
+                  </span>
+                )}
+                
+                {current.favorites && current.favorites > 0 && (
+                  <span className="text-xs font-medium py-1 px-3 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 backdrop-blur-sm flex items-center gap-1">
+                    <Heart className="w-3 h-3 fill-pink-500 text-pink-500" /> {current.favorites.toLocaleString()}
+                  </span>
+                )}
               </div>
               
-              {/* Fixed title styling to prevent layout issues */}
-              <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-white shadow-[0_0_10px_rgba(255,255,255,0.3)] block">
+              {/* Title displayed as block with properly contained background */}
+              <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-white mb-2">
                 {current.title_english || current.title}
               </h1>
               
-              <h2 className="text-xl md:text-2xl font-noto-sans opacity-70 text-cyber-accent">
+              <h2 className="text-xl md:text-2xl font-noto-sans opacity-70 text-cyber-accent mb-3">
                 {current.title_japanese}
               </h2>
             </div>
@@ -163,16 +178,6 @@ const HeroSection = () => {
                   {genre.name}
                 </span>
               ))}
-              {current.score > 0 && (
-                <span className="text-xs font-medium py-1 px-3 rounded-full bg-cyber-accent/20 text-cyber-accent border border-cyber-accent/30 backdrop-blur-sm flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-cyber-accent text-cyber-accent" /> {current.score.toFixed(1)}
-                </span>
-              )}
-              {current.favorites && current.favorites > 0 && (
-                <span className="text-xs font-medium py-1 px-3 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 backdrop-blur-sm flex items-center gap-1">
-                  <Heart className="w-3 h-3 fill-pink-500 text-pink-500" /> {current.favorites.toLocaleString()}
-                </span>
-              )}
             </div>
             
             <div className="backdrop-blur-md bg-black/30 border border-cyber-accent/10 p-4 mb-6 transition-all duration-500 hover:bg-black/40 mx-0 my-0 rounded-md">

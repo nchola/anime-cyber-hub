@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 
@@ -12,6 +12,13 @@ interface TrailerModalProps {
 
 const TrailerModal: React.FC<TrailerModalProps> = ({ isOpen, onClose, embedUrl, title }) => {
   const [isIframeLoaded, setIsIframeLoaded] = useState(false);
+
+  // Reset iframe loaded state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setIsIframeLoaded(false);
+    }
+  }, [isOpen]);
 
   // We only load the iframe when the modal is open to save resources
   const handleIframeLoad = () => {

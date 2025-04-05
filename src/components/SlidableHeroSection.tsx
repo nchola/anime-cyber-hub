@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SlidableHeroSectionProps {
   title: string;
@@ -23,6 +24,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
   error,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     if (items.length > 0) {
@@ -51,7 +53,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
   // Loading state
   if (loading) {
     return (
-      <div className="w-full h-[500px] relative overflow-hidden bg-cyber-background">
+      <div className="w-full h-screen relative overflow-hidden bg-cyber-background">
         <div className="container mx-auto px-4 h-full flex flex-col justify-center items-center">
           <Skeleton className="h-12 w-3/4 max-w-md mb-4 bg-gray-800" />
           <Skeleton className="h-6 w-1/2 max-w-xs mb-8 bg-gray-800" />
@@ -68,7 +70,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
   // Error state
   if (error || items.length === 0) {
     return (
-      <div className="w-full h-[500px] relative overflow-hidden bg-cyber-background flex justify-center items-center">
+      <div className="w-full h-screen relative overflow-hidden bg-cyber-background flex justify-center items-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-cyber-accent mb-4" />
           <h2 className="text-2xl font-orbitron text-cyber-accent mb-4">
@@ -88,10 +90,10 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
   const current = items[currentIndex];
 
   return (
-    <div className="w-full h-[500px] sm:h-[600px] relative overflow-hidden bg-cyber-background noise-bg">
+    <div className="w-full h-screen relative overflow-hidden bg-cyber-background noise-bg">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Fixed background image positioning and brightness */}
+      {/* Background image with full coverage */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {current && current.images && current.images.jpg && (
           <img 
@@ -99,8 +101,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
             alt={current.title || "Featured anime"}
             className="w-full h-full object-cover transition-all duration-700 ease-in-out"
             style={{ 
-              filter: "brightness(0.4)",
-              objectPosition: "center 25%" // Position image 25% down from center
+              filter: "brightness(0.5)",
             }}
             loading="lazy"
             width="800"
@@ -113,7 +114,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
       
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className={`max-w-3xl mx-auto text-center ${isMobile ? 'scale-80' : ''}`}>
             <h1 className="text-3xl md:text-4xl font-orbitron font-bold mb-4 text-cyber-accent">
               {title}
             </h1>
@@ -125,8 +126,8 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
             )}
             
             <div className="max-w-2xl mx-auto mb-8">
-              {/* Fixed title styling to prevent white box overflow */}
-              <h2 className="text-2xl font-orbitron mb-2 text-white block">
+              {/* Improved title styling without white box */}
+              <h2 className="text-2xl font-orbitron mb-2 text-white">
                 {current.title_english || current.title}
               </h2>
               

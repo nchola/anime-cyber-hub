@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -46,6 +47,7 @@
   body {
     @apply relative bg-cyber-background text-foreground font-noto-sans;
     background-color: #0F0F0F;
+    overflow-x: hidden;
   }
 
   /* Image rendering optimization */
@@ -69,6 +71,12 @@
     );
     background-size: 100% 4px;
     animation: scanline 8s linear infinite;
+  }
+
+  /* Scale utility for mobile responsiveness */
+  .scale-80 {
+    transform: scale(0.8);
+    transform-origin: center;
   }
 
   /* Glitch effect */

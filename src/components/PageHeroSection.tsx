@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
 import { Anime } from '@/types/anime';
 import { Manga } from '@/types/manga';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PageHeroSectionProps {
   title: string;
@@ -31,6 +32,8 @@ const PageHeroSection: React.FC<PageHeroSectionProps> = ({
   loading = false,
   error = null,
 }) => {
+  const isMobile = useIsMobile();
+
   // Render loading state
   if (loading) {
     return (
@@ -76,13 +79,13 @@ const PageHeroSection: React.FC<PageHeroSectionProps> = ({
           style={{ 
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center 25%', // Position image 25% down from center
+            backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
           }}
         ></div>
       )}
       
-      <div className="container relative z-10 mx-auto px-4 text-center">
+      <div className={`container relative z-10 mx-auto px-4 text-center ${isMobile ? 'scale-80' : ''}`}>
         <h1 className="mb-4 font-orbitron text-4xl font-bold text-cyber-accent md:text-5xl">
           {title}
         </h1>

@@ -117,7 +117,7 @@ const Index = () => {
           <GenreCloud />
         </div>
         
-        {/* Retro Game Animation section - NEW */}
+        {/* Retro Game Animation section */}
         <div className="container mx-auto px-4 mb-8">
           <h2 className="text-2xl font-orbitron text-cyber-accent text-center mb-4">
             Retro Arcade Zone
