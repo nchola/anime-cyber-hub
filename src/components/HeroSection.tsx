@@ -53,11 +53,11 @@ const HeroSection = () => {
     }
   }, [featuredAnime.length]);
 
-  // Ensure hero section takes full height of viewport
+  // Ensure hero section takes full height of viewport with improved handling
   useEffect(() => {
     const adjustHeight = () => {
       if (heroSectionRef.current) {
-        heroSectionRef.current.style.height = `${window.innerHeight}px`;
+        heroSectionRef.current.style.minHeight = `${window.innerHeight}px`;
       }
     };
 
@@ -140,13 +140,16 @@ const HeroSection = () => {
     >
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Background Image with better positioning */}
+      {/* Background Image with improved positioning for full coverage */}
       {current && current.images && current.images.jpg && (
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-t before:from-black before:via-black/60 before:to-transparent">
           <div 
-            className="absolute inset-0 bg-center bg-cover"
+            className="w-full h-full"
             style={{
               backgroundImage: `url(${current.images.jpg.large_image_url})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
               filter: "brightness(0.6)",
             }}
           />
@@ -159,24 +162,29 @@ const HeroSection = () => {
       
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
-          {/* Mobile scaling for content */}
+          {/* Mobile scaling for content with improved spacing */}
           <div className={`max-w-3xl ${isMobile ? 'transform scale-80 origin-left' : ''}`}>
-            <div className="mb-6 flex flex-col gap-2">
-              <div className="mb-4">
-                <span className="inline-flex bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent">
-                  #{currentIndex + 1} Most Favorited
-                </span>
-              </div>
+            <div className="flex flex-wrap items-center mb-4">
+              <span className="inline-flex bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent mr-4 mb-2">
+                #{currentIndex + 1} Most Favorited
+              </span>
               
-              {/* Title with improved styling */}
-              <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-white mb-2 leading-tight">
-                {current.title_english || current.title}
-              </h1>
-              
-              <h2 className="text-xl md:text-2xl font-noto-sans opacity-70 text-cyber-accent mb-3">
-                {current.title_japanese}
-              </h2>
+              <Button 
+                onClick={handleWatchTrailer} 
+                className="bg-cyber-accent text-cyber-background font-orbitron hover:bg-opacity-80 transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,217,90,0.5)] transform hover:-translate-y-1 mb-2"
+              >
+                Watch Trailer
+              </Button>
             </div>
+            
+            {/* Title with improved styling */}
+            <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-white mb-2 leading-tight">
+              {current.title_english || current.title}
+            </h1>
+            
+            <h2 className="text-xl md:text-2xl font-noto-sans opacity-70 text-cyber-accent mb-3">
+              {current.title_japanese}
+            </h2>
             
             <div className="flex flex-wrap gap-2 mb-6">
               {current.genres && current.genres.length > 0 && current.genres.slice(0, 3).map((genre) => (
@@ -218,12 +226,6 @@ const HeroSection = () => {
             </div>
             
             <div className="flex flex-wrap gap-4">
-              <Button 
-                onClick={handleWatchTrailer} 
-                className="bg-cyber-accent text-cyber-background font-orbitron hover:bg-opacity-80 transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,217,90,0.5)] transform hover:-translate-y-1"
-              >
-                Watch Trailer
-              </Button>
               <Link to={`/anime/${current.mal_id}`}>
                 <Button 
                   variant="outline" 

@@ -111,7 +111,7 @@ const SearchSuggestions = ({
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-400 line-clamp-2">
+                        <p className="text-xs text-gray-400 line-clamp-3">
                           {anime.synopsis || 'No synopsis available.'}
                         </p>
                       </div>

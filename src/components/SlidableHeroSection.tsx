@@ -43,7 +43,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
   useEffect(() => {
     const adjustHeight = () => {
       if (sectionRef.current) {
-        sectionRef.current.style.height = `${window.innerHeight}px`;
+        sectionRef.current.style.minHeight = `${window.innerHeight}px`;
       }
     };
 
@@ -113,13 +113,16 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
     >
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Background image with better positioning */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      {/* Background image with improved positioning */}
+      <div className="absolute inset-0 z-0">
         {current && current.images && current.images.jpg && (
           <div 
-            className="absolute inset-0 bg-center bg-cover"
+            className="absolute inset-0 w-full h-full"
             style={{ 
               backgroundImage: `url(${current.images.jpg.large_image_url})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
               filter: "brightness(0.5)",
             }}
           />

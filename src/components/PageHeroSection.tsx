@@ -94,15 +94,16 @@ const PageHeroSection: React.FC<PageHeroSectionProps> = ({
       ref={sectionRef}
       className="relative bg-gradient-to-b from-cyber-background to-cyber-background/80 py-16 md:py-24"
     >
-      {/* Background with better positioning */}
+      {/* Background with improved positioning */}
       {backgroundImage && (
         <div 
-          className="absolute inset-0 z-0 opacity-20"
+          className="absolute inset-0 z-0"
           style={{ 
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
+            opacity: 0.2
           }}
         ></div>
       )}

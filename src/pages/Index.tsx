@@ -98,11 +98,11 @@ const Index = () => {
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
-      <div className="pt-16"> {/* Padding top for navbar */}
-        {/* Full viewport hero section */}
-        <HeroSection />
-        
-        {/* Tabbed content */}
+      {/* Full viewport hero section with no extra padding */}
+      <HeroSection />
+      
+      {/* Tabbed content - moved below hero section with no padding-top */}
+      <div className="container mx-auto px-4">
         <TabNavigation
           topAnime={topAnime}
           seasonalAnime={seasonalAnime}
