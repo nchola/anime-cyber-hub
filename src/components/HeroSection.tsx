@@ -120,40 +120,31 @@ const HeroSection = () => {
     <div className="w-full h-screen relative overflow-hidden bg-cyber-background noise-bg">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Background Image - Using object-cover and no objectPosition */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        {current && current.images && current.images.jpg && (
-          <img 
-            src={current.images.jpg.large_image_url}
-            alt={current.title || "Featured anime"}
-            className="w-full h-full object-contain transition-all duration-1000 ease-in-out"
-            style={{ 
-              filter: "brightness(1) contrast(1)",
-              objectPosition: "right center"
-            }}
-            loading="eager"
-            width="1280"
-            height="620"
-          />
-        )}
-      </div>
+      {/* Background Image - Full viewport coverage with content overlay */}
+      {current && current.images && current.images.jpg && (
+        <div className="absolute inset-0 z-0 bg-cover bg-center" 
+             style={{
+               backgroundImage: `url(${current.images.jpg.large_image_url})`,
+               filter: "brightness(0.6)",
+             }}>
+        </div>
+      )}
       
       <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-transparent to-black/80"></div>
       
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
-          <div className={`max-w-3xl ${isMobile ? 'scale-80' : ''}`}>
+          <div className={`max-w-3xl ${isMobile ? 'scale-90' : ''}`}>
             <div className="mb-6 flex flex-col gap-2">
               <div className="flex flex-wrap gap-3 items-center mb-2">
-                <div className="inline-block bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent">
+                <div className="inline-flex bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent">
                   #{currentIndex + 1} Most Favorited
                 </div>
-                
               </div>
               
               {/* Title displayed as block with properly contained background */}
-              <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-white mb-2">
+              <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-white mb-2 leading-tight">
                 {current.title_english || current.title}
               </h1>
               
@@ -201,7 +192,7 @@ const HeroSection = () => {
               )}
             </div>
             
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap gap-4">
               <Button 
                 onClick={handleWatchTrailer} 
                 className="bg-cyber-accent text-cyber-background font-orbitron hover:bg-opacity-80 transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,217,90,0.5)] transform hover:-translate-y-1"

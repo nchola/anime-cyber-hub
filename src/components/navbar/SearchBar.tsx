@@ -8,6 +8,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { searchAnime } from "@/services/searchService";
 import { Anime } from "@/types/anime";
 import SearchSuggestions from "@/components/SearchSuggestions";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const SearchBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,6 +19,8 @@ const SearchBar = () => {
   
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isMobile = useIsMobile();
   
   const debouncedSearchTerm = useDebounce(searchQuery, 300);
 
@@ -51,6 +54,7 @@ const SearchBar = () => {
       );
     } else if (e.key === "Escape") {
       setShowSuggestions(false);
+      inputRef.current?.blur();
     }
   };
 
@@ -63,7 +67,7 @@ const SearchBar = () => {
 
       setIsLoading(true);
       try {
-        const results = await searchAnime(debouncedSearchTerm, 1, 5);
+        const results = await searchAnime(debouncedSearchTerm, 1, isMobile ? 8 : 5);
         if (results && results.data) {
           setSuggestions(results.data);
           setShowSuggestions(true);
@@ -80,7 +84,7 @@ const SearchBar = () => {
     };
 
     fetchSuggestions();
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, isMobile]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -99,6 +103,7 @@ const SearchBar = () => {
     <div ref={searchRef} className="relative">
       <form onSubmit={handleSearch}>
         <Input
+          ref={inputRef}
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
