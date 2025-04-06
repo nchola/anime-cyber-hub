@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Manga } from "@/types/manga";
-import { Loader2, Star, BookOpen } from "lucide-react";
+import { Loader2, Star, BookOpen, Calendar, Users } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MangaSearchSuggestionsProps {
@@ -66,7 +66,7 @@ const MangaSearchSuggestions: React.FC<MangaSearchSuggestionsProps> = ({
                     <img
                       src={manga.images.jpg.small_image_url || "/placeholder.svg"}
                       alt={manga.title}
-                      className={`object-cover rounded mr-3 ${isMobile ? 'h-16 w-12' : 'h-12 w-9'}`}
+                      className={`object-cover rounded mr-3 ${isMobile ? 'h-20 w-14' : 'h-12 w-9'}`}
                       loading="lazy"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = "/placeholder.svg";
@@ -74,41 +74,43 @@ const MangaSearchSuggestions: React.FC<MangaSearchSuggestionsProps> = ({
                     />
                     <div className="flex-1 min-w-0">
                       <h4 
-                        className="text-sm text-white mb-1"
+                        className="text-sm text-white mb-1.5"
                         dangerouslySetInnerHTML={{ 
                           __html: highlightMatch(manga.title || '', query) 
                         }}
                       />
                       
-                      {isMobile && (
-                        <div className="flex flex-wrap gap-1 mb-1">
-                          {manga.score && (
-                            <span className="text-xs bg-cyber-accent/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
-                              <Star className="w-3 h-3 mr-0.5" /> {manga.score.toFixed(1)}
-                            </span>
-                          )}
-                          {manga.type && (
-                            <span className="text-xs bg-cyber-accent/20 text-cyber-accent px-1.5 py-0.5 rounded">
-                              {manga.type}
-                            </span>
-                          )}
-                          {manga.chapters && (
-                            <span className="text-xs bg-cyber-accent/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
-                              <BookOpen className="w-3 h-3 mr-0.5" /> {manga.chapters} ch
-                            </span>
-                          )}
-                        </div>
-                      )}
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {manga.score && (
+                          <span className="text-xs bg-cyber-accent/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
+                            <Star className="w-3 h-3 mr-0.5" /> {manga.score.toFixed(1)}
+                          </span>
+                        )}
+                        {manga.type && (
+                          <span className="text-xs bg-cyber-accent/20 text-cyber-accent px-1.5 py-0.5 rounded">
+                            {manga.type}
+                          </span>
+                        )}
+                        {manga.chapters && (
+                          <span className="text-xs bg-cyber-purple/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
+                            <BookOpen className="w-3 h-3 mr-0.5" /> {manga.chapters} ch
+                          </span>
+                        )}
+                        {manga.published?.from && (
+                          <span className="text-xs bg-cyber-purple/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
+                            <Calendar className="w-3 h-3 mr-0.5" /> {new Date(manga.published.from).getFullYear()}
+                          </span>
+                        )}
+                        {manga.members && (
+                          <span className="text-xs bg-cyber-purple/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
+                            <Users className="w-3 h-3 mr-0.5" /> {(manga.members > 999) ? `${(manga.members/1000).toFixed(1)}k` : manga.members}
+                          </span>
+                        )}
+                      </div>
                       
-                      {isMobile ? (
-                        <p className="text-xs text-gray-400 line-clamp-2">
-                          {manga.synopsis || 'No synopsis available.'}
-                        </p>
-                      ) : (
-                        <p className="text-xs text-gray-400">
-                          {manga.type || "Manga"} • {manga.chapters || "?"} chapters
-                        </p>
-                      )}
+                      <p className="text-xs text-gray-400 line-clamp-2">
+                        {manga.synopsis || 'No synopsis available.'}
+                      </p>
                     </div>
                   </Link>
                 </li>
@@ -120,7 +122,7 @@ const MangaSearchSuggestions: React.FC<MangaSearchSuggestionsProps> = ({
                 className="block text-center text-xs text-cyber-accent py-1 hover:underline"
                 onClick={onItemClick}
               >
-                View all results for "{query}"
+                View all results for "{query}" »
               </Link>
             </div>
           </>
