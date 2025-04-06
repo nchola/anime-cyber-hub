@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Star, Heart } from "lucide-react";
 import { Anime } from "@/types/anime";
 import { getCurrentSeasonAnime } from "@/services/animeService";
@@ -21,7 +21,6 @@ const HeroSection = () => {
   const [currentTrailerTitle, setCurrentTrailerTitle] = useState<string | undefined>("");
   const { toast } = useToast();
   const isMobile = useIsMobile();
-  const heroSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchFeaturedAnime = async () => {
@@ -53,22 +52,6 @@ const HeroSection = () => {
     }
   }, [featuredAnime.length]);
 
-  // Ensure hero section takes full height of viewport
-  useEffect(() => {
-    const adjustHeight = () => {
-      if (heroSectionRef.current) {
-        heroSectionRef.current.style.height = `${window.innerHeight}px`;
-      }
-    };
-
-    adjustHeight();
-    window.addEventListener('resize', adjustHeight);
-    
-    return () => {
-      window.removeEventListener('resize', adjustHeight);
-    };
-  }, []);
-
   const handlePrev = () => {
     setCurrentIndex((prevIndex) => 
       prevIndex === 0 ? featuredAnime.length - 1 : prevIndex - 1
@@ -99,7 +82,7 @@ const HeroSection = () => {
 
   if (loading) {
     return (
-      <div ref={heroSectionRef} className="w-full min-h-screen relative overflow-hidden bg-cyber-background">
+      <div className="w-full h-screen relative overflow-hidden bg-cyber-background">
         <div className="container mx-auto px-4 h-full flex flex-col justify-center">
           <div className="w-full max-w-3xl">
             <Skeleton className="h-12 w-3/4 mb-4 bg-gray-800" />
@@ -115,7 +98,7 @@ const HeroSection = () => {
 
   if (error || featuredAnime.length === 0) {
     return (
-      <div ref={heroSectionRef} className="w-full min-h-screen relative overflow-hidden bg-cyber-background flex justify-center items-center">
+      <div className="w-full h-screen relative overflow-hidden bg-cyber-background flex justify-center items-center">
         <div className="text-center">
           <h2 className="text-2xl font-orbitron text-cyber-accent mb-4">
             {error || "No featured anime available"}
@@ -134,51 +117,38 @@ const HeroSection = () => {
   const current = featuredAnime[currentIndex];
   
   return (
-    <div 
-      ref={heroSectionRef} 
-      className="w-full min-h-screen relative overflow-hidden bg-cyber-background noise-bg"
-    >
+    <div className="w-full h-screen relative overflow-hidden bg-cyber-background noise-bg">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Background Image with improved positioning and alignment */}
+      {/* Background Image - Full viewport coverage with content overlay */}
       {current && current.images && current.images.jpg && (
-        <div className="absolute inset-0 z-0">
-          <div 
-            className="absolute inset-0 bg-cover"
-            style={{
-              backgroundImage: `url(${current.images.jpg.large_image_url})`,
-              backgroundPosition: isMobile ? 'right center' : 'center',
-              filter: "brightness(0.7)",
-            }}
-          />
+        <div className="absolute inset-0 z-0 bg-cover bg-center" 
+             style={{
+               backgroundImage: `url(${current.images.jpg.large_image_url})`,
+               filter: "brightness(0.6)",
+             }}>
         </div>
       )}
       
-      {/* Improved gradient overlays for better text visibility */}
       <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
-      <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/90 via-transparent to-black/40"></div>
-      {/* Additional gradient for mobile to improve readability */}
-      {isMobile && (
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-transparent via-transparent to-black/80"></div>
-      )}
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-transparent to-black/80"></div>
       
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
-          {/* Adjusted mobile scaling for content */}
-          <div className={`max-w-3xl ${isMobile ? 'transform scale-95 origin-left' : ''}`}>
+          <div className={`max-w-3xl ${isMobile ? 'scale-90' : ''}`}>
             <div className="mb-6 flex flex-col gap-2">
-              <div className="mb-4">
-                <span className="inline-flex bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent">
+              <div className="flex flex-wrap gap-3 items-center mb-2">
+                <div className="inline-flex bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent">
                   #{currentIndex + 1} Most Favorited
-                </span>
+                </div>
               </div>
               
-              {/* Title with improved styling */}
-              <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-white mb-2 leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
+              {/* Title displayed as block with properly contained background */}
+              <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-white mb-2 leading-tight">
                 {current.title_english || current.title}
               </h1>
               
-              <h2 className="text-xl md:text-2xl font-noto-sans opacity-70 text-cyber-accent mb-3 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
+              <h2 className="text-xl md:text-2xl font-noto-sans opacity-70 text-cyber-accent mb-3">
                 {current.title_japanese}
               </h2>
             </div>
@@ -190,19 +160,19 @@ const HeroSection = () => {
                 </span>
               ))}
               {current.score > 0 && (
-                <span className="text-xs font-medium py-1 px-3 rounded-full bg-cyber-accent/20 text-cyber-accent border border-cyber-accent/30 backdrop-blur-sm flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-cyber-accent text-cyber-accent" /> {current.score.toFixed(1)}
-                </span>
-              )}
+                  <span className="text-xs font-medium py-1 px-3 rounded-full bg-cyber-accent/20 text-cyber-accent border border-cyber-accent/30 backdrop-blur-sm flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-cyber-accent text-cyber-accent" /> {current.score.toFixed(1)}
+                  </span>
+                )}
                 
-              {current.favorites && current.favorites > 0 && (
-                <span className="text-xs font-medium py-1 px-3 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 backdrop-blur-sm flex items-center gap-1">
-                  <Heart className="w-3 h-3 fill-pink-500 text-pink-500" /> {current.favorites.toLocaleString()}
-                </span>
-              )}
+                {current.favorites && current.favorites > 0 && (
+                  <span className="text-xs font-medium py-1 px-3 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 backdrop-blur-sm flex items-center gap-1">
+                    <Heart className="w-3 h-3 fill-pink-500 text-pink-500" /> {current.favorites.toLocaleString()}
+                  </span>
+                )}
             </div>
             
-            <div className="backdrop-blur-md bg-black/40 border border-cyber-accent/10 p-4 mb-6 transition-all duration-500 hover:bg-black/50 rounded-md shadow-lg">
+            <div className="backdrop-blur-md bg-black/30 border border-cyber-accent/10 p-4 mb-6 transition-all duration-500 hover:bg-black/40 mx-0 my-0 rounded-md">
               <p
                 className={`text-gray-300 text-sm font-thin whitespace-pre-line ${
                   !isExpanded && "line-clamp-3"
