@@ -94,26 +94,29 @@ const PageHeroSection: React.FC<PageHeroSectionProps> = ({
       ref={sectionRef}
       className="relative bg-gradient-to-b from-cyber-background to-cyber-background/80 py-16 md:py-24"
     >
-      {/* Background with better positioning */}
+      {/* Background with improved positioning */}
       {backgroundImage && (
         <div 
           className="absolute inset-0 z-0 opacity-20"
           style={{ 
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundPosition: isMobile ? 'right center' : 'center',
             backgroundRepeat: 'no-repeat',
           }}
         ></div>
       )}
       
-      <div className={`container relative z-10 mx-auto px-4 text-center ${isMobile ? 'transform scale-80' : ''}`}>
-        <h1 className="mb-4 font-orbitron text-4xl font-bold text-cyber-accent md:text-5xl">
+      {/* Additional gradient for better readability */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/70 via-transparent to-black/40"></div>
+      
+      <div className={`container relative z-10 mx-auto px-4 text-center ${isMobile ? 'transform scale-90' : ''}`}>
+        <h1 className="mb-4 font-orbitron text-4xl font-bold text-cyber-accent md:text-5xl drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
           {title}
         </h1>
         
         {subtitle && (
-          <p className="mb-8 text-lg text-gray-300">
+          <p className="mb-8 text-lg text-gray-300 drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
             {subtitle}
           </p>
         )}

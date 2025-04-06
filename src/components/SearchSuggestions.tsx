@@ -41,7 +41,7 @@ const SearchSuggestions = ({
   };
 
   return (
-    <div className="absolute z-50 mt-1 w-full bg-cyber-background/95 backdrop-blur-sm border border-cyber-accent/30 rounded-md shadow-lg">
+    <div className={`absolute z-50 mt-1 ${isMobile ? 'left-0 right-0 w-screen -mx-2 px-2' : 'w-full'} bg-cyber-background/95 backdrop-blur-sm border border-cyber-accent/30 rounded-md shadow-lg`}>
       <div className="rounded-md">
         <div className={`${isMobile ? 'max-h-[70vh]' : 'max-h-60'} overflow-auto p-0`}>
           {results.length === 0 && query.length >= 2 ? (

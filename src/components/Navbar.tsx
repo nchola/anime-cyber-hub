@@ -93,6 +93,18 @@ const Navbar = () => {
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
+            {/* Moved hamburger button to the left side on mobile */}
+            {isMobile && (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="mr-1 text-white hover:text-cyber-accent"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </Button>
+            )}
+            
             <NavbarBrand />
             
             <div className="hidden md:flex ml-6 lg:ml-8">
@@ -101,15 +113,8 @@ const Navbar = () => {
           </div>
           
           <div className="flex items-center gap-2 sm:gap-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="md:hidden text-white hover:text-cyber-accent"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </Button>
-
+            {/* Removed hamburger button from here */}
+            
             <SearchBar />
             
             <div className="hidden md:block">
