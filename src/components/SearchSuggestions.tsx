@@ -4,7 +4,7 @@ import { Anime } from '@/types/anime';
 import { Link } from 'react-router-dom';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Star, Clock, Calendar, Tv, Users } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 interface SearchSuggestionsProps {
   results: Anime[];
@@ -60,14 +60,14 @@ const SearchSuggestions = ({
                   onClick={onItemClick}
                 >
                   {isMobile ? (
-                    // Enhanced Mobile view with more information
+                    // Mobile view - expanded card format
                     <div
                       className={`flex p-3 cursor-pointer border-b border-cyber-accent/10 ${
                         index === highlightIndex ? 'bg-cyber-accent/10' : ''
                       }`}
                       onMouseEnter={() => onMouseEnter(index)}
                     >
-                      <div className="flex-shrink-0 h-24 w-16 mr-3">
+                      <div className="flex-shrink-0 h-16 w-12 mr-3">
                         <img 
                           src={anime.images?.jpg?.image_url || '/placeholder.svg'} 
                           alt={anime.title} 
@@ -79,44 +79,24 @@ const SearchSuggestions = ({
                       </div>
                       <div className="flex-1 min-w-0">
                         <div 
-                          className="text-sm font-medium text-white mb-1.5"
+                          className="text-sm font-medium text-white mb-1"
                           dangerouslySetInnerHTML={{ 
                             __html: highlightMatch(anime.title || '', query) 
                           }}
                         />
-                        <div className="flex flex-wrap gap-1.5 mb-2">
+                        <div className="flex flex-wrap gap-1 mb-1">
                           {anime.score && (
                             <span className="text-xs bg-cyber-accent/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
                               <Star className="w-3 h-3 mr-0.5" /> {anime.score.toFixed(1)}
                             </span>
                           )}
                           {anime.status && (
-                            <span className="text-xs bg-cyber-accent/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
-                              <Tv className="w-3 h-3 mr-0.5" /> {anime.status}
-                            </span>
-                          )}
-                          {anime.episodes && (
-                            <span className="text-xs bg-cyber-purple/20 text-cyber-accent px-1.5 py-0.5 rounded">
-                              {anime.episodes} eps
-                            </span>
-                          )}
-                          {anime.aired?.from && (
-                            <span className="text-xs bg-cyber-purple/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
-                              <Calendar className="w-3 h-3 mr-0.5" /> {new Date(anime.aired.from).getFullYear()}
-                            </span>
-                          )}
-                          {anime.duration && (
-                            <span className="text-xs bg-cyber-purple/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
-                              <Clock className="w-3 h-3 mr-0.5" /> {anime.duration.split(' ')[0]}m
-                            </span>
-                          )}
-                          {anime.members && (
-                            <span className="text-xs bg-cyber-purple/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
-                              <Users className="w-3 h-3 mr-0.5" /> {(anime.members > 999) ? `${(anime.members/1000).toFixed(1)}k` : anime.members}
+                            <span className="text-xs bg-cyber-accent/20 text-cyber-accent px-1.5 py-0.5 rounded">
+                              {anime.status}
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-400 line-clamp-3">
+                        <p className="text-xs text-gray-400 line-clamp-2">
                           {anime.synopsis || 'No synopsis available.'}
                         </p>
                       </div>

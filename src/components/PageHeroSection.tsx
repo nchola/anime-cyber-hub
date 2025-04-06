@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -33,31 +33,11 @@ const PageHeroSection: React.FC<PageHeroSectionProps> = ({
   error = null,
 }) => {
   const isMobile = useIsMobile();
-  const sectionRef = useRef<HTMLDivElement>(null);
-  
-  // Adjust height for better display
-  useEffect(() => {
-    const adjustHeight = () => {
-      if (sectionRef.current) {
-        // Calculate a more appropriate height based on content and viewport
-        const viewportHeight = window.innerHeight;
-        const desiredHeight = isMobile ? viewportHeight * 0.5 : viewportHeight * 0.6;
-        sectionRef.current.style.height = `${desiredHeight}px`;
-      }
-    };
-
-    adjustHeight();
-    window.addEventListener('resize', adjustHeight);
-    
-    return () => {
-      window.removeEventListener('resize', adjustHeight);
-    };
-  }, [isMobile]);
 
   // Render loading state
   if (loading) {
     return (
-      <div ref={sectionRef} className="relative bg-gradient-to-b from-cyber-background to-cyber-background/80 flex items-center">
+      <div className="relative bg-gradient-to-b from-cyber-background to-cyber-background/80 py-16 md:py-24">
         <div className="container relative z-10 mx-auto px-4 text-center">
           <Skeleton className="mx-auto h-10 w-2/3 max-w-md rounded-md bg-gray-800" />
           <Skeleton className="mx-auto mt-4 h-6 w-1/2 max-w-sm rounded-md bg-gray-800" />
@@ -77,7 +57,7 @@ const PageHeroSection: React.FC<PageHeroSectionProps> = ({
   // Render error state
   if (error) {
     return (
-      <div ref={sectionRef} className="relative bg-gradient-to-b from-cyber-background to-cyber-background/80 flex items-center">
+      <div className="relative bg-gradient-to-b from-cyber-background to-cyber-background/80 py-16 md:py-24">
         <div className="container relative z-10 mx-auto px-4 text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-cyber-accent mb-4" />
           <h2 className="mb-4 font-orbitron text-2xl font-bold text-cyber-accent md:text-3xl">
@@ -92,25 +72,20 @@ const PageHeroSection: React.FC<PageHeroSectionProps> = ({
   }
 
   return (
-    <div 
-      ref={sectionRef}
-      className="relative bg-gradient-to-b from-cyber-background to-cyber-background/80 flex items-center"
-    >
-      {/* Background with improved positioning */}
+    <div className="relative bg-gradient-to-b from-cyber-background to-cyber-background/80 py-16 md:py-24">
       {backgroundImage && (
         <div 
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 opacity-20"
           style={{ 
             backgroundImage: `url(${backgroundImage})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center 25%',
+            backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            opacity: 0.3
           }}
-        />
+        ></div>
       )}
       
-      <div className="container relative z-10 mx-auto px-4 text-center">
+      <div className={`container relative z-10 mx-auto px-4 text-center ${isMobile ? 'scale-80' : ''}`}>
         <h1 className="mb-4 font-orbitron text-4xl font-bold text-cyber-accent md:text-5xl">
           {title}
         </h1>
