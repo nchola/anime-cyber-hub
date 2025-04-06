@@ -99,8 +99,10 @@ const Index = () => {
       <Navbar />
       
       <div className="pt-16"> {/* Padding top for navbar */}
+        {/* Full viewport hero section */}
         <HeroSection />
         
+        {/* Tabbed content */}
         <TabNavigation
           topAnime={topAnime}
           seasonalAnime={seasonalAnime}

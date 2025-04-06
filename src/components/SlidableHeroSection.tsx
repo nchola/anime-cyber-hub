@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Star, Heart } from "lucide-react";
 import { Anime } from "@/types/anime";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const isMobile = useIsMobile();
+  const sectionRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     if (items.length > 0) {
@@ -37,6 +38,22 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
       return () => clearInterval(interval);
     }
   }, [items.length]);
+
+  // Ensure hero section takes full height of viewport
+  useEffect(() => {
+    const adjustHeight = () => {
+      if (sectionRef.current) {
+        sectionRef.current.style.height = `${window.innerHeight}px`;
+      }
+    };
+
+    adjustHeight();
+    window.addEventListener('resize', adjustHeight);
+    
+    return () => {
+      window.removeEventListener('resize', adjustHeight);
+    };
+  }, []);
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) => 
@@ -53,7 +70,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
   // Loading state
   if (loading) {
     return (
-      <div className="w-full h-screen relative overflow-hidden bg-cyber-background">
+      <div ref={sectionRef} className="w-full min-h-screen relative overflow-hidden bg-cyber-background">
         <div className="container mx-auto px-4 h-full flex flex-col justify-center items-center">
           <Skeleton className="h-12 w-3/4 max-w-md mb-4 bg-gray-800" />
           <Skeleton className="h-6 w-1/2 max-w-xs mb-8 bg-gray-800" />
@@ -70,7 +87,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
   // Error state
   if (error || items.length === 0) {
     return (
-      <div className="w-full h-screen relative overflow-hidden bg-cyber-background flex justify-center items-center">
+      <div ref={sectionRef} className="w-full min-h-screen relative overflow-hidden bg-cyber-background flex justify-center items-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-cyber-accent mb-4" />
           <h2 className="text-2xl font-orbitron text-cyber-accent mb-4">
@@ -90,22 +107,21 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
   const current = items[currentIndex];
 
   return (
-    <div className="w-full h-screen relative overflow-hidden bg-cyber-background noise-bg">
+    <div 
+      ref={sectionRef}
+      className="w-full min-h-screen relative overflow-hidden bg-cyber-background noise-bg"
+    >
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Background image with full coverage */}
+      {/* Background image with better positioning */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {current && current.images && current.images.jpg && (
-          <img 
-            src={current.images.jpg.large_image_url}
-            alt={current.title || "Featured anime"}
-            className="w-full h-full object-cover transition-all duration-700 ease-in-out"
+          <div 
+            className="absolute inset-0 bg-center bg-cover"
             style={{ 
+              backgroundImage: `url(${current.images.jpg.large_image_url})`,
               filter: "brightness(0.5)",
             }}
-            loading="lazy"
-            width="800"
-            height="450"
           />
         )}
       </div>
@@ -114,7 +130,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
       
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
-          <div className={`max-w-3xl mx-auto text-center ${isMobile ? 'scale-80' : ''}`}>
+          <div className={`max-w-3xl mx-auto text-center ${isMobile ? 'transform scale-80' : ''}`}>
             <h1 className="text-3xl md:text-4xl font-orbitron font-bold mb-4 text-cyber-accent">
               {title}
             </h1>
@@ -126,7 +142,7 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
             )}
             
             <div className="max-w-2xl mx-auto mb-8">
-              {/* Improved title styling without white box */}
+              {/* Improved title styling */}
               <h2 className="text-2xl font-orbitron mb-2 text-white">
                 {current.title_english || current.title}
               </h2>
@@ -144,11 +160,13 @@ const SlidableHeroSection: React.FC<SlidableHeroSectionProps> = ({
                 )}
               </div>
               
-              <p className="text-gray-300 text-sm font-thin line-clamp-3 mb-6">
-                {current.synopsis
-                  ? current.synopsis.replace(/\[Written by MAL Rewrite\]$/g, "")
-                  : "No description found for this anime series."}
-              </p>
+              <div className="backdrop-blur-md bg-black/30 border border-cyber-accent/10 p-4 mb-6 rounded-md">
+                <p className="text-gray-300 text-sm font-thin line-clamp-3">
+                  {current.synopsis
+                    ? current.synopsis.replace(/\[Written by MAL Rewrite\]$/g, "")
+                    : "No description found for this anime series."}
+                </p>
+              </div>
               
               <Link to={`/anime/${current.mal_id}`}>
                 <Button 
