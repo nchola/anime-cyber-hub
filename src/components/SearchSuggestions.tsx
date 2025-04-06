@@ -4,7 +4,7 @@ import { Anime } from '@/types/anime';
 import { Link } from 'react-router-dom';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Star, Clock, Calendar, Tv } from 'lucide-react';
+import { Star, Clock, Calendar, Tv, Users } from 'lucide-react';
 
 interface SearchSuggestionsProps {
   results: Anime[];
@@ -67,7 +67,7 @@ const SearchSuggestions = ({
                       }`}
                       onMouseEnter={() => onMouseEnter(index)}
                     >
-                      <div className="flex-shrink-0 h-20 w-14 mr-3">
+                      <div className="flex-shrink-0 h-24 w-16 mr-3">
                         <img 
                           src={anime.images?.jpg?.image_url || '/placeholder.svg'} 
                           alt={anime.title} 
@@ -108,6 +108,11 @@ const SearchSuggestions = ({
                           {anime.duration && (
                             <span className="text-xs bg-cyber-purple/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
                               <Clock className="w-3 h-3 mr-0.5" /> {anime.duration.split(' ')[0]}m
+                            </span>
+                          )}
+                          {anime.members && (
+                            <span className="text-xs bg-cyber-purple/20 text-cyber-accent px-1.5 py-0.5 rounded flex items-center">
+                              <Users className="w-3 h-3 mr-0.5" /> {(anime.members > 999) ? `${(anime.members/1000).toFixed(1)}k` : anime.members}
                             </span>
                           )}
                         </div>

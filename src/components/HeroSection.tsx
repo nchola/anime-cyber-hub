@@ -53,11 +53,15 @@ const HeroSection = () => {
     }
   }, [featuredAnime.length]);
 
-  // Ensure hero section takes full height of viewport with improved handling
+  // Ensure hero section takes up the right amount of viewport height
   useEffect(() => {
     const adjustHeight = () => {
       if (heroSectionRef.current) {
-        heroSectionRef.current.style.minHeight = `${window.innerHeight}px`;
+        // Set height more accurately based on viewport
+        const viewportHeight = window.innerHeight;
+        // Calculate desired height (adjust the multiplier as needed)
+        const desiredHeight = isMobile ? viewportHeight * 0.9 : viewportHeight;
+        heroSectionRef.current.style.height = `${desiredHeight}px`;
       }
     };
 
@@ -67,7 +71,7 @@ const HeroSection = () => {
     return () => {
       window.removeEventListener('resize', adjustHeight);
     };
-  }, []);
+  }, [isMobile]);
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) => 
@@ -99,7 +103,7 @@ const HeroSection = () => {
 
   if (loading) {
     return (
-      <div ref={heroSectionRef} className="w-full min-h-screen relative overflow-hidden bg-cyber-background">
+      <div ref={heroSectionRef} className="w-full relative overflow-hidden bg-cyber-background">
         <div className="container mx-auto px-4 h-full flex flex-col justify-center">
           <div className="w-full max-w-3xl">
             <Skeleton className="h-12 w-3/4 mb-4 bg-gray-800" />
@@ -115,7 +119,7 @@ const HeroSection = () => {
 
   if (error || featuredAnime.length === 0) {
     return (
-      <div ref={heroSectionRef} className="w-full min-h-screen relative overflow-hidden bg-cyber-background flex justify-center items-center">
+      <div ref={heroSectionRef} className="w-full relative overflow-hidden bg-cyber-background flex justify-center items-center">
         <div className="text-center">
           <h2 className="text-2xl font-orbitron text-cyber-accent mb-4">
             {error || "No featured anime available"}
@@ -136,34 +140,32 @@ const HeroSection = () => {
   return (
     <div 
       ref={heroSectionRef} 
-      className="w-full min-h-screen relative overflow-hidden bg-cyber-background noise-bg"
+      className="w-full relative overflow-hidden bg-cyber-background noise-bg flex items-center"
     >
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Background Image with improved positioning for full coverage */}
+      {/* Background Image - improved positioning for full coverage */}
       {current && current.images && current.images.jpg && (
-        <div className="absolute inset-0 z-0 before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-t before:from-black before:via-black/60 before:to-transparent">
-          <div 
-            className="w-full h-full"
-            style={{
-              backgroundImage: `url(${current.images.jpg.large_image_url})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              filter: "brightness(0.6)",
-            }}
-          />
-        </div>
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `url(${current.images.jpg.large_image_url})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 25%', // Position more toward the top
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.4, // Increased opacity for better visibility
+          }}
+        />
       )}
       
       {/* Gradient overlays */}
       <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-transparent to-black/80"></div>
       
-      <div className="container mx-auto px-4 h-full relative z-20">
-        <div className="flex flex-col justify-center h-full">
-          {/* Mobile scaling for content with improved spacing */}
-          <div className={`max-w-3xl ${isMobile ? 'transform scale-80 origin-left' : ''}`}>
+      <div className="container mx-auto px-4 relative z-20 py-10">
+        <div className="flex flex-col justify-center">
+          {/* Content with better mobile scaling */}
+          <div className={`max-w-3xl mx-auto ${isMobile ? '' : ''}`}>
             <div className="flex flex-wrap items-center mb-4">
               <span className="inline-flex bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent mr-4 mb-2">
                 #{currentIndex + 1} Most Favorited

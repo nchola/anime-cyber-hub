@@ -66,7 +66,7 @@ const MangaSearchSuggestions: React.FC<MangaSearchSuggestionsProps> = ({
                     <img
                       src={manga.images.jpg.small_image_url || "/placeholder.svg"}
                       alt={manga.title}
-                      className={`object-cover rounded mr-3 ${isMobile ? 'h-20 w-14' : 'h-12 w-9'}`}
+                      className={`object-cover rounded mr-3 ${isMobile ? 'h-24 w-16' : 'h-14 w-10'}`}
                       loading="lazy"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = "/placeholder.svg";
