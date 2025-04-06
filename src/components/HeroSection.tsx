@@ -126,9 +126,9 @@ const HeroSection = () => {
           <img 
             src={current.images.jpg.large_image_url}
             alt={current.title || "Featured anime"}
-            className="w-full h-full object-cover transition-all duration-1000 ease-in-out"
+            className="w-full h-full object-contain object-right transition-all duration-1000 ease-in-out"
             style={{ 
-              filter: "brightness(0.6)",
+              filter: "brightness(1)",
             }}
             loading="eager"
             width="1280"
@@ -137,8 +137,8 @@ const HeroSection = () => {
         )}
       </div>
       
-      <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
-      <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/80 via-transparent to-black/80"></div>
+      <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/45 via-black/40 to-transparent"></div>
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/60 via-transparent to-black/90"></div>
       
       <div className="container mx-auto px-4 h-full relative z-20">
         <div className="flex flex-col justify-center h-full">
