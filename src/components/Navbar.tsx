@@ -35,6 +35,11 @@ const Navbar = () => {
             setUsername(user.user_metadata.username || 'User');
             setAvatar(user.user_metadata.avatar || '');
           }
+        } else {
+          // Ensure state is reset when no session exists
+          setIsLoggedIn(false);
+          setUsername('');
+          setAvatar('');
         }
       } catch (error) {
         console.error("Error checking auth status:", error);
@@ -42,6 +47,17 @@ const Navbar = () => {
     };
     
     checkUserLogin();
+    
+    // Listen for auth state changes
+    const handleAuthStateChange = () => {
+      checkUserLogin();
+    };
+    
+    window.addEventListener('auth-state-changed', handleAuthStateChange);
+    
+    return () => {
+      window.removeEventListener('auth-state-changed', handleAuthStateChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -56,25 +72,29 @@ const Navbar = () => {
   }, []);
   
   const handleLogout = async () => {
-    // Update UI state immediately
-    setIsLoggedIn(false);
-    setUsername('');
-    setAvatar('');
-    setMobileMenuOpen(false);
-    
-    // Clear bookmarks
-    localStorage.removeItem('bookmarks');
-    localStorage.removeItem('bookmarkedManga');
-    
-    // Dispatch storage event to notify other components
-    window.dispatchEvent(new Event('storage'));
-    
     try {
+      // Update UI state immediately
+      setIsLoggedIn(false);
+      setUsername('');
+      setAvatar('');
+      setMobileMenuOpen(false);
+      
+      // Clear bookmarks
+      localStorage.removeItem('bookmarks');
+      localStorage.removeItem('bookmarkedManga');
+      
+      // Dispatch storage event to notify other components
+      window.dispatchEvent(new Event('storage'));
+      
+      // Perform the actual logout
       const { error } = await signOut();
       
       if (error) {
         throw error;
       }
+      
+      // Force a re-render of the entire navbar
+      window.dispatchEvent(new Event('auth-state-changed'));
       
       toast({
         title: "Logout Berhasil",

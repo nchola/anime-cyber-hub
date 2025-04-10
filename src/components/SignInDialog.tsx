@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import SignUpDialog from "@/components/SignUpDialog";
-import { signInWithEmail } from "@/lib/supabase";
+import { signInWithEmail, syncLocalBookmarksWithServer } from "@/lib/supabase";
 import { supabase } from "@/integrations/supabase/client";
 import { FcGoogle } from "react-icons/fc";
 import { Separator } from "@/components/ui/separator";
@@ -67,6 +67,9 @@ const SignInDialog = ({ open, onOpenChange, onLoginSuccess }: SignInDialogProps)
         token: authData.session.access_token
       };
       
+      // Sync bookmarks with server
+      await syncLocalBookmarksWithServer(userData.id);
+      
       // Sukses login
       toast({
         title: "Login Berhasil",
@@ -110,6 +113,12 @@ const SignInDialog = ({ open, onOpenChange, onLoginSuccess }: SignInDialogProps)
       });
 
       if (error) throw error;
+      
+      // After successful Google login, we need to sync bookmarks
+      // This will be handled in the auth callback page
+      // We'll set a flag in localStorage to indicate we need to sync
+      localStorage.setItem('needsBookmarkSync', 'true');
+      
     } catch (error) {
       console.error('Error logging in with Google:', error);
       toast({

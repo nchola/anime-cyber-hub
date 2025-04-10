@@ -30,28 +30,41 @@ const UserMenu: React.FC<UserMenuProps> = ({
   const { toast } = useToast();
   
   const handleLogout = async () => {
-    const { error } = await signOut();
-    
-    if (error) {
+    try {
+      // Perform the actual logout
+      const { error } = await signOut();
+      
+      if (error) {
+        toast({
+          title: "Logout Gagal",
+          description: "Terjadi kesalahan saat logout",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Clear bookmarks from localStorage
+      localStorage.removeItem('bookmarks');
+      localStorage.removeItem('bookmarkedManga');
+      
+      // Dispatch storage event to notify other components
+      window.dispatchEvent(new Event('storage'));
+      
+      // Force a re-render of the entire navbar
+      window.dispatchEvent(new Event('auth-state-changed'));
+      
+      toast({
+        title: "Logout Berhasil",
+        description: "Anda telah keluar dari akun",
+      });
+    } catch (error) {
+      console.error("Error during logout:", error);
       toast({
         title: "Logout Gagal",
         description: "Terjadi kesalahan saat logout",
         variant: "destructive",
       });
-      return;
     }
-    
-    // Clear bookmarks from localStorage
-    localStorage.removeItem('bookmarks');
-    localStorage.removeItem('bookmarkedManga');
-    
-    // Dispatch storage event to notify other components
-    window.dispatchEvent(new Event('storage'));
-    
-    toast({
-      title: "Logout Berhasil",
-      description: "Anda telah keluar dari akun",
-    });
   };
   
   if (isLoggedIn) {
