@@ -101,7 +101,7 @@ const SignInDialog = ({ open, onOpenChange, onLoginSuccess }: SignInDialogProps)
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://wufknidkprsagfpejrsu.supabase.co/auth/v1/callback',
+          redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
