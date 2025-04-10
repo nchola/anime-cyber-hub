@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Star, Heart } from "lucide-react";
 import { Anime } from "@/types/anime";
@@ -120,13 +119,13 @@ const HeroSection = () => {
     <div className="w-full h-screen relative overflow-hidden bg-cyber-background noise-bg">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
-      {/* Background Image - Using object-cover and no objectPosition */}
+      {/* Background Image with improved mobile responsiveness */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {current && current.images && current.images.jpg && (
           <img 
             src={current.images.jpg.large_image_url}
             alt={current.title || "Featured anime"}
-            className="w-full h-full object-contain object-right transition-all duration-1000 ease-in-out"
+            className="w-full h-full object-cover md:object-contain object-center md:object-right transition-all duration-1000 ease-in-out"
             style={{ 
               filter: "brightness(1)",
             }}
