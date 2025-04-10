@@ -4,6 +4,7 @@ import { Anime } from "@/types/anime";
 import { Star, Clock, Bookmark, BookmarkCheck, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import TrailerModal from "./TrailerModal";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AnimeCardProps {
   anime: Anime;
@@ -30,9 +31,20 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, index = 0 }) => {
   }, [anime.mal_id]);
 
   // Toggle bookmark status
-  const toggleBookmark = (e: React.MouseEvent) => {
+  const toggleBookmark = async (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation
-    e.stopPropagation(); // Prevent event bubbling
+    e.stopPropagation();
+    
+    // Check if user is logged in
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast({
+        title: "Login Required",
+        description: "Please login to add bookmarks",
+        variant: "destructive",
+      });
+      return;
+    }
     
     try {
       const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');

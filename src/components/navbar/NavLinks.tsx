@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { 
@@ -89,17 +88,7 @@ const NavLinks: React.FC<NavLinksProps> = ({ isLoggedIn }) => {
         </NavigationMenuItem>
 
         {/* Conditional Bookmarks Link */}
-        {isLoggedIn && (
-          <NavigationMenuItem>
-            <Link
-              to="/bookmark"
-              className="text-white hover:text-cyber-accent transition-all duration-300 px-3 py-2 font-orbitron text-xs md:text-sm relative group"
-            >
-              BOOKMARKS
-              <span className="absolute bottom-0 left-0 w-0 h-px bg-cyber-accent transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-          </NavigationMenuItem>
-        )}
+        {/* Removing bookmark link as requested */}
       </NavigationMenuList>
     </NavigationMenu>
   );

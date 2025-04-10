@@ -1,4 +1,3 @@
-
 import React from "react";
 import { UserPlus, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,6 +40,13 @@ const UserMenu: React.FC<UserMenuProps> = ({
       });
       return;
     }
+    
+    // Clear bookmarks from localStorage
+    localStorage.removeItem('bookmarks');
+    localStorage.removeItem('bookmarkedManga');
+    
+    // Dispatch storage event to notify other components
+    window.dispatchEvent(new Event('storage'));
     
     toast({
       title: "Logout Berhasil",

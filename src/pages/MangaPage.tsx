@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +27,7 @@ const MangaPage = () => {
   const mangaPerPage = 10; // Limit to 10 manga per page
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [bookmarkedManga, setBookmarkedManga] = useState<Manga[]>([]);
 
   const fetchManga = async () => {
     try {
@@ -66,6 +66,17 @@ const MangaPage = () => {
     fetchManga();
   }, [currentPage]);
 
+  useEffect(() => {
+    // Load bookmarked manga from localStorage
+    try {
+      const bookmarks = JSON.parse(localStorage.getItem('bookmarkedManga') || '[]');
+      setBookmarkedManga(bookmarks);
+    } catch (err) {
+      console.error("Failed to load bookmarked manga:", err);
+      setBookmarkedManga([]);
+    }
+  }, []);
+
   const handlePageChange = (page: number) => {
     window.scrollTo(0, 0);
     setCurrentPage(page);
@@ -87,6 +98,20 @@ const MangaPage = () => {
       
       <div className="pt-12 pb-24">
         <div className="container mx-auto px-4">
+          {/* Bookmarked Manga Section */}
+          {bookmarkedManga.length > 0 && (
+            <div className="mb-16">
+              <h2 className="text-3xl font-orbitron font-bold text-cyber-accent mb-6 text-center">
+                Your Bookmarked Manga
+              </h2>
+              <MangaGrid 
+                mangaList={bookmarkedManga}
+                loading={false}
+                error={null}
+              />
+            </div>
+          )}
+          
           <div className="mb-16">
             <h2 className="text-3xl font-orbitron font-bold text-cyber-accent mb-6 text-center">
               Explore Manga Genres

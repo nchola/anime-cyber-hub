@@ -1,7 +1,7 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { LogOut, UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -9,6 +9,8 @@ interface MobileMenuProps {
   username: string;
   onItemClick: () => void;
   onLogout: () => void;
+  onSignInClick: () => void;
+  onSignUpClick: () => void;
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ 
@@ -16,7 +18,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
   isLoggedIn, 
   username, 
   onItemClick,
-  onLogout
+  onLogout,
+  onSignInClick,
+  onSignUpClick
 }) => {
   if (!isOpen) return null;
 
@@ -84,7 +88,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           )}
         </div>
         
-        {isLoggedIn && (
+        {isLoggedIn ? (
           <div className="flex flex-col space-y-2 pt-2 border-t border-cyber-accent/20">
             <div className="px-3 py-2 font-orbitron text-cyber-accent">
               {username}
@@ -96,6 +100,23 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
               <LogOut className="h-4 w-4" />
               Log out
             </button>
+          </div>
+        ) : (
+          <div className="flex flex-col space-y-2 pt-2 border-t border-cyber-accent/20">
+            <Button 
+              onClick={onSignInClick}
+              className="w-full bg-cyber-accent text-cyber-background"
+            >
+              Sign In
+            </Button>
+            <Button
+              onClick={onSignUpClick}
+              variant="outline"
+              className="w-full border-cyber-accent text-cyber-accent"
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              Sign Up
+            </Button>
           </div>
         )}
       </div>

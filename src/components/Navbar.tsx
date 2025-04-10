@@ -56,26 +56,38 @@ const Navbar = () => {
   }, []);
   
   const handleLogout = async () => {
-    const { error } = await signOut();
-    
-    if (error) {
-      toast({
-        title: "Logout Gagal",
-        description: "Terjadi kesalahan saat logout",
-        variant: "destructive",
-      });
-      return;
-    }
-    
+    // Update UI state immediately
     setIsLoggedIn(false);
     setUsername('');
     setAvatar('');
     setMobileMenuOpen(false);
     
-    toast({
-      title: "Logout Berhasil",
-      description: "Anda telah keluar dari akun",
-    });
+    // Clear bookmarks
+    localStorage.removeItem('bookmarks');
+    localStorage.removeItem('bookmarkedManga');
+    
+    // Dispatch storage event to notify other components
+    window.dispatchEvent(new Event('storage'));
+    
+    try {
+      const { error } = await signOut();
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Logout Berhasil",
+        description: "Anda telah keluar dari akun",
+      });
+    } catch (error) {
+      console.error("Error during logout:", error);
+      toast({
+        title: "Logout Gagal",
+        description: "Terjadi kesalahan saat logout",
+        variant: "destructive",
+      });
+    }
   };
   
   const handleSignUpClick = () => {
@@ -130,6 +142,14 @@ const Navbar = () => {
         username={username}
         onItemClick={() => setMobileMenuOpen(false)}
         onLogout={handleLogout}
+        onSignInClick={() => {
+          setMobileMenuOpen(false);
+          setSignInOpen(true);
+        }}
+        onSignUpClick={() => {
+          setMobileMenuOpen(false);
+          handleSignUpClick();
+        }}
       />
       
       <SignInDialog 
