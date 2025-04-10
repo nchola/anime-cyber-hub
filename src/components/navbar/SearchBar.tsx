@@ -104,7 +104,7 @@ const SearchBar = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => searchQuery.length >= 2 && setShowSuggestions(true)}
-          placeholder="Search anime..."
+          placeholder="Find anime"
           className="py-1 pl-2 pr-8 w-32 sm:w-40 md:w-64 bg-cyber-background border border-cyber-accent/30 rounded-md focus:outline-none focus:border-cyber-accent text-xs md:text-sm placeholder-gray-500"
         />
         <Button 
