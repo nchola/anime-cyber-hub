@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -11,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import SignUpDialog from "@/components/SignUpDialog";
 import { signInWithEmail } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
+import { FcGoogle } from "react-icons/fc";
+import { Separator } from "@/components/ui/separator";
 
 // Validasi skema login
 const loginSchema = z.object({
@@ -94,91 +96,90 @@ const SignInDialog = ({ open, onOpenChange, onLoginSuccess }: SignInDialogProps)
     setShowPassword(!showPassword);
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'https://wufknidkprsagfpejrsu.supabase.co/auth/v1/callback',
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
+        }
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error logging in with Google:', error);
+      toast({
+        title: "Login Gagal",
+        description: error instanceof Error ? error.message : "Gagal login dengan Google",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="bg-cyber-background text-white border border-cyber-accent/30 sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-orbitron text-cyber-accent">
-              Sign In
-            </DialogTitle>
-            <DialogDescription>
-              Masuk ke akun Anda untuk mengakses fitur tambahan
-            </DialogDescription>
-          </DialogHeader>
-          
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="name@example.com" 
-                        {...field} 
-                        className="bg-cyber-background/50 border-cyber-accent/30 focus-visible:ring-cyber-accent/50"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
+        <DialogContent className="bg-cyber-background text-white border border-cyber-accent/30 sm:max-w-md">          
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
                         <Input 
-                          type={showPassword ? "text" : "password"} 
-                          placeholder="••••••••" 
+                          placeholder="name@example.com" 
                           {...field} 
-                          className="bg-cyber-background/50 border-cyber-accent/30 focus-visible:ring-cyber-accent/50 pr-10"
+                          className="bg-cyber-background/50 border-cyber-accent/30 focus-visible:ring-cyber-accent/50"
                         />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={toggleShowPassword}
-                          className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-cyber-accent"
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <DialogFooter className="pt-4">
-                <Button 
-                  type="submit" 
-                  disabled={isLoading}
-                  className="w-full bg-cyber-accent text-cyber-background hover:bg-cyber-accent/80"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Memproses...
-                    </>
-                  ) : (
-                    "Masuk"
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input 
+                            type={showPassword ? "text" : "password"} 
+                            placeholder="••••••••" 
+                            {...field} 
+                            className="bg-cyber-background/50 border-cyber-accent/30 focus-visible:ring-cyber-accent/50 pr-10"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={toggleShowPassword}
+                            className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-cyber-accent"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+            
           
           <div className="text-center text-sm">
             Belum punya akun?{" "}
@@ -194,6 +195,18 @@ const SignInDialog = ({ open, onOpenChange, onLoginSuccess }: SignInDialogProps)
               Daftar di sini
             </Button>
           </div>
+          <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-cyber-background px-2 text-cyber-accent/70">Or continue with</span>
+              </div>
+          <Button
+              type="button"
+              variant="outline"
+              onClick={handleGoogleLogin}
+              className="w-full bg-cyber-background/10 border-cyber-accent"
+            >
+              <FcGoogle className="mr-2 h-4 w-4" />
+              Google
+            </Button>
         </DialogContent>
       </Dialog>
       

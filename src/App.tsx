@@ -14,6 +14,7 @@ import SeasonalAnime from "./pages/SeasonalAnime";
 import UpcomingAnime from "./pages/UpcomingAnime";
 import MangaPage from "./pages/MangaPage";
 import MangaDetail from "./pages/MangaDetail";
+import AuthCallback from "./pages/auth/callback";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,8 @@ const App = () => (
         <Route path="/genre/:id" element={<GenrePage />} />
         <Route path="/search/:query" element={<SearchResults />} />
         <Route path="/search/manga/:query" element={<SearchResults manga={true} />} />
-        
+        <Route path="/auth/callback" element={<AuthCallback />} />
+
         {/* Updated routes with proper pages */}
         <Route path="/anime" element={<AllAnime />} />
         <Route path="/seasonal" element={<SeasonalAnime />} />
