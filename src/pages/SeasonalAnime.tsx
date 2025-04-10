@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { getSeasonNow, getSeasonList, getSeasonUpcoming } from "@/services/searchService";
@@ -6,7 +5,8 @@ import { Anime } from "@/types/anime";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimeGrid from "@/components/AnimeGrid";
-import SlidableHeroSection from "@/components/SlidableHeroSection";
+import PageHeroSection from "@/components/PageHeroSection";
+import AnimatedCardCarousel from "@/components/AnimatedCardCarousel";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
@@ -133,124 +133,133 @@ const SeasonalAnime = () => {
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
-      <div className="pt-16"> {/* Padding for navbar */}
-        <SlidableHeroSection
-          title={`${currentSeason} ${currentYear} Anime`}
-          subtitle="Discover what's hot this season"
-          items={featuredAnime}
-          loading={loading.featured}
-          error={error.featured}
-        />
-        
-        <div className="pt-8 pb-16">
-          <div className="container mx-auto px-4">
-            <Tabs defaultValue="current" onValueChange={handleTabChange} className="w-full mb-8">
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
-                <TabsTrigger value="current" className="font-orbitron">Current Season</TabsTrigger>
-                <TabsTrigger value="upcoming" className="font-orbitron">Upcoming</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="current">
-                <h2 className="text-3xl md:text-4xl font-orbitron font-bold text-cyber-accent mb-8 text-center">
-                  {currentSeason} {currentYear} Releases
-                </h2>
-                
-                <AnimeGrid
-                  title=""
-                  animeList={currentAnimeList}
-                  loading={loading.current}
-                  error={error.current}
-                />
-                
-                {!loading.current && !error.current && currentAnimeList.length > 0 && totalPages > 1 && (
-                  <Pagination className="my-10">
-                    <PaginationContent>
-                      {currentPage > 1 && (
-                        <PaginationItem>
-                          <PaginationPrevious 
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
-                          />
-                        </PaginationItem>
-                      )}
-                      
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        let pageNum = 1;
-                        
-                        if (totalPages <= 5) {
-                          pageNum = i + 1;
-                        } else if (currentPage <= 3) {
-                          pageNum = i + 1;
-                        } else if (currentPage >= totalPages - 2) {
-                          pageNum = totalPages - 4 + i;
-                        } else {
-                          pageNum = currentPage - 2 + i;
-                        }
-                        
-                        return (
-                          <PaginationItem key={i}>
-                            <PaginationLink
-                              isActive={currentPage === pageNum}
-                              onClick={() => handlePageChange(pageNum)}
-                              className={`cursor-pointer ${
-                                currentPage === pageNum 
-                                  ? "border-cyber-accent bg-cyber-accent/20 text-cyber-accent" 
-                                  : "border-cyber-accent/30 text-white hover:bg-cyber-accent/10"
-                              }`}
-                            >
-                              {pageNum}
-                            </PaginationLink>
-                          </PaginationItem>
-                        );
-                      })}
-                      
-                      {currentPage < totalPages && (
-                        <PaginationItem>
-                          <PaginationNext 
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
-                          />
-                        </PaginationItem>
-                      )}
-                    </PaginationContent>
-                  </Pagination>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="upcoming">
-                <h2 className="text-3xl md:text-4xl font-orbitron font-bold text-cyber-accent mb-8 text-center">
-                  Upcoming Season Releases
-                </h2>
-                
-                <AnimeGrid
-                  title=""
-                  animeList={upcomingAnimeList}
-                  loading={loading.upcoming}
-                  error={error.upcoming}
-                />
-              </TabsContent>
-            </Tabs>
+      <PageHeroSection
+        title={`${currentSeason} ${currentYear} Anime`}
+        subtitle="Discover what's hot this season"
+        items={featuredAnime}
+        type="anime"
+      />
+      
+      <div className="pt-8 pb-16">
+        <div className="container mx-auto px-4">
+          <Tabs defaultValue="current" onValueChange={handleTabChange} className="w-full mb-8">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
+              <TabsTrigger value="current" className="font-orbitron">Current Season</TabsTrigger>
+              <TabsTrigger value="upcoming" className="font-orbitron">Upcoming</TabsTrigger>
+            </TabsList>
             
-            {!loading.list && !error.list && seasonList.length > 0 && (
-              <div className="mt-16 bg-cyber-background/40 border border-cyber-accent/20 rounded-lg p-6">
-                <h3 className="text-2xl font-orbitron text-cyber-accent mb-6 text-center">
-                  Available Seasons Archive
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                  {seasonList.slice(0, 12).map((season, index) => (
-                    <div 
-                      key={`${season.year}-${season.season}`}
-                      className="bg-cyber-background/60 border border-cyber-accent/30 hover:border-cyber-accent/70 
-                                rounded-md p-3 text-center cursor-pointer transition-all"
-                    >
-                      <p className="text-cyber-accent font-medium">{season.year}</p>
-                      <p className="text-gray-300 capitalize">{season.season}</p>
-                    </div>
-                  ))}
-                </div>
+            <TabsContent value="current">
+              <h2 className="text-3xl md:text-4xl font-orbitron font-bold text-cyber-accent mb-8 text-center">
+                {currentSeason} {currentYear} Releases
+              </h2>
+              
+              <AnimeGrid
+                title=""
+                animeList={currentAnimeList}
+                loading={loading.current}
+                error={error.current}
+              />
+              
+              {!loading.current && !error.current && currentAnimeList.length > 0 && totalPages > 1 && (
+                <Pagination className="my-10">
+                  <PaginationContent>
+                    {currentPage > 1 && (
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
+                        />
+                      </PaginationItem>
+                    )}
+                    
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum = 1;
+                      
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <PaginationItem key={i}>
+                          <PaginationLink
+                            isActive={currentPage === pageNum}
+                            onClick={() => handlePageChange(pageNum)}
+                            className={`cursor-pointer ${
+                              currentPage === pageNum 
+                                ? "border-cyber-accent bg-cyber-accent/20 text-cyber-accent" 
+                                : "border-cyber-accent/30 text-white hover:bg-cyber-accent/10"
+                            }`}
+                          >
+                            {pageNum}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    })}
+                    
+                    {currentPage < totalPages && (
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          className="cursor-pointer border-cyber-accent/30 text-cyber-accent hover:bg-cyber-accent/10"
+                        />
+                      </PaginationItem>
+                    )}
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="upcoming">
+              <h2 className="text-3xl md:text-4xl font-orbitron font-bold text-cyber-accent mb-8 text-center">
+                Upcoming Season Releases
+              </h2>
+              
+              <AnimeGrid
+                title=""
+                animeList={upcomingAnimeList}
+                loading={loading.upcoming}
+                error={error.upcoming}
+              />
+            </TabsContent>
+          </Tabs>
+          
+          {/* Featured Seasonal Anime Carousel */}
+          {!loading.current && !error.current && currentAnimeList.length > 0 && (
+            <div className="mt-16 mb-8">
+              <AnimatedCardCarousel 
+                items={currentAnimeList.slice(0, 10)} 
+                title={`Featured ${currentSeason} Anime`} 
+                subtitle={`Discover the most popular anime from ${currentSeason} ${currentYear}`}
+                type="anime"
+              />
+            </div>
+          )}
+          
+          {!loading.list && !error.list && seasonList.length > 0 && (
+            <div className="mt-16 bg-cyber-background/40 border border-cyber-accent/20 rounded-lg p-6">
+              <h3 className="text-2xl font-orbitron text-cyber-accent mb-6 text-center">
+                Available Seasons Archive
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {seasonList.slice(0, 12).map((season, index) => (
+                  <div 
+                    key={`${season.year}-${season.season}`}
+                    className="bg-cyber-background/60 border border-cyber-accent/30 hover:border-cyber-accent/70 
+                              rounded-md p-3 text-center cursor-pointer transition-all"
+                  >
+                    <p className="text-cyber-accent font-medium">{season.year}</p>
+                    <p className="text-gray-300 capitalize">{season.season}</p>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
       

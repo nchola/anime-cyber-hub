@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { AlertCircle } from 'lucide-react';
 import { Anime } from '@/types/anime';
 import { Manga } from '@/types/manga';
 import { useIsMobile } from '@/hooks/use-mobile';
+import AnimatedCardCarousel from '@/components/AnimatedCardCarousel';
 
 interface PageHeroSectionProps {
   title: string;
@@ -108,31 +108,11 @@ const PageHeroSection: React.FC<PageHeroSectionProps> = ({
         )}
         
         {items && items.length > 0 && (
-          <div className="mt-10 flex items-center justify-center space-x-4 overflow-x-auto py-4">
-            {items.slice(0, 5).map((item, index) => (
-              <Link 
-                key={item.mal_id} 
-                to={`/${type}/${item.mal_id}`}
-                className="group flex-shrink-0 transition-transform duration-300 hover:scale-105"
-              >
-                <div 
-                  className="relative h-24 w-16 overflow-hidden rounded-md border border-cyber-accent/30 md:h-32 md:w-24"
-                >
-                  <img 
-                    src={item.images?.jpg?.image_url || '/placeholder.svg'} 
-                    alt={item.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    loading="lazy"
-                    width="96"
-                    height="128"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-1 text-center text-xs text-white">
-                    {item.title.length > 15 ? item.title.substring(0, 15) + '...' : item.title}
-                  </div>
-                </div>
-              </Link>
-            ))}
+          <div className="mt-10">
+            <AnimatedCardCarousel 
+              items={items as Anime[]} 
+              type={type}
+            />
           </div>
         )}
       </div>

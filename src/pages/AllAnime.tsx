@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { getTopAnime } from "@/services/animeService";
@@ -6,6 +5,8 @@ import { Anime } from "@/types/anime";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AnimeGrid from "@/components/AnimeGrid";
+import PageHeroSection from "@/components/PageHeroSection";
+import AnimatedCardCarousel from "@/components/AnimatedCardCarousel";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const AllAnime = () => {
@@ -44,20 +45,19 @@ const AllAnime = () => {
     setCurrentPage(page);
   };
 
+  // Get a few featured anime for the hero section
+  const featuredAnime = animeList.slice(0, 5);
+
   return (
     <div className="min-h-screen bg-cyber-background noise-bg">
       <Navbar />
       
-      <div className="bg-gradient-to-b from-cyber-background via-cyber-background/80 to-cyber-background py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-cyber-accent mb-4">
-            All Anime Collection
-          </h1>
-          <p className="text-lg text-gray-300 mb-8">
-            Discover the best anime from across the universe
-          </p>
-        </div>
-      </div>
+      <PageHeroSection
+        title="All Anime Collection"
+        subtitle="Discover the best anime from across the universe"
+        items={featuredAnime}
+        type="anime"
+      />
       
       <div className="pt-12 pb-16">
         <div className="container mx-auto px-4">
@@ -124,6 +124,18 @@ const AllAnime = () => {
                 )}
               </PaginationContent>
             </Pagination>
+          )}
+          
+          {/* Featured Anime Carousel */}
+          {!loading && !error && animeList.length > 0 && (
+            <div className="mt-16 mb-8">
+              <AnimatedCardCarousel 
+                items={animeList.slice(0, 10)} 
+                title="Featured Anime" 
+                subtitle="Check out these top-rated anime series"
+                type="anime"
+              />
+            </div>
           )}
         </div>
       </div>

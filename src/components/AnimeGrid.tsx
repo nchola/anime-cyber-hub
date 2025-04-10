@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Anime } from "@/types/anime";
 import AnimeCard from "./AnimeCard";
@@ -54,7 +53,7 @@ const AnimeGrid: React.FC<AnimeGridProps> = ({
   if (error || animeList.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-orbitron font-bold mb-6 text-white">
+        <h2 className="text-1xl font-orbitron font-bold mb-6 text-white">
           {title}
         </h2>
         <div className="bg-cyber-background/50 rounded-lg p-8 text-center border border-cyber-accent/20">
@@ -83,7 +82,7 @@ const AnimeGrid: React.FC<AnimeGridProps> = ({
           </Link>
         )}
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6">
+      <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6">
         {animeList.map((anime, index) => (
           <AnimeCard key={anime.mal_id} anime={anime} index={index} />
         ))}

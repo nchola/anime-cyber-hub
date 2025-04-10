@@ -1,0 +1,22 @@
+{
+  "name": "autocommit",
+  "version": "1.0.0",
+  "description": "Sistem autocommit dengan deskripsi otomatis",
+  "type": "module",
+  "main": "autocommit.js",
+  "scripts": {
+    "start": "node autocommit.js",
+    "silent": "node autocommit-silent.js",
+    "setup-cron": "node setup-autocommit-cron.js setup",
+    "remove-cron": "node setup-autocommit-cron.js remove",
+    "setup-windows": "node setup-autocommit-windows.js setup",
+    "remove-windows": "node setup-autocommit-windows.js remove"
+  },
+  "keywords": [
+    "git",
+    "commit",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT"
+} 

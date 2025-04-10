@@ -86,12 +86,14 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, index = 0 }) => {
   // Get title font size class based on title length
   const getTitleFontSizeClass = () => {
     const title = anime.title_english || anime.title;
-    if (title.length > 30) {
-      return "text-xs"; // Extra small for very long titles
+    if (title.length > 40) {
+      return "text-[10px]"; // Extra extra small for very very long titles
+    } else if (title.length > 30) {
+      return "text-[10px]"; // Extra small for very long titles
     } else if (title.length > 20) {
-      return "text-sm"; // Small for long titles
+      return "text-[11px]"; // Small for long titles
     } else {
-      return "text-base"; // Default size for normal titles
+      return "text-[12px]"; // Default size for normal titles
     }
   };
 
@@ -167,8 +169,11 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, index = 0 }) => {
           {/* Title and info */}
           <div className="p-3">
             {/* Dynamic font size based on title length */}
-            <div className="min-h-[40px] flex items-center">
-              <h3 className={`font-orbitron text-white font-light ${getTitleFontSizeClass()} line-clamp-2 group-hover:text-cyber-accent transition-colors`}>
+            <div className="min-h-[32px] flex items-center">
+              <h3 
+                className={`font-orbitron text-white font-light ${getTitleFontSizeClass()} line-clamp-2 group-hover:text-cyber-accent transition-colors`}
+                title={anime.title_english || anime.title}
+              >
                 {anime.title_english || anime.title}
               </h3>
             </div>
