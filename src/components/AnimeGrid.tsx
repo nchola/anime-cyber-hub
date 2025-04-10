@@ -82,7 +82,7 @@ const AnimeGrid: React.FC<AnimeGridProps> = ({
           </Link>
         )}
       </div>
-      <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6">
         {animeList.map((anime, index) => (
           <AnimeCard key={anime.mal_id} anime={anime} index={index} />
         ))}
