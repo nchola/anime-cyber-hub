@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Star, Heart } from "lucide-react";
 import { Anime } from "@/types/anime";
@@ -116,7 +117,7 @@ const HeroSection = () => {
   const current = featuredAnime[currentIndex];
   
   return (
-    <div className="w-full min-h-screen md:h-screen relative overflow-hidden bg-cyber-background noise-bg">
+    <div className="w-full h-screen relative overflow-hidden bg-cyber-background noise-bg">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyber-accent to-transparent z-10 animate-pulse-accent"></div>
       
       {/* Background Image - Using object-cover and no objectPosition */}
@@ -140,8 +141,8 @@ const HeroSection = () => {
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/60 via-transparent to-black/90"></div>
       
       <div className="container mx-auto px-4 h-full relative z-20">
-        <div className="flex flex-col justify-center h-full py-8 md:py-0">
-          <div className={`max-w-3xl ${isMobile ? 'scale-90' : ''}`}>
+        <div className="flex flex-col justify-center h-full">
+          <div className={`max-w-3xl ${isMobile ? 'scale-80' : ''}`}>
             <div className="mb-6 flex flex-col gap-2">
               <div className="flex flex-wrap gap-3 items-center mb-2">
                 <div className="inline-block bg-cyber-purple/80 text-white px-4 py-2 rounded-md font-orbitron shadow-[0_0_15px_rgba(138,43,226,0.5)] border border-cyber-purple animate-pulse-accent">

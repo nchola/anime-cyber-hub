@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Anime } from '@/types/anime';
 import { Link } from 'react-router-dom';
@@ -37,9 +36,9 @@ const SearchSuggestions = ({
   };
 
   return (
-    <div className="absolute z-50 mt-1 w-full bg-cyber-background border border-cyber-accent/30 rounded-md shadow-lg">
+    <div className="absolute z-50 mt-1 w-full min-w-[300px] max-w-[400px] -left-0 bg-cyber-background border border-cyber-accent/30 rounded-md shadow-lg">
       <div className="rounded-md">
-        <div className="max-h-60 overflow-auto p-0">
+        <div className="max-h-[70vh] overflow-auto p-0">
           {results.length === 0 && query.length >= 2 ? (
             <div className="py-6 text-center text-sm text-gray-400">
               No results found for "{query}"
@@ -86,7 +85,12 @@ const SearchSuggestions = ({
                         </div>
                       </div>
                     </HoverCardTrigger>
-                    <HoverCardContent side="right" className="w-72 p-0 bg-cyber-background border border-cyber-accent/30 shadow-lg">
+                    <HoverCardContent 
+                      side="right" 
+                      align="start"
+                      className="w-72 p-0 bg-cyber-background border border-cyber-accent/30 shadow-lg"
+                      sideOffset={5}
+                    >
                       <div className="flex flex-col">
                         <img 
                           src={anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || '/placeholder.svg'} 

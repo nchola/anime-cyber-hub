@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -96,8 +95,8 @@ const SearchBar = () => {
   }, []);
 
   return (
-    <div ref={searchRef} className="relative">
-      <form onSubmit={handleSearch}>
+    <div ref={searchRef} className="relative w-full max-w-[300px]">
+      <form onSubmit={handleSearch} className="relative">
         <Input
           type="text"
           value={searchQuery}
@@ -105,7 +104,7 @@ const SearchBar = () => {
           onKeyDown={handleKeyDown}
           onFocus={() => searchQuery.length >= 2 && setShowSuggestions(true)}
           placeholder="Find anime"
-          className="py-1 pl-2 pr-8 w-32 sm:w-40 md:w-64 bg-cyber-background border border-cyber-accent/30 rounded-md focus:outline-none focus:border-cyber-accent text-xs md:text-sm placeholder-gray-500"
+          className="py-1 pl-2 pr-8 w-full bg-cyber-background border border-cyber-accent/30 rounded-md focus:outline-none focus:border-cyber-accent text-xs md:text-sm placeholder-gray-500"
         />
         <Button 
           type="submit" 
@@ -117,14 +116,16 @@ const SearchBar = () => {
         </Button>
       </form>
       
-      <SearchSuggestions
-        results={suggestions}
-        query={searchQuery}
-        visible={showSuggestions}
-        onItemClick={() => setShowSuggestions(false)}
-        highlightIndex={highlightedIndex}
-        onMouseEnter={setHighlightedIndex}
-      />
+      <div className="absolute left-0 right-0 w-full">
+        <SearchSuggestions
+          results={suggestions}
+          query={searchQuery}
+          visible={showSuggestions}
+          onItemClick={() => setShowSuggestions(false)}
+          highlightIndex={highlightedIndex}
+          onMouseEnter={setHighlightedIndex}
+        />
+      </div>
     </div>
   );
 };
