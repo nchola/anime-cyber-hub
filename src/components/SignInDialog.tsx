@@ -182,7 +182,7 @@ const SignInDialog = ({ open, onOpenChange, onLoginSuccess }: SignInDialogProps)
             
           
           <div className="text-center text-sm">
-            Belum punya akun?{" "}
+            New Here?{" "}
             <Button 
               variant="link" 
               onClick={() => {
@@ -192,7 +192,7 @@ const SignInDialog = ({ open, onOpenChange, onLoginSuccess }: SignInDialogProps)
               className="text-cyber-accent p-0 h-auto"
               aria-label="Sign up"
             >
-              Daftar di sini
+              Register Here
             </Button>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
