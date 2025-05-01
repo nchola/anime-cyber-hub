@@ -1,30 +1,26 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import AnimeGrid from "@/components/AnimeGrid";
-import { Anime } from "@/types/anime";
+import MangaGrid from "@/components/MangaGrid";
+import { Manga } from "@/types/manga";
 import { Star } from "lucide-react";
 import { useBookmark } from "@/hooks/use-bookmark";
 
-interface TabNavigationProps {
-  topAnime: Anime[];
-  seasonalAnime: Anime[];
-  upcomingAnime: Anime[];
+interface MangaTabNavigationProps {
+  topManga: Manga[];
+  popularManga: Manga[];
   loading: {
     top: boolean;
-    seasonal: boolean;
-    upcoming: boolean;
+    popular: boolean;
   };
   error: {
     top: string | null;
-    seasonal: string | null;
-    upcoming: string | null;
+    popular: string | null;
   };
 }
 
-const TabNavigation: React.FC<TabNavigationProps> = ({
-  topAnime,
-  seasonalAnime,
-  upcomingAnime,
+const MangaTabNavigation: React.FC<MangaTabNavigationProps> = ({
+  topManga,
+  popularManga,
   loading,
   error,
 }) => {
@@ -39,16 +35,11 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
             );
             break;
           case "2":
-            document.querySelector('[data-value="seasonal"]')?.dispatchEvent(
+            document.querySelector('[data-value="popular"]')?.dispatchEvent(
               new MouseEvent("click", { bubbles: true })
             );
             break;
           case "3":
-            document.querySelector('[data-value="upcoming"]')?.dispatchEvent(
-              new MouseEvent("click", { bubbles: true })
-            );
-            break;
-          case "4":
             document.querySelector('[data-value="bookmarks"]')?.dispatchEvent(
               new MouseEvent("click", { bubbles: true })
             );
@@ -63,15 +54,15 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Get bookmarked anime using the useBookmark hook
+  // Get bookmarked manga using the useBookmark hook
   const { bookmarks, getBookmarksByType } = useBookmark();
-  const bookmarkedAnime = getBookmarksByType('anime');
+  const bookmarkedManga = getBookmarksByType('manga') as unknown as Manga[];
 
   return (
     <div className="container mx-auto px-4 pt-8">
       <Tabs defaultValue="top-rated" className="w-full">
         <div className="overflow-x-auto pb-2 scrollbar-hide">
-          <TabsList className="anime-tab-container mb-6 w-full justify-start h-12 bg-cyber-background">
+          <TabsList className="manga-tab-container mb-6 w-full justify-start h-12 bg-cyber-background">
             <TabsTrigger 
               value="top-rated" 
               className="tab-item font-orbitron text-base px-6 transition-all duration-300"
@@ -80,18 +71,11 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
               TOP RATED
             </TabsTrigger>
             <TabsTrigger 
-              value="seasonal" 
+              value="popular" 
               className="tab-item font-orbitron text-base px-6 transition-all duration-300"
-              data-category="seasonal"
+              data-category="popular"
             >
-              SEASONAL
-            </TabsTrigger>
-            <TabsTrigger 
-              value="upcoming" 
-              className="tab-item font-orbitron text-base px-6 transition-all duration-300"
-              data-category="upcoming"
-            >
-              UPCOMING
+              POPULAR
             </TabsTrigger>
             <TabsTrigger 
               value="bookmarks" 
@@ -99,9 +83,9 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
               data-category="bookmarks"
             >
               <Star size={16} className="text-cyber-accent" /> BOOKMARKS
-              {bookmarkedAnime.length > 0 && (
+              {bookmarkedManga.length > 0 && (
                 <span className="bg-cyber-accent text-cyber-background rounded-full px-2 py-0.5 text-xs">
-                  {bookmarkedAnime.length}
+                  {bookmarkedManga.length}
                 </span>
               )}
             </TabsTrigger>
@@ -109,41 +93,31 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
         </div>
 
         <TabsContent value="top-rated" className="mt-0">
-          <AnimeGrid
+          <MangaGrid
             title=""
-            animeList={topAnime}
+            mangaList={topManga}
             loading={loading.top}
             error={error.top}
-            viewMoreLink="/anime"
+            viewMoreLink="/manga"
           />
         </TabsContent>
         
-        <TabsContent value="seasonal" className="mt-0">
-          <AnimeGrid
+        <TabsContent value="popular" className="mt-0">
+          <MangaGrid
             title=""
-            animeList={seasonalAnime}
-            loading={loading.seasonal}
-            error={error.seasonal}
-            viewMoreLink="/seasonal"
-          />
-        </TabsContent>
-        
-        <TabsContent value="upcoming" className="mt-0">
-          <AnimeGrid
-            title=""
-            animeList={upcomingAnime}
-            loading={loading.upcoming}
-            error={error.upcoming}
-            viewMoreLink="/upcoming"
+            mangaList={popularManga}
+            loading={loading.popular}
+            error={error.popular}
+            viewMoreLink="/manga/popular"
           />
         </TabsContent>
         
         <TabsContent value="bookmarks" className="mt-0">
-          <AnimeGrid
+          <MangaGrid
             title=""
-            animeList={bookmarkedAnime}
+            mangaList={bookmarkedManga}
             loading={false}
-            error={bookmarkedAnime.length === 0 ? "No bookmarks yet. Add some anime to your bookmarks!" : null}
+            error={bookmarkedManga.length === 0 ? "No bookmarks yet. Add some manga to your bookmarks!" : null}
           />
         </TabsContent>
       </Tabs>
@@ -151,4 +125,4 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
   );
 };
 
-export default TabNavigation;
+export default MangaTabNavigation; 

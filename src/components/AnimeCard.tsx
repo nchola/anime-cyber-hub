@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Anime } from "@/types/anime";
-import { Star, Clock, Bookmark, BookmarkCheck, Play } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Star, Clock, Play } from "lucide-react";
 import TrailerModal from "./TrailerModal";
-import { supabase } from "@/integrations/supabase/client";
+import BookmarkButton from "./BookmarkButton";
 
 interface AnimeCardProps {
   anime: Anime;
@@ -13,73 +12,10 @@ interface AnimeCardProps {
 
 const AnimeCard: React.FC<AnimeCardProps> = ({ anime, index = 0 }) => {
   const [hovered, setHovered] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTrailer, setShowTrailer] = useState(false);
-  const { toast } = useToast();
   
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
-
-  // Check if this anime is bookmarked
-  useEffect(() => {
-    try {
-      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      setIsBookmarked(bookmarks.includes(anime.mal_id));
-    } catch (err) {
-      console.error("Failed to load bookmarks:", err);
-    }
-  }, [anime.mal_id]);
-
-  // Toggle bookmark status
-  const toggleBookmark = async (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent navigation
-    e.stopPropagation();
-    
-    // Check if user is logged in
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      toast({
-        title: "Login Required",
-        description: "Please login to add bookmarks",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    try {
-      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      let newBookmarks;
-      
-      if (isBookmarked) {
-        // Remove from bookmarks
-        newBookmarks = bookmarks.filter((id: number) => id !== anime.mal_id);
-        toast({
-          title: "Removed from bookmarks",
-          description: `${anime.title_english || anime.title} removed from your bookmarks`,
-        });
-      } else {
-        // Add to bookmarks
-        newBookmarks = [...bookmarks, anime.mal_id];
-        toast({
-          title: "Added to bookmarks",
-          description: `${anime.title_english || anime.title} added to your bookmarks`,
-        });
-      }
-      
-      localStorage.setItem('bookmarks', JSON.stringify(newBookmarks));
-      setIsBookmarked(!isBookmarked);
-      
-      // Dispatch a storage event to notify other components
-      window.dispatchEvent(new Event('storage'));
-    } catch (err) {
-      console.error("Failed to update bookmarks:", err);
-      toast({
-        title: "Error",
-        description: "Failed to update bookmarks",
-        variant: "destructive",
-      });
-    }
-  };
 
   // Open trailer modal
   const openTrailer = (e: React.MouseEvent) => {
@@ -87,11 +23,6 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, index = 0 }) => {
     e.stopPropagation();
     if (anime.trailer?.embed_url) {
       setShowTrailer(true);
-    } else {
-      toast({
-        title: "Trailer not available",
-        description: "No trailer available for this anime",
-      });
     }
   };
 
@@ -122,16 +53,13 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, index = 0 }) => {
             {/* Action buttons */}
             <div className="absolute top-2 right-2 z-10 flex flex-col gap-2">
               {/* Bookmark button */}
-              <button 
-                onClick={toggleBookmark}
-                className="bg-black/70 p-1.5 rounded-full transition-all hover:bg-cyber-accent/90 hover:text-cyber-background"
-              >
-                {isBookmarked ? (
-                  <BookmarkCheck size={16} className="text-cyber-accent" />
-                ) : (
-                  <Bookmark size={16} className="text-white" />
-                )}
-              </button>
+              <BookmarkButton
+                itemId={anime.mal_id}
+                itemType="anime"
+                itemData={anime}
+                variant="icon"
+                size="sm"
+              />
               
               {/* Play trailer button (only show if trailer exists) */}
               {anime.trailer?.youtube_id && (

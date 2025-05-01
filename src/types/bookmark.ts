@@ -1,19 +1,20 @@
+import { Database } from "@/integrations/supabase/database.types";
+
 // Bookmark types
-export type BookmarkItem = {
+export type BookmarkType = 'anime' | 'manga';
+
+export interface BookmarkItem {
   id: number;
+  type: BookmarkType;
   title: string;
   image_url: string;
-  type: 'anime' | 'manga';
-  [key: string]: any;
-};
+}
 
 // Supabase bookmark types
-export type SupabaseBookmark = {
+export type SupabaseBookmark = Database['public']['Tables']['bookmarks']['Row'];
+
+export interface BookmarkData {
   id: number;
-  user_id: string;
-  item_id: number;
-  item_type: 'anime' | 'manga';
-  item_data: any;
-  created_at: string;
-  updated_at: string;
-}; 
+  type: BookmarkType;
+  data: any;
+} 

@@ -4,9 +4,10 @@ import { getAnimeById } from "@/services/animeService";
 import { Anime } from "@/types/anime";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Star, Calendar, Clock, BarChart, Users, Tv, Bookmark } from "lucide-react";
+import { Star, Calendar, Clock, BarChart, Users, Tv } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import BookmarkButton from "@/components/BookmarkButton";
 
 const AnimeDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -116,10 +117,13 @@ const AnimeDetail = () => {
               </div>
               
               <div className="mt-6 space-y-3">
-                <Button variant="outline" className="w-full border-cyber-accent text-cyber-accent font-orbitron flex gap-2 items-center justify-center">
-                  <Bookmark size={16} />
-                  Add to Bookmarks
-                </Button>
+                <BookmarkButton
+                  itemId={anime.mal_id}
+                  itemType="anime"
+                  itemData={anime}
+                  variant="button"
+                  className="w-full"
+                />
               </div>
             </div>
             

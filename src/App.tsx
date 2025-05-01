@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -15,6 +14,7 @@ import UpcomingAnime from "./pages/UpcomingAnime";
 import MangaPage from "./pages/MangaPage";
 import MangaDetail from "./pages/MangaDetail";
 import AuthCallback from "./pages/auth/callback";
+import { Analytics } from "@vercel/analytics/react"
 
 const queryClient = new QueryClient();
 
@@ -23,6 +23,7 @@ const App = () => (
     <BrowserRouter>
       <Toaster />
       <Sonner />
+      <Analytics />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/anime/:id" element={<AnimeDetail />} />

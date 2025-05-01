@@ -1,116 +1,135 @@
 import React, { useState, useEffect } from 'react';
 import { Bookmark, BookmarkCheck } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { addBookmark, removeBookmarkItem, isBookmarked } from '@/utils/bookmarkUtils';
-import { BookmarkItem } from '@/types/bookmark';
+import { useBookmark } from '@/hooks/use-bookmark';
+import { cn } from '@/lib/utils';
 
 interface BookmarkButtonProps {
-  item: BookmarkItem;
-  size?: 'sm' | 'md' | 'lg';
-  variant?: 'ghost' | 'outline' | 'default';
+  itemId: number;
+  itemType: 'anime' | 'manga';
+  itemData: any;
+  variant?: 'icon' | 'button';
   className?: string;
+  size?: 'sm' | 'md' | 'lg';
 }
 
-const BookmarkButton: React.FC<BookmarkButtonProps> = ({ 
-  item, 
-  size = 'md', 
-  variant = 'ghost',
-  className = ''
+const BookmarkButton: React.FC<BookmarkButtonProps> = ({
+  itemId,
+  itemType,
+  itemData,
+  variant = 'icon',
+  className,
+  size = 'md'
 }) => {
-  const [isBookmarkedState, setIsBookmarkedState] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { isBookmarked, addBookmark, removeBookmark, isLoading } = useBookmark();
+  const [isBookmarkedState, setIsBookmarkedState] = useState(false);
+  const [isLoadingState, setIsLoadingState] = useState(false);
 
-  // Check if item is bookmarked on component mount
+  // Update local state when global state changes
   useEffect(() => {
-    const checkBookmarkStatus = async () => {
-      try {
-        const bookmarked = await isBookmarked(item.id, item.type);
-        setIsBookmarkedState(bookmarked);
-      } catch (error) {
-        console.error('Error checking bookmark status:', error);
-      }
-    };
+    setIsBookmarkedState(isBookmarked(itemId));
+  }, [isBookmarked, itemId]);
 
-    checkBookmarkStatus();
-  }, [item.id, item.type]);
-
-  // Listen for storage events to update bookmark status
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const checkBookmarkStatus = async () => {
-        try {
-          const bookmarked = await isBookmarked(item.id, item.type);
-          setIsBookmarkedState(bookmarked);
-        } catch (error) {
-          console.error('Error checking bookmark status after storage change:', error);
-        }
-      };
-
-      checkBookmarkStatus();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, [item.id, item.type]);
-
-  const handleToggleBookmark = async () => {
-    setIsLoading(true);
+  const handleToggleBookmark = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setIsLoadingState(true);
+    
     try {
       if (isBookmarkedState) {
-        // Remove bookmark
-        await removeBookmarkItem(item.id, item.type);
+        await removeBookmark(itemId, itemType);
         setIsBookmarkedState(false);
         toast({
-          title: "Bookmark Dihapus",
-          description: `${item.title} telah dihapus dari bookmark`,
+          title: "Removed from bookmarks",
+          description: `${itemData.title_english || itemData.title} removed from your bookmarks`,
         });
       } else {
-        // Add bookmark
-        await addBookmark(item);
+        // Create a bookmark item with the required properties
+        const bookmarkItem = {
+          id: itemId,
+          title: itemData.title_english || itemData.title,
+          image_url: itemData.images?.jpg?.large_image_url || '',
+          type: itemType,
+          ...itemData
+        };
+        
+        await addBookmark(bookmarkItem);
         setIsBookmarkedState(true);
         toast({
-          title: "Bookmark Ditambahkan",
-          description: `${item.title} telah ditambahkan ke bookmark`,
+          title: "Added to bookmarks",
+          description: `${itemData.title_english || itemData.title} added to your bookmarks`,
         });
       }
     } catch (error) {
-      console.error('Error toggling bookmark:', error);
+      console.error("Failed to update bookmark:", error);
       toast({
-        title: "Gagal",
-        description: "Terjadi kesalahan saat mengelola bookmark",
+        title: "Error",
+        description: "Failed to update bookmark. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsLoadingState(false);
     }
   };
 
-  // Determine button size classes
+  // Size classes
   const sizeClasses = {
-    sm: 'h-8 w-8',
-    md: 'h-10 w-10',
-    lg: 'h-12 w-12'
+    sm: 'p-1.5',
+    md: 'p-2',
+    lg: 'p-2.5'
   };
 
+  // Icon sizes
+  const iconSizes = {
+    sm: 16,
+    md: 20,
+    lg: 24
+  };
+
+  if (variant === 'icon') {
+    return (
+      <button
+        onClick={handleToggleBookmark}
+        disabled={isLoadingState || isLoading}
+        className={cn(
+          "bg-black/70 rounded-full transition-all hover:bg-cyber-accent/90 hover:text-cyber-background",
+          sizeClasses[size],
+          className
+        )}
+        aria-label={isBookmarkedState ? "Remove from bookmarks" : "Add to bookmarks"}
+      >
+        {isBookmarkedState ? (
+          <BookmarkCheck size={iconSizes[size]} className="text-cyber-accent" />
+        ) : (
+          <Bookmark size={iconSizes[size]} className="text-white" />
+        )}
+      </button>
+    );
+  }
+
   return (
-    <Button
-      variant={variant}
-      size="icon"
-      className={`${sizeClasses[size]} ${className} ${isBookmarkedState ? 'text-cyber-accent' : 'text-white'}`}
+    <button
       onClick={handleToggleBookmark}
-      disabled={isLoading}
-      aria-label={isBookmarkedState ? "Hapus bookmark" : "Tambahkan bookmark"}
+      disabled={isLoadingState || isLoading}
+      className={cn(
+        "w-full border-cyber-accent text-cyber-accent font-orbitron flex gap-2 items-center justify-center py-2 px-4 rounded-md transition-all hover:bg-cyber-accent hover:text-cyber-background",
+        className
+      )}
     >
       {isBookmarkedState ? (
-        <BookmarkCheck className="h-4 w-4 sm:h-5 sm:w-5" />
+        <>
+          <BookmarkCheck size={iconSizes[size]} />
+          Remove from Bookmarks
+        </>
       ) : (
-        <Bookmark className="h-4 w-4 sm:h-5 sm:w-5" />
+        <>
+          <Bookmark size={iconSizes[size]} />
+          Add to Bookmarks
+        </>
       )}
-    </Button>
+    </button>
   );
 };
 

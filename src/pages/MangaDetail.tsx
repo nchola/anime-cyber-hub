@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getMangaById, getPopularMangaByGenre } from "@/services/mangaService";
@@ -12,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import MangaReader from "@/components/MangaReader";
 import MangaGrid from "@/components/MangaGrid";
+import BookmarkButton from "@/components/BookmarkButton";
 
 const MangaDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -199,17 +199,13 @@ const MangaDetail = () => {
               </div>
               
               <div className="mt-6 space-y-3">
-                <Button 
-                  variant="outline" 
-                  onClick={handleBookmark}
-                  className={`w-full ${isBookmarked ? 'bg-cyber-accent/20' : ''} border-cyber-accent text-cyber-accent font-orbitron flex gap-2 items-center justify-center`}
-                >
-                  {isBookmarked ? (
-                    <><BookmarkCheck size={16} /> Remove Bookmark</>
-                  ) : (
-                    <><Bookmark size={16} /> Add to Bookmarks</>
-                  )}
-                </Button>
+                <BookmarkButton
+                  itemId={manga.mal_id}
+                  itemType="manga"
+                  itemData={manga}
+                  variant="button"
+                  className="w-full"
+                />
 
                 <Button 
                   onClick={() => setShowReader(true)}
